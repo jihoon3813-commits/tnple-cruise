@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useConfig } from '../context/ConfigContext';
-import { Plus, Trash2, Star, Save, X } from 'lucide-react';
+import { Star, Trash2, Plus, X, MessageSquare, User } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const AdminReviewManager = () => {
-  const { config, addReview } = useConfig();
+  const { config, addReview, deleteReview } = useConfig();
   const [isAdding, setIsAdding] = useState(false);
   const [newReview, setNewReview] = useState({
     user: "",
@@ -13,93 +14,142 @@ const AdminReviewManager = () => {
   });
 
   const handleSave = () => {
-    addReview({
-      ...newReview,
-      id: `review-${Date.now()}`
-    });
+    addReview({ ...newReview, id: `review-${Date.now()}` });
     setIsAdding(false);
     setNewReview({ user: "", rating: 5, content: "", images: [""] });
   };
 
   return (
-    <div className="admin-content">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
-        <h1 style={{ fontSize: '28px' }}>여행 후기 관리</h1>
-        <button className="luxury-button" onClick={() => setIsAdding(true)}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Plus size={16} /> 후기 작성
-          </div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <button className="luxury-btn" onClick={() => setIsAdding(true)}>
+          <Plus size={16} /> 신규 리뷰 등록
         </button>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '20px' }}>
+      <div style={{ columns: '2 400px', columnGap: '24px' }}>
         {config.reviews.map(review => (
-          <div key={review.id} className="admin-card">
-            <div style={{ display: 'flex', gap: '15px', marginBottom: '15px' }}>
-              <img src={review.images[0]} style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '4px' }} alt="" />
-              <div>
-                <h4 style={{ fontWeight: '700' }}>{review.user}</h4>
-                <div style={{ display: 'flex', color: 'var(--accent)', marginTop: '5px' }}>
-                  {[...Array(5)].map((_, i) => <Star key={i} size={14} fill={i < review.rating ? "var(--accent)" : "none"} />)}
+          <motion.div 
+            key={review.id} 
+            className="admin-card-glass" 
+            style={{ marginBottom: '24px', breakInside: 'avoid', padding: '24px' }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
+              <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <User size={24} className="text-gold" />
+                </div>
+                <div>
+                  <h4 style={{ fontWeight: '700', fontSize: '16px' }}>{review.user}</h4>
+                  <div style={{ display: 'flex', color: 'var(--gold-primary)', marginTop: '4px' }}>
+                    {[...Array(5)].map((_, i) => <Star key={i} size={12} fill={i < review.rating ? "var(--gold-primary)" : "none"} />)}
+                  </div>
                 </div>
               </div>
+              <button 
+                onClick={() => deleteReview(review.id)}
+                style={{ color: '#ef4444', opacity: 0.5 }}
+              >
+                <Trash2 size={16} />
+              </button>
             </div>
-            <p style={{ fontSize: '14px', color: 'var(--text-light)' }}>{review.content}</p>
-          </div>
+            
+            <p style={{ color: 'var(--text-gray)', fontSize: '14px', lineHeight: '1.6', marginBottom: '20px' }}>
+               "{review.content}"
+            </p>
+
+            {review.images && review.images[0] && (
+              <img 
+                src={review.images[0]} 
+                alt="Review" 
+                style={{ width: '100%', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }} 
+              />
+            )}
+          </motion.div>
         ))}
       </div>
 
-      {isAdding && (
-        <div style={{ 
-          position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', 
-          background: 'rgba(0,0,0,0.5)', zIndex: 2000, display: 'flex', 
-          alignItems: 'center', justifyContent: 'center' 
-        }}>
-          <div className="admin-card" style={{ width: '100%', maxWidth: '500px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '25px' }}>
-              <h2 style={{ fontSize: '20px' }}>새 후기 작성</h2>
-              <button onClick={() => setIsAdding(false)}><X size={20} /></button>
-            </div>
-            
-            <div className="form-group">
-              <label>작성자 이름</label>
-              <input 
-                className="form-control" 
-                value={newReview.user}
-                onChange={e => setNewReview({...newReview, user: e.target.value})}
-              />
-            </div>
-            <div className="form-group">
-              <label>평점 (1-5)</label>
-              <input 
-                type="number" className="form-control" min={1} max={5}
-                value={newReview.rating}
-                onChange={e => setNewReview({...newReview, rating: parseInt(e.target.value)})}
-              />
-            </div>
-            <div className="form-group">
-              <label>후기 내용</label>
-              <textarea 
-                className="form-control" rows={4}
-                value={newReview.content}
-                onChange={e => setNewReview({...newReview, content: e.target.value})}
-              />
-            </div>
-            <div className="form-group">
-              <label>후기 이미지 URL</label>
-              <input 
-                className="form-control" 
-                value={newReview.images[0]}
-                onChange={e => setNewReview({...newReview, images: [e.target.value]})}
-              />
-            </div>
+      <AnimatePresence>
+        {isAdding && (
+          <div style={{ 
+            position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', 
+            background: 'rgba(2, 6, 23, 0.9)', backdropFilter: 'blur(10px)', 
+            zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' 
+          }}>
+            <motion.div 
+              className="admin-card-glass" 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              style={{ width: '100%', maxWidth: '500px', border: '1px solid rgba(255,255,255,0.1)' }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '32px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <MessageSquare className="text-gold" size={20} />
+                  <h2 style={{ fontSize: '20px', fontWeight: '700' }}>신규 리뷰 작성</h2>
+                </div>
+                <button onClick={() => setIsAdding(false)}><X size={24} /></button>
+              </div>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <div className="form-group">
+                  <label style={{ fontSize: '12px', color: 'var(--text-gray)', marginBottom: '8px', display: 'block' }}>작성자 이름</label>
+                  <input 
+                    className="glass-light" 
+                    style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', color: '#fff' }}
+                    value={newReview.user}
+                    onChange={e => setNewReview({...newReview, user: e.target.value})}
+                  />
+                </div>
+                <div className="form-group">
+                  <label style={{ fontSize: '12px', color: 'var(--text-gray)', marginBottom: '8px', display: 'block' }}>매칭 평점 (1-5)</label>
+                  <div style={{ display: 'flex', gap: '10px' }}>
+                    {[1,2,3,4,5].map(nu => (
+                      <button 
+                        key={nu}
+                        onClick={() => setNewReview({...newReview, rating: nu})}
+                        style={{ 
+                          flex: 1, padding: '10px', borderRadius: '8px', 
+                          background: newReview.rating >= nu ? 'var(--gold-primary)' : 'rgba(255,255,255,0.05)',
+                          color: newReview.rating >= nu ? '#000' : '#fff'
+                        }}
+                      >
+                        {nu}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="form-group">
+                  <label style={{ fontSize: '12px', color: 'var(--text-gray)', marginBottom: '8px', display: 'block' }}>리뷰 메시지</label>
+                  <textarea 
+                    className="glass-light" 
+                    style={{ width: '100%', padding: '16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', color: '#fff' }}
+                    rows={4}
+                    value={newReview.content}
+                    onChange={e => setNewReview({...newReview, content: e.target.value})}
+                  />
+                </div>
+                <div className="form-group">
+                  <label style={{ fontSize: '12px', color: 'var(--text-gray)', marginBottom: '8px', display: 'block' }}>포토 후기 URL</label>
+                  <input 
+                    className="glass-light" 
+                    style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', color: '#fff' }}
+                    value={newReview.images[0]}
+                    onChange={e => setNewReview({...newReview, images: [e.target.value]})}
+                  />
+                </div>
 
-            <button className="luxury-button" style={{ width: '100%', marginTop: '10px' }} onClick={handleSave}>
-              후기 저장
-            </button>
+                <div style={{ display: 'flex', gap: '16px', marginTop: '16px' }}>
+                  <button className="luxury-btn outline" style={{ flex: 1 }} onClick={() => setIsAdding(false)}>취소</button>
+                  <button className="luxury-btn" style={{ flex: 1 }} onClick={handleSave}>리뷰 등록하기</button>
+                </div>
+              </div>
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
     </div>
   );
 };
