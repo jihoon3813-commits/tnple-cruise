@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Ship, Menu, X, ArrowUpRight } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -10,7 +9,7 @@ const Navbar = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
+      setScrolled(window.scrollY > 20);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -20,26 +19,26 @@ const Navbar = () => {
 
   return (
     <nav className={`nav ${scrolled ? 'scrolled' : ''}`}>
-      <Link to="/" className="nav-logo" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        <div style={{ width: '40px', height: '40px', background: 'var(--gold-gradient)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Ship size={24} color="#000" />
+      <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
+        <div style={{ padding: '8px', background: 'var(--primary)', borderRadius: '10px', display: 'flex' }}>
+          <Ship size={24} color="#fff" />
         </div>
-        <span style={{ fontWeight: '900', letterSpacing: '-0.02em', fontSize: '24px' }}>OLIGO</span>
+        <span style={{ fontWeight: '900', fontSize: '24px', letterSpacing: '-0.02em', color: 'var(--text-main)' }}>OLIGO</span>
       </Link>
 
-      <div className="nav-links">
-        {['홈', '멤버십', '크루즈', '여행후기'].map((text, idx) => (
+      <div style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
+        {['홈', '멤버십', '크루즈', '여행후기'].map((text) => (
           <Link 
             key={text} 
-            to={text === '홈' ? '/' : text === '여행후기' ? '/reviews' : `/#${text}`} 
+            to={text === '홈' ? '/' : text === '여행후기' ? '/reviews' : `#${text}`} 
             className="nav-link"
           >
             {text}
           </Link>
         ))}
-        <div style={{ width: '1px', height: '24px', background: 'rgba(255,255,255,0.1)', marginLeft: '10px' }}></div>
-        <Link to="/admin" className="luxury-btn" style={{ padding: '8px 24px', fontSize: '11px', borderRadius: '100px' }}>
-           ADMIN <ArrowUpRight size={14} style={{ marginLeft: '4px' }} />
+        <div style={{ width: '1px', height: '20px', background: 'var(--border-light)' }}></div>
+        <Link to="/admin" className="luxury-btn" style={{ padding: '10px 24px' }}>
+           관리자 <ArrowUpRight size={14} style={{ marginLeft: '4px' }} />
         </Link>
       </div>
     </nav>

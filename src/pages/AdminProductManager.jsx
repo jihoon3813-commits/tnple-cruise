@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useConfig } from '../context/ConfigContext';
-import { Plus, Trash2, Edit, Save, X, Package, CreditCard, Clock } from 'lucide-react';
+import { Plus, Trash2, Edit, Save, X, Package, CreditCard, Clock, MapPin } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const AdminProductManager = () => {
-  const { config, addProduct, updateProduct } = useConfig();
+  const { config, addProduct, updateProduct, deleteProduct } = useConfig();
   const [isEditing, setIsEditing] = useState(false);
   const [currentProduct, setCurrentProduct] = useState(null);
 
@@ -41,47 +41,51 @@ const AdminProductManager = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
-      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <button className="luxury-btn" onClick={handleAddNew}>
-          <Plus size={16} /> 신규 크루즈 등록
-        </button>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+         <h2 style={{ fontSize: '20px', fontWeight: '800' }}>크루즈 패키지 리스트</h2>
+         <button className="luxury-btn" onClick={handleAddNew}>
+            <Plus size={16} /> 신규 패키지 등록
+         </button>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '24px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '24px' }}>
         {config.products.map(product => (
           <motion.div 
             key={product.id} 
-            className="admin-card-glass" 
+            className="admin-card" 
             style={{ padding: '0', overflow: 'hidden' }}
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
           >
-            <div style={{ height: '200px', position: 'relative' }}>
+            <div style={{ height: '180px', position: 'relative' }}>
               <img src={product.thumbnails[0]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              <div style={{ 
-                position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)' 
-              }}></div>
-              <div style={{ position: 'absolute', bottom: '16px', left: '16px' }}>
-                 <p style={{ fontSize: '10px', textTransform: 'uppercase', color: 'var(--gold-primary)', fontWeight: '800' }}>Product ID: {product.id.slice(0, 8)}</p>
-                 <h3 style={{ fontSize: '18px', fontWeight: '700' }}>{product.title}</h3>
+              <div style={{ position: 'absolute', top: '12px', right: '12px', display: 'flex', gap: '8px' }}>
+                <button 
+                  onClick={() => handleEdit(product)}
+                  style={{ background: '#fff', border: 'none', padding: '8px', borderRadius: '8px', cursor: 'pointer', boxShadow: 'var(--shadow-md)' }}
+                >
+                  <Edit size={16} color="var(--primary)" />
+                </button>
+                <button 
+                  onClick={() => deleteProduct(product.id)}
+                  style={{ background: '#fff', border: 'none', padding: '8px', borderRadius: '8px', cursor: 'pointer', boxShadow: 'var(--shadow-md)' }}
+                >
+                  <Trash2 size={16} color="#ef4444" />
+                </button>
               </div>
-              <button 
-                onClick={() => handleEdit(product)}
-                style={{ 
-                  position: 'absolute', top: '16px', right: '16px', 
-                  background: 'var(--gold-gradient)', padding: '10px', borderRadius: '12px', color: 'var(--primary)' 
-                }}
-              >
-                <Edit size={16} />
-              </button>
             </div>
-            <div style={{ padding: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '18px', fontWeight: '800' }} className="text-gradient">{product.price.toLocaleString()} KRW</span>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <div className="glass-light" style={{ padding: '4px 10px', borderRadius: '4px', fontSize: '10px' }}>
-                  {product.paymentType === 'full' ? '일시불' : '분할납부'}
-                </div>
+            <div style={{ padding: '24px' }}>
+              <h3 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '8px', color: 'var(--text-main)' }}>{product.title}</h3>
+              <div style={{ display: 'flex', gap: '12px', color: 'var(--text-muted)', fontSize: '13px', marginBottom: '16px' }}>
+                 <div className="flex items-center gap-1"><MapPin size={14} /> 지중해</div>
+                 <div className="flex items-center gap-1"><Clock size={14} /> 14일</div>
+              </div>
+              <div style={{ borderTop: '1px solid var(--border-light)', paddingTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '18px', fontWeight: '800', color: 'var(--primary)' }}>{product.price.toLocaleString()}원</span>
+                <span style={{ fontSize: '11px', fontWeight: '700', padding: '4px 10px', background: 'var(--bg-sub)', color: 'var(--text-muted)', borderRadius: '6px' }}>
+                   {product.paymentType === 'full' ? '일시불 할인가' : '분할 납부형'}
+                </span>
               </div>
             </div>
           </motion.div>
@@ -92,116 +96,95 @@ const AdminProductManager = () => {
         {isEditing && (
           <div style={{ 
             position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', 
-            background: 'rgba(2, 6, 23, 0.9)', backdropFilter: 'blur(20px)', 
-            zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px' 
+            background: 'rgba(15, 23, 42, 0.4)', backdropFilter: 'blur(8px)', 
+            zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' 
           }}>
             <motion.div 
-              className="admin-card-glass" 
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 50 }}
-              style={{ width: '100%', maxWidth: '1000px', maxHeight: '90vh', overflowY: 'auto', border: '1px solid rgba(255,255,255,0.1)' }}
+              className="admin-card" 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              style={{ width: '100%', maxWidth: '800px', maxHeight: '90vh', overflowY: 'auto' }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '40px', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '24px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                  <Package className="text-gold" />
-                  <h2 style={{ fontSize: '24px', fontWeight: '800' }}>상품 마스터 정보 편집</h2>
-                </div>
-                <button onClick={() => setIsEditing(false)}><X size={24} /></button>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '32px' }}>
+                <h2 style={{ fontSize: '22px', fontWeight: '800' }}>상품 마스터 정보 편집</h2>
+                <button onClick={() => setIsEditing(false)} style={{ border: 'none', background: 'none', cursor: 'pointer' }}><X size={24} /></button>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '32px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px' }}>
                 <div style={{ gridColumn: 'span 2' }}>
-                  <label style={{ fontSize: '13px', color: 'var(--text-gray)', marginBottom: '10px', display: 'block' }}>전시 상품명</label>
+                  <label style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>전시 상품명</label>
                   <input 
-                    className="glass-light" 
-                    style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', color: '#fff' }}
+                    className="form-control" 
                     value={currentProduct.title} 
                     onChange={e => setCurrentProduct({...currentProduct, title: e.target.value})} 
                   />
                 </div>
                 <div style={{ gridColumn: 'span 2' }}>
-                  <label style={{ fontSize: '13px', color: 'var(--text-gray)', marginBottom: '10px', display: 'block' }}>상품 슬로건 및 설명</label>
+                  <label style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-muted)', marginBottom: '10px', display: 'block' }}>상품 슬로건 및 요약 설명</label>
                   <textarea 
-                    className="glass-light" 
-                    style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', color: '#fff' }}
+                    className="form-control" 
                     value={currentProduct.description} 
                     onChange={e => setCurrentProduct({...currentProduct, description: e.target.value})}
-                    rows={3}
+                    rows={2}
                   />
                 </div>
                 <div>
-                  <label style={{ fontSize: '13px', color: 'var(--text-gray)', marginBottom: '10px', display: 'block' }}>판매가액 (KRW)</label>
+                  <label style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>기준 판매가액 (원)</label>
                   <input 
-                    type="number" className="glass-light" 
-                    style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', color: '#fff' }}
+                    type="number" className="form-control" 
                     value={currentProduct.price} 
                     onChange={e => setCurrentProduct({...currentProduct, price: parseInt(e.target.value)})} 
                   />
                 </div>
                 <div>
-                  <label style={{ fontSize: '13px', color: 'var(--text-gray)', marginBottom: '10px', display: 'block' }}>결제 솔루션</label>
+                  <label style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>결제 정책 선택</label>
                   <select 
-                    className="glass-light" 
-                    style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', color: '#fff' }}
+                    className="form-control" 
                     value={currentProduct.paymentType}
                     onChange={e => setCurrentProduct({...currentProduct, paymentType: e.target.value})}
                   >
-                    <option value="full" style={{ background: '#0F172A' }}>일시불 즉시할인 적용</option>
-                    <option value="split" style={{ background: '#0F172A' }}>선납금 + 월 분할납부</option>
+                    <option value="full">일시불 할인가 방식</option>
+                    <option value="split">선납금 + 월 분할납부 방식</option>
                   </select>
                 </div>
 
                 {currentProduct.paymentType === 'split' && (
-                  <motion.div 
-                    initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
-                    style={{ gridColumn: 'span 2', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px', background: 'rgba(212, 175, 55, 0.05)', padding: '24px', borderRadius: '16px' }}
-                  >
+                  <div style={{ gridColumn: 'span 2', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', background: 'var(--bg-sub)', padding: '24px', borderRadius: '12px' }}>
                     <div>
-                      <label style={{ fontSize: '13px', color: 'var(--gold-primary)', marginBottom: '10px', display: 'block' }}>초기 선납금 (KRW)</label>
+                      <label style={{ fontSize: '13px', fontWeight: '700', color: 'var(--primary)', marginBottom: '8px', display: 'block' }}>착수금 / 선불금 (원)</label>
                       <input 
-                        type="number" className="glass-light" 
-                        style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid var(--gold-primary)', color: '#fff' }}
+                        type="number" className="form-control" 
+                        style={{ background: '#fff' }}
                         value={currentProduct.downPayment} 
                         onChange={e => setCurrentProduct({...currentProduct, downPayment: parseInt(e.target.value)})} 
                       />
                     </div>
                     <div>
-                      <label style={{ fontSize: '13px', color: 'var(--gold-primary)', marginBottom: '10px', display: 'block' }}>납부 기간 (개월)</label>
+                      <label style={{ fontSize: '13px', fontWeight: '700', color: 'var(--primary)', marginBottom: '8px', display: 'block' }}>분할 납부 할부기간 (개월)</label>
                       <input 
-                        type="number" className="glass-light" 
-                        style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid var(--gold-primary)', color: '#fff' }}
+                        type="number" className="form-control" 
+                        style={{ background: '#fff' }}
                         value={currentProduct.installments} 
                         onChange={e => setCurrentProduct({...currentProduct, installments: parseInt(e.target.value)})} 
                       />
                     </div>
-                  </motion.div>
+                  </div>
                 )}
 
                 <div style={{ gridColumn: 'span 2' }}>
-                  <label style={{ fontSize: '13px', color: 'var(--text-gray)', marginBottom: '10px', display: 'block' }}>대표 썸네일 URL</label>
+                  <label style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>대표 썸네일 URL</label>
                   <input 
-                    className="glass-light" 
-                    style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', color: '#fff' }}
+                    className="form-control" 
                     value={currentProduct.thumbnails[0]} 
                     onChange={e => setCurrentProduct({...currentProduct, thumbnails: [e.target.value]})} 
                   />
                 </div>
               </div>
 
-              <div style={{ marginTop: '48px', display: 'flex', gap: '20px', justifyContent: 'flex-end', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '32px' }}>
-                <button 
-                  className="luxury-btn outline" 
-                  onClick={() => setIsEditing(false)}
-                >
-                  변경 취소
-                </button>
-                <button 
-                  className="luxury-btn" 
-                  onClick={handleSave}
-                >
-                  데이터 저장
-                </button>
+              <div style={{ marginTop: '40px', display: 'flex', gap: '16px', justifyContent: 'flex-end' }}>
+                <button className="luxury-btn outline" onClick={() => setIsEditing(false)} style={{ borderRadius: '10px' }}>취소</button>
+                <button className="luxury-btn" onClick={handleSave} style={{ borderRadius: '10px' }}>데이터 반영</button>
               </div>
             </motion.div>
           </div>

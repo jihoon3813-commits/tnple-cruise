@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useConfig } from '../context/ConfigContext';
-import { Plus, Trash2, MoveUp, MoveDown, Save, Monitor, Layers } from 'lucide-react';
+import { Plus, Trash2, Save, Monitor, Layers, Image as ImageIcon } from 'lucide-react';
 
 const AdminHomeEditor = () => {
   const { config, updateHero, updateSection, addSection, deleteSection } = useConfig();
@@ -8,7 +8,7 @@ const AdminHomeEditor = () => {
 
   const handleHeroSave = () => {
     updateHero(heroForm);
-    alert('디자인 변경사항이 성공적으로 적용되었습니다.');
+    alert('홈페이지 대문 설정이 저장되었습니다.');
   };
 
   const handleSectionUpdate = (id, field, value) => {
@@ -20,8 +20,8 @@ const AdminHomeEditor = () => {
     const newId = `section-${Date.now()}`;
     addSection({
       id: newId,
-      title: "새로운 여행 패키지",
-      content: "여기에 여정의 디테일한 내용을 매력적으로 입력하세요...",
+      title: "새로운 패키지 소개",
+      content: "이 여정의 특별한 점을 설명해 주세요...",
       image: "https://images.unsplash.com/photo-1548574505-5e239809ee19?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
       layout: "text-left"
     });
@@ -30,140 +30,140 @@ const AdminHomeEditor = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
       {/* Hero Editor */}
-      <section className="admin-card-glass">
+      <section className="admin-card">
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '32px' }}>
-          <div className="text-gradient"><Monitor size={24} /></div>
-          <h2 style={{ fontSize: '20px', fontWeight: '700' }}>Hero Section 비주얼 에디터</h2>
+          <div style={{ padding: '10px', background: 'rgba(37, 99, 235, 0.1)', borderRadius: '12px', color: 'var(--primary)' }}><Monitor size={24} /></div>
+          <h2 style={{ fontSize: '20px', fontWeight: '800' }}>히어로 브랜딩 설정</h2>
         </div>
         
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px' }}>
           <div className="form-group" style={{ gridColumn: 'span 2' }}>
-            <label style={{ fontSize: '12px', color: 'var(--text-gray)', marginBottom: '8px', display: 'block' }}>메인 타이틀 (\n으로 줄바꿈 가능)</label>
+            <label style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>메인 헤드라인</label>
             <textarea 
-              className="glass-light" 
-              style={{ width: '100%', padding: '16px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontSize: '15px' }}
+              className="form-control" 
               value={heroForm.title} 
               onChange={e => setHeroForm({...heroForm, title: e.target.value})}
               rows={3}
             />
           </div>
           <div className="form-group">
-            <label style={{ fontSize: '12px', color: 'var(--text-gray)', marginBottom: '8px', display: 'block' }}>서브 타이틀 (태그라인)</label>
+            <label style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>슬로건 (태그라인)</label>
             <input 
-              className="glass-light" 
-              style={{ width: '100%', padding: '12px 16px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff' }}
+              className="form-control" 
               value={heroForm.subtitle} 
               onChange={e => setHeroForm({...heroForm, subtitle: e.target.value})}
             />
           </div>
           <div className="form-group">
-            <label style={{ fontSize: '12px', color: 'var(--text-gray)', marginBottom: '8px', display: 'block' }}>배경 텍스트 위치</label>
+            <label style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>텍스트 정렬</label>
             <select 
-              className="glass-light" 
-              style={{ width: '100%', padding: '12px 16px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff' }}
+              className="form-control" 
               value={heroForm.textPosition}
               onChange={e => setHeroForm({...heroForm, textPosition: e.target.value})}
             >
-              <option value="left" style={{ background: '#0F172A' }}>왼쪽 정렬</option>
-              <option value="center" style={{ background: '#0F172A' }}>중앙 정렬</option>
-              <option value="right" style={{ background: '#0F172A' }}>오른쪽 정렬</option>
+              <option value="left">왼쪽 정렬</option>
+              <option value="center">가운데 정렬</option>
+              <option value="right">오른쪽 정렬</option>
             </select>
           </div>
           <div className="form-group">
-            <label style={{ fontSize: '12px', color: 'var(--text-gray)', marginBottom: '8px', display: 'block' }}>배경 미디어 타입</label>
-            <select 
-              className="glass-light" 
-              style={{ width: '100%', padding: '12px 16px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff' }}
-              value={heroForm.bgType}
-              onChange={e => setHeroForm({...heroForm, bgType: e.target.value})}
-            >
-              <option value="image" style={{ background: '#0F172A' }}>이미지 이미지</option>
-              <option value="video" style={{ background: '#0F172A' }}>시네마틱 동영상 (Direct URL)</option>
-            </select>
-          </div>
-          <div className="form-group">
-            <label style={{ fontSize: '12px', color: 'var(--text-gray)', marginBottom: '8px', display: 'block' }}>미디어 리소스 URL</label>
+            <label style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>미디어 소스 URL</label>
             <input 
-              className="glass-light" 
-              style={{ width: '100%', padding: '12px 16px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff' }}
+              className="form-control" 
               value={heroForm.bgUrl} 
               onChange={e => setHeroForm({...heroForm, bgUrl: e.target.value})}
             />
           </div>
+          <div className="form-group">
+            <label style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>미디어 타입</label>
+            <select 
+              className="form-control" 
+              value={heroForm.bgType}
+              onChange={e => setHeroForm({...heroForm, bgType: e.target.value})}
+            >
+              <option value="image">스틸 이미지</option>
+              <option value="video">시네마틱 영상</option>
+            </select>
+          </div>
         </div>
-        <button className="luxury-btn" style={{ marginTop: '32px' }} onClick={handleHeroSave}>
-          <Save size={16} /> 변경사항 저장
-        </button>
+        <div style={{ marginTop: '32px', display: 'flex', justifyContent: 'flex-end' }}>
+           <button className="luxury-btn" onClick={handleHeroSave}>
+             <Save size={18} /> 설정 저장하기
+           </button>
+        </div>
       </section>
 
       {/* Sections Config */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div className="text-gradient"><Layers size={24} /></div>
-          <h2 style={{ fontSize: '20px', fontWeight: '700' }}>콘텐츠 섹션 타임라인</h2>
-        </div>
-        <button className="luxury-btn outline" style={{ padding: '10px 24px', fontSize: '13px' }} onClick={handleAddNewSection}>
-          <Plus size={16} /> 신규 섹션 추가
-        </button>
-      </div>
-
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-        {config.sections.map((section, index) => (
-          <div key={section.id} className="admin-card-glass" style={{ padding: '32px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '24px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                 <span style={{ fontSize: '12px', color: 'var(--gold-primary)', fontWeight: '800' }}>#{index + 1}</span>
-                 <h3 style={{ fontSize: '16px', fontWeight: '600' }}>섹션 블록</h3>
-              </div>
-              <button onClick={() => deleteSection(section.id)} style={{ color: '#ef4444', opacity: 0.6 }} className="hover-1">
-                <Trash2 size={18} />
-              </button>
-            </div>
-            
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px' }}>
-              <div className="form-group">
-                <label style={{ fontSize: '12px', color: 'var(--text-gray)', marginBottom: '8px', display: 'block' }}>섹션 제목</label>
-                <input 
-                  className="glass-light" 
-                  style={{ width: '100%', padding: '12px 16px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff' }}
-                  value={section.title} 
-                  onChange={e => handleSectionUpdate(section.id, 'title', e.target.value)}
-                />
-              </div>
-              <div className="form-group">
-                <label style={{ fontSize: '12px', color: 'var(--text-gray)', marginBottom: '8px', display: 'block' }}>레이아웃 프리셋</label>
-                <select 
-                  className="glass-light" 
-                  style={{ width: '100%', padding: '12px 16px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff' }}
-                  value={section.layout}
-                  onChange={e => handleSectionUpdate(section.id, 'layout', e.target.value)}
-                >
-                  <option value="text-left" style={{ background: '#0F172A' }}>텍스트 좌측 | 이미지 우측</option>
-                  <option value="text-right" style={{ background: '#0F172A' }}>텍스트 우측 | 이미지 좌측</option>
-                </select>
-              </div>
-              <div className="form-group" style={{ gridColumn: 'span 2' }}>
-                <label style={{ fontSize: '12px', color: 'var(--text-gray)', marginBottom: '8px', display: 'block' }}>본문 내러티브</label>
-                <textarea 
-                  className="glass-light" 
-                  style={{ width: '100%', padding: '16px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff' }}
-                  value={section.content} 
-                  onChange={e => handleSectionUpdate(section.id, 'content', e.target.value)}
-                  rows={3}
-                />
-              </div>
-              <div className="form-group" style={{ gridColumn: 'span 2' }}>
-                <label style={{ fontSize: '12px', color: 'var(--text-gray)', marginBottom: '8px', display: 'block' }}>비주얼 리소스 URL</label>
-                <input 
-                  className="glass-light" 
-                  style={{ width: '100%', padding: '12px 16px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff' }}
-                  value={section.image} 
-                  onChange={e => handleSectionUpdate(section.id, 'image', e.target.value)}
-                />
-              </div>
-            </div>
+      <div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ padding: '10px', background: 'rgba(37, 99, 235, 0.1)', borderRadius: '12px', color: 'var(--primary)' }}><Layers size={21} /></div>
+            <h2 style={{ fontSize: '20px', fontWeight: '800' }}>홍보 섹션 관리</h2>
           </div>
-        ))}
+          <button className="luxury-btn outline" style={{ borderRadius: '12px', padding: '10px 20px', fontSize: '13px' }} onClick={handleAddNewSection}>
+            <Plus size={16} /> 신규 섹션
+          </button>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          {config.sections.map((section, index) => (
+            <div key={section.id} className="admin-card" style={{ padding: '32px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '24px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                   <div style={{ width: '28px', height: '28px', background: 'var(--bg-sub)', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: '800' }}>{index + 1}</div>
+                   <h3 style={{ fontSize: '17px', fontWeight: '700' }}>{section.title || '제목 없음'}</h3>
+                </div>
+                <button onClick={() => deleteSection(section.id)} style={{ color: '#ef4444', background: 'rgba(239, 68, 68, 0.05)', padding: '8px', borderRadius: '8px', border: 'none', cursor: 'pointer' }}>
+                  <Trash2 size={18} />
+                </button>
+              </div>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px' }}>
+                <div className="form-group">
+                  <label style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>제목</label>
+                  <input 
+                    className="form-control" 
+                    value={section.title} 
+                    onChange={e => handleSectionUpdate(section.id, 'title', e.target.value)}
+                  />
+                </div>
+                <div className="form-group">
+                  <label style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>레이아웃</label>
+                  <select 
+                    className="form-control" 
+                    value={section.layout}
+                    onChange={e => handleSectionUpdate(section.id, 'layout', e.target.value)}
+                  >
+                    <option value="text-left">텍스트 왼쪽 | 이미지 오른쪽</option>
+                    <option value="text-right">텍스트 오른쪽 | 이미지 왼쪽</option>
+                  </select>
+                </div>
+                <div className="form-group" style={{ gridColumn: 'span 2' }}>
+                  <label style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>본문 상세 설명</label>
+                  <textarea 
+                    className="form-control" 
+                    value={section.content} 
+                    onChange={e => handleSectionUpdate(section.id, 'content', e.target.value)}
+                    rows={4}
+                  />
+                </div>
+                <div className="form-group" style={{ gridColumn: 'span 2' }}>
+                  <label style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>이미지 URL</label>
+                  <div style={{ display: 'flex', gap: '12px' }}>
+                    <input 
+                      className="form-control" 
+                      value={section.image} 
+                      onChange={e => handleSectionUpdate(section.id, 'image', e.target.value)}
+                    />
+                    <div style={{ width: '48px', height: '48px', borderRadius: '8px', border: '1px solid var(--border-light)', overflow: 'hidden' }}>
+                      <img src={section.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
