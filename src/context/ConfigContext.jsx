@@ -66,7 +66,7 @@ export const ConfigProvider = ({ children }) => {
   };
 
   const addSection = async (data) => {
-    const { title, content, image, images, layout, style, items, typography, showButton, buttonLink, bgColor, bgType, bgUrl } = data;
+    const { title, content, image, images, layout, style, items, typography, showButton, buttonLink, bgColor, bgType, bgUrl, bgOpacity, paddingTop, paddingBottom } = data;
     await addSectionMutation({ 
       title, content, image, images, layout, 
       style: style || "classic", 
@@ -76,16 +76,19 @@ export const ConfigProvider = ({ children }) => {
       buttonLink, bgColor, 
       bgType: bgType || "color", 
       bgUrl, 
+      bgOpacity: bgOpacity ?? 1,
+      paddingTop: paddingTop ?? 120,
+      paddingBottom: paddingBottom ?? 120,
       order: config.sections.length 
     });
   };
 
   const updateSection = async (id, data) => {
-    const { title, content, image, images, layout, style, items, typography, showButton, buttonLink, bgColor, bgType, bgUrl, order } = data;
+    const { title, content, image, images, layout, style, items, typography, showButton, buttonLink, bgColor, bgType, bgUrl, bgOpacity, paddingTop, paddingBottom, order } = data;
     await updateSectionMutation({ 
       id, title, content, image, images, layout, style, items, typography,
       showButton: Boolean(showButton), 
-      buttonLink, bgColor, bgType, bgUrl, order 
+      buttonLink, bgColor, bgType, bgUrl, bgOpacity, paddingTop, paddingBottom, order 
     });
   };
 

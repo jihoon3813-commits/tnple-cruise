@@ -49,6 +49,9 @@ export const add = mutation({
     bgColor: v.optional(v.string()),
     bgType: v.string(),
     bgUrl: v.optional(v.string()),
+    bgOpacity: v.optional(v.number()),
+    paddingTop: v.optional(v.number()),
+    paddingBottom: v.optional(v.number()),
     order: v.number(),
   },
   handler: async (ctx, args) => {
@@ -72,6 +75,9 @@ export const update = mutation({
     bgColor: v.optional(v.string()),
     bgType: v.optional(v.string()),
     bgUrl: v.optional(v.string()),
+    bgOpacity: v.optional(v.number()),
+    paddingTop: v.optional(v.number()),
+    paddingBottom: v.optional(v.number()),
     order: v.optional(v.number()),
   },
   handler: async (ctx, args) => {

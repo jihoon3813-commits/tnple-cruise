@@ -47,6 +47,9 @@ export default defineSchema({
     bgColor: v.optional(v.string()),
     bgType: v.optional(v.string()), // "color", "image", "video"
     bgUrl: v.optional(v.string()), // For image/video backgrounds
+    bgOpacity: v.optional(v.number()), // 0 to 1
+    paddingTop: v.optional(v.number()), // px
+    paddingBottom: v.optional(v.number()), // px
     order: v.optional(v.number()),
   }),
   products: defineTable({

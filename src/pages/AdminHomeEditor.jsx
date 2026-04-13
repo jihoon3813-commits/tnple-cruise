@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useConfig } from '../context/ConfigContext';
-import { Plus, Trash2, Save, Monitor, Layers, Image as ImageIcon, Palette, Type, Link as LinkIcon, Upload, Loader2, Play, ChevronUp, ChevronDown, Check, X, Settings2, Grid, List, Activity } from 'lucide-react';
+import { Plus, Trash2, Save, Monitor, Layers, Image as ImageIcon, Palette, Type, Link as LinkIcon, Upload, Loader2, Play, ChevronUp, ChevronDown, Check, X, Settings2, Grid, List, Activity, MoveVertical } from 'lucide-react';
 
 const AdminHomeEditor = () => {
   const { config, updateHero, updateSection, addSection, deleteSection, uploadFile } = useConfig();
@@ -83,7 +83,10 @@ const AdminHomeEditor = () => {
       showButton: true,
       buttonLink: "",
       bgColor: "#ffffff",
-      bgType: "color"
+      bgType: "color",
+      bgOpacity: 1,
+      paddingTop: 120,
+      paddingBottom: 120
     });
   };
 
@@ -257,9 +260,15 @@ const AdminHomeEditor = () => {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                        <div className="form-group"><label>타이틀</label><input className="form-control" value={section.title} onChange={e => handleSectionUpdate(section.id, 'title', e.target.value)} /></div>
                        <div className="form-group"><label>본문 내용</label><textarea className="form-control" value={section.content} onChange={e => handleSectionUpdate(section.id, 'content', e.target.value)} rows={4} /></div>
+                       
+                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', borderTop: '1px solid var(--border-light)', paddingTop: '24px' }}>
+                          <div className="form-group"><label><MoveVertical size={12} /> 상단 여백 (px)</label><input type="number" className="form-control" value={section.paddingTop ?? 120} onChange={e => handleSectionUpdate(section.id, 'paddingTop', parseInt(e.target.value))} /></div>
+                          <div className="form-group"><label><MoveVertical size={12} /> 하단 여백 (px)</label><input type="number" className="form-control" value={section.paddingBottom ?? 120} onChange={e => handleSectionUpdate(section.id, 'paddingBottom', parseInt(e.target.value))} /></div>
+                       </div>
+
                        {(section.style === 'feature-cards' || section.style === 'process') && (
                          <div style={{ borderTop: '1px solid var(--border-light)', paddingTop: '24px' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}><h4>하위 아이템 카드 ({section.items?.length || 0})</h4><button className="luxury-btn outline" style={{ padding: '4px 10px', fontSize: '11px' }} onClick={() => handleAddItem(section.id)}><Plus size={14} /> 추가</button></div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}><h4>하위 아이템 카드</h4><button className="luxury-btn outline" style={{ padding: '4px 10px', fontSize: '11px' }} onClick={() => handleAddItem(section.id)}><Plus size={14} /> 추가</button></div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                               {(section.items || []).map((item, i) => (
                                 <div key={i} style={{ padding: '16px', background: 'var(--bg-sub)', borderRadius: '12px', display: 'grid', gridTemplateColumns: '80px 1fr 40px', gap: '12px', alignItems: 'center' }}>
@@ -279,10 +288,17 @@ const AdminHomeEditor = () => {
 
                   {editTab === 'visual' && (
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-                       <MediaInput label="메인 이미지" value={section.image} onChange={v => handleSectionUpdate(section.id, 'image', v)} />
-                       <MultiMediaInput label="멀티 이미지 갤러리" values={section.images} onChange={v => handleSectionUpdate(section.id, 'images', v)} />
+                       <MediaInput label="메인 이미지 (생략 가능)" value={section.image} onChange={v => handleSectionUpdate(section.id, 'image', v)} />
+                       <MultiMediaInput label="멀티 이미지 슬라이더" values={section.images} onChange={v => handleSectionUpdate(section.id, 'images', v)} />
                        <div className="form-group"><label>배경 타입</label><select className="form-control" value={section.bgType} onChange={e => handleSectionUpdate(section.id, 'bgType', e.target.value)}><option value="color">Color</option><option value="image">Image</option><option value="video">Video</option></select></div>
                        {section.bgType === 'color' ? <div className="form-group"><label>배경색</label><input type="color" className="form-control" style={{ height: '42px' }} value={section.bgColor} onChange={e => handleSectionUpdate(section.id, 'bgColor', e.target.value)} /></div> : <MediaInput label="배경 파일" value={section.bgUrl} onChange={v => handleSectionUpdate(section.id, 'bgUrl', v)} />}
+                       <div className="form-group" style={{ gridColumn: 'span 2' }}>
+                          <label>배경 투명도 / 밝기 (0: 투명, 1: 불투명)</label>
+                          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                             <input type="range" min="0" max="1" step="0.1" className="form-control" value={section.bgOpacity ?? 1} onChange={e => handleSectionUpdate(section.id, 'bgOpacity', parseFloat(e.target.value))} />
+                             <span style={{ fontWeight: 800 }}>{section.bgOpacity ?? 1}</span>
+                          </div>
+                       </div>
                     </div>
                   )}
 
