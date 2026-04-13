@@ -4,11 +4,22 @@ import { v } from "convex/values";
 export default defineSchema({
   siteConfig: defineTable({
     hero: v.object({
+      style: v.optional(v.string()), // "classic", "full-bg", "split", "card", "minimal", "video-focus"
       title: v.string(),
-      subtitle: v.string(),
+      subtitle: v.optional(v.string()),
+      aboveTitle: v.optional(v.string()),
+      belowTitle: v.optional(v.string()),
       bgType: v.string(),
       bgUrl: v.string(),
-      textPosition: v.string(),
+      bgOpacity: v.optional(v.number()),
+      textPosition: v.string(), // "left", "center", "right"
+      verticalAlign: v.optional(v.string()), // "top", "middle", "bottom"
+      typography: v.optional(v.object({
+        above: v.optional(v.any()), // Reusing typography object structure
+        title: v.optional(v.any()),
+        subtitle: v.optional(v.any()),
+        below: v.optional(v.any()),
+      })),
     }),
   }),
   sections: defineTable({

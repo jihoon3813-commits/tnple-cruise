@@ -10,11 +10,17 @@ export const get = query({
 
 export const updateHero = mutation({
   args: {
+    style: v.optional(v.string()),
     title: v.string(),
-    subtitle: v.string(),
+    subtitle: v.optional(v.string()),
+    aboveTitle: v.optional(v.string()),
+    belowTitle: v.optional(v.string()),
     bgType: v.string(),
     bgUrl: v.string(),
+    bgOpacity: v.optional(v.number()),
     textPosition: v.string(),
+    verticalAlign: v.optional(v.string()),
+    typography: v.optional(v.any()),
   },
   handler: async (ctx, args) => {
     const existing = await ctx.db.query("siteConfig").first();

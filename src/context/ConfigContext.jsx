@@ -61,8 +61,24 @@ export const ConfigProvider = ({ children }) => {
   };
 
   const updateHero = async (data) => {
-    const { title, subtitle, bgType, bgUrl, textPosition } = data;
-    await updateHeroMutation({ title, subtitle, bgType, bgUrl, textPosition });
+    const { 
+      style, title, subtitle, aboveTitle, belowTitle, 
+      bgType, bgUrl, bgOpacity, 
+      textPosition, verticalAlign, typography 
+    } = data;
+    await updateHeroMutation({ 
+      style: style || "classic", 
+      title, 
+      subtitle: subtitle || "",
+      aboveTitle: aboveTitle || "",
+      belowTitle: belowTitle || "",
+      bgType, 
+      bgUrl, 
+      bgOpacity: bgOpacity ?? 1,
+      textPosition, 
+      verticalAlign: verticalAlign || "middle",
+      typography: typography || {}
+    });
   };
 
   const addSection = async (data) => {
