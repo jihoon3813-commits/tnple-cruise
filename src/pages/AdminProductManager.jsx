@@ -15,7 +15,6 @@ const AdminProductManager = () => {
 
   const handleAddNew = () => {
     setCurrentProduct({
-      id: `product-${Date.now()}`,
       title: "",
       description: "",
       price: 0,
@@ -23,21 +22,26 @@ const AdminProductManager = () => {
       paymentType: "full",
       downPayment: 0,
       installments: 12,
-      schedule: [{ day: 1, title: "", content: "" }],
       scheduleImage: ""
     });
     setIsEditing(true);
   };
 
-  const handleSave = () => {
-    const exists = config.products.find(p => p.id === currentProduct.id);
-    if (exists) {
-      updateProduct(currentProduct.id, currentProduct);
+  const handleSave = async () => {
+    if (currentProduct.id) {
+      const { id, _id, _creationTime, ...data } = currentProduct;
+      await updateProduct(id, data);
     } else {
-      addProduct(currentProduct);
+      await addProduct(currentProduct);
     }
     setIsEditing(false);
     setCurrentProduct(null);
+  };
+
+  const handleDelete = async (id) => {
+    if (window.confirm('정말 이 상품을 삭제하시겠습니까?')) {
+      await deleteProduct(id);
+    }
   };
 
   return (
@@ -68,7 +72,7 @@ const AdminProductManager = () => {
                   <Edit size={16} color="var(--primary)" />
                 </button>
                 <button 
-                  onClick={() => deleteProduct(product.id)}
+                  onClick={() => handleDelete(product.id)}
                   style={{ background: '#fff', border: 'none', padding: '8px', borderRadius: '8px', cursor: 'pointer', boxShadow: 'var(--shadow-md)' }}
                 >
                   <Trash2 size={16} color="#ef4444" />
