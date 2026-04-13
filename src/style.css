@@ -114,14 +114,15 @@ h1, h2, h3, h4, .font-heading {
 
 .luxury-btn.outline {
   background: transparent;
-  border: 1px solid var(--primary);
-  color: var(--primary);
+  border: 1px solid var(--border-light);
+  color: var(--text-main);
   box-shadow: none;
 }
 
 .luxury-btn.outline:hover {
-  background: var(--primary);
-  color: #fff;
+  border-color: var(--primary);
+  color: var(--primary);
+  background: rgba(37, 99, 235, 0.05);
 }
 
 /* Hero Section Refinement */
@@ -241,4 +242,13 @@ h1, h2, h3, h4, .font-heading {
 .text-gradient {
   color: var(--primary);
   font-weight: 800;
+}
+
+.style-selector > div:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.style-selector > div {
+  transition: var(--transition-smooth);
 }

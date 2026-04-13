@@ -14,15 +14,16 @@ export default defineSchema({
   sections: defineTable({
     title: v.string(),
     content: v.string(),
-    image: v.string(), // Main content image
+    image: v.optional(v.string()), // Deprecated but kept for safety
+    images: v.optional(v.array(v.string())), // Multiple images support
     layout: v.string(), // "left", "right"
-    style: v.string(), // "classic", "split-card", "minimal-centered"
-    showButton: v.boolean(),
+    style: v.optional(v.string()), // "classic", "split-card", "minimal-centered"
+    showButton: v.optional(v.boolean()),
     buttonLink: v.optional(v.string()),
     bgColor: v.optional(v.string()),
-    bgType: v.string(), // "color", "image", "video"
+    bgType: v.optional(v.string()), // "color", "image", "video"
     bgUrl: v.optional(v.string()), // For image/video backgrounds
-    order: v.number(),
+    order: v.optional(v.number()),
   }),
   products: defineTable({
     title: v.string(),

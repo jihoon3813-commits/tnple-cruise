@@ -44,7 +44,7 @@ export const ConfigProvider = ({ children }) => {
 
   const config = useMemo(() => ({
     hero: heroData?.hero || DEFAULT_CONFIG.hero,
-    sections: sectionsData?.map(s => ({ ...s, id: s._id })) || [],
+    sections: sectionsData?.sort((a,b) => (a.order || 0) - (b.order || 0)).map(s => ({ ...s, id: s._id })) || [],
     products: productsData?.map(p => ({ ...p, id: p._id })) || [],
     reviews: reviewsData?.map(r => ({ ...r, id: r._id })) || [],
   }), [heroData, sectionsData, productsData, reviewsData]);
@@ -57,25 +57,34 @@ export const ConfigProvider = ({ children }) => {
       body: file,
     });
     const { storageId } = await result.json();
-    return storageId; // We'll use a component to resolve storageId to URL or just store high-level
+    return storageId;
   };
 
   const updateHero = async (data) => {
-    await updateHeroMutation(data);
+    const { title, subtitle, bgType, bgUrl, textPosition } = data;
+    await updateHeroMutation({ title, subtitle, bgType, bgUrl, textPosition });
   };
 
   const addSection = async (data) => {
+    const { title, content, image, images, layout, style, showButton, buttonLink, bgColor, bgType, bgUrl } = data;
     await addSectionMutation({ 
-      ...data, 
-      style: data.style || "classic",
-      showButton: data.showButton ?? true,
-      bgType: data.bgType || "color",
+      title, content, image, images, layout, 
+      style: style || "classic", 
+      showButton: showButton ?? true, 
+      buttonLink, bgColor, 
+      bgType: bgType || "color", 
+      bgUrl, 
       order: config.sections.length 
     });
   };
 
   const updateSection = async (id, data) => {
-    await updateSectionMutation({ id, ...data });
+    const { title, content, image, images, layout, style, showButton, buttonLink, bgColor, bgType, bgUrl, order } = data;
+    await updateSectionMutation({ 
+      id, title, content, image, images, layout, style, 
+      showButton: Boolean(showButton), 
+      buttonLink, bgColor, bgType, bgUrl, order 
+    });
   };
 
   const deleteSection = async (id) => {
@@ -83,11 +92,13 @@ export const ConfigProvider = ({ children }) => {
   };
 
   const addProduct = async (data) => {
-    await addProductMutation(data);
+    const { title, description, price, thumbnails, paymentType, downPayment, installments, scheduleImage } = data;
+    await addProductMutation({ title, description, price, thumbnails, paymentType, downPayment, installments, scheduleImage });
   };
 
   const updateProduct = async (id, data) => {
-    await updateProductMutation({ id, ...data });
+    const { title, description, price, thumbnails, paymentType, downPayment, installments, scheduleImage } = data;
+    await updateProductMutation({ id, title, description, price, thumbnails, paymentType, downPayment, installments, scheduleImage });
   };
 
   const deleteProduct = async (id) => {
@@ -95,7 +106,8 @@ export const ConfigProvider = ({ children }) => {
   };
 
   const addReview = async (data) => {
-    await addReviewMutation(data);
+    const { user, rating, content, images } = data;
+    await addReviewMutation({ user, rating, content, images });
   };
 
   return (

@@ -15,6 +15,29 @@ const Home = () => {
     return 'justify-center text-center';
   };
 
+  const ImageGallery = ({ images = [], singleImage }) => {
+    const allImages = (images && images.length > 0) ? images : (singleImage ? [singleImage] : []);
+    
+    if (allImages.length === 0) return null;
+    if (allImages.length === 1) {
+      return <SafeMedia src={allImages[0]} style={{ width: '100%', borderRadius: '24px', boxShadow: 'var(--shadow-lg)' }} />;
+    }
+
+    return (
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
+        {allImages.map((img, idx) => (
+          <div key={idx} style={{ 
+            gridColumn: idx === 0 && allImages.length % 2 !== 0 ? 'span 2' : 'span 1',
+            height: idx === 0 && allImages.length % 2 !== 0 ? '400px' : '200px',
+            borderRadius: '16px', overflow: 'hidden', boxShadow: 'var(--shadow-md)'
+          }}>
+            <SafeMedia src={img} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   const renderSection = (section, index) => {
     const isStyleClassic = section.style === 'classic' || !section.style;
     const isStyleSplit = section.style === 'split-card';
@@ -53,10 +76,7 @@ const Home = () => {
             }}>
               <div style={{ flex: 1 }}>
                 <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-                  <SafeMedia 
-                    src={section.image} 
-                    style={{ width: '100%', borderRadius: '24px', boxShadow: 'var(--shadow-lg)' }} 
-                  />
+                  <ImageGallery images={section.images} singleImage={section.image} />
                 </motion.div>
               </div>
               <div style={{ flex: 1 }}>
@@ -80,8 +100,8 @@ const Home = () => {
               viewport={{ once: true }}
               style={{ display: 'flex', overflow: 'hidden', padding: '0', borderRadius: '32px', minHeight: '500px' }}
             >
-               <div style={{ flex: 1, position: 'relative' }}>
-                 <SafeMedia src={section.image} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+               <div style={{ flex: 1, position: 'relative', minHeight: '400px' }}>
+                 <ImageGallery images={section.images} singleImage={section.image} />
                </div>
                <div style={{ flex: 1, padding: '60px', display: 'flex', flexDirection: 'column', justifyContent: 'center', background: '#fff' }}>
                  <h2 style={{ fontSize: '48px', fontWeight: '800', marginBottom: '24px' }}>{section.title}</h2>
@@ -102,12 +122,14 @@ const Home = () => {
                  <h2 style={{ fontSize: '56px', fontWeight: '800', marginBottom: '32px' }}>{section.title}</h2>
                  <div style={{ width: '100px', height: '4px', background: 'var(--primary)', margin: '0 auto 40px' }}></div>
                  <p style={{ fontSize: '20px', color: 'var(--text-muted)', marginBottom: '60px' }}>{section.content}</p>
-                 <SafeMedia src={section.image} style={{ width: '100%', borderRadius: '40px', marginBottom: '60px', boxShadow: 'var(--shadow-lg)' }} />
-                 {section.showButton && (
-                   <Link to={section.buttonLink || "/"} className="luxury-btn outline" style={{ borderRadius: '100px', padding: '16px 48px', textDecoration: 'none' }}>
-                     자세히 보기
-                   </Link>
-                 )}
+                 <ImageGallery images={section.images} singleImage={section.image} />
+                 <div style={{ marginTop: '60px' }}>
+                   {section.showButton && (
+                     <Link to={section.buttonLink || "/"} className="luxury-btn outline" style={{ borderRadius: '100px', padding: '16px 48px', textDecoration: 'none' }}>
+                       자세히 보기
+                     </Link>
+                   )}
+                 </div>
                </motion.div>
             </div>
           )}
