@@ -53,9 +53,9 @@ const BookingModal = ({ isOpen, onClose, productTitle, accentColor }) => {
   };
 
   const inputStyle = {
-    background: '#f1f5f9', // Lighter background
+    background: '#f1f5f9',
     border: '1px solid #e2e8f0',
-    color: '#0F172A', // Dark text
+    color: '#0F172A', 
     padding: '16px',
     borderRadius: '16px',
     fontSize: '15px',
@@ -71,7 +71,7 @@ const BookingModal = ({ isOpen, onClose, productTitle, accentColor }) => {
     display: 'flex', 
     alignItems: 'center', 
     gap: '6px',
-    color: '#334155' // Darker label for better contrast
+    color: '#334155' 
   };
 
   return (
@@ -98,8 +98,8 @@ const BookingModal = ({ isOpen, onClose, productTitle, accentColor }) => {
                   <CheckCircle2 size={48} />
                 </div>
                 <div>
-                   <h2 style={{ fontSize: '24px', fontWeight: '900', marginBottom: '12px' }}>상담 신청 완료</h2>
-                   <p style={{ color: 'var(--text-muted)', lineHeight: '1.6' }}>
+                   <h2 style={{ fontSize: '24px', fontWeight: '900', marginBottom: '12px', color: '#0F172A' }}>상담 신청 완료</h2>
+                   <p style={{ color: '#64748b', lineHeight: '1.6' }}>
                      럭셔리 크루즈 전문가가 곧 연락드리겠습니다.<br />잠시만 기다려 주세요!
                    </p>
                 </div>
@@ -108,7 +108,7 @@ const BookingModal = ({ isOpen, onClose, productTitle, accentColor }) => {
             ) : (
               <>
                 <div style={{ padding: '24px 40px', background: '#f8fafc', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <h2 style={{ fontSize: '18px', fontWeight: '900' }}>전문 상담 신청</h2>
+                  <h2 style={{ fontSize: '18px', fontWeight: '900', color: '#0F172A' }}>전문 상담 신청</h2>
                   <button onClick={onClose} style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#94a3b8' }}><X size={24} /></button>
                 </div>
                 
@@ -156,7 +156,7 @@ const BookingModal = ({ isOpen, onClose, productTitle, accentColor }) => {
                     </div>
 
                     <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px', fontWeight: '700' }}>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px', fontWeight: '700', color: '#334155' }}>
                            <input type="checkbox" checked={form.agreed} onChange={e => setForm({...form, agreed: e.target.checked})} style={{ width: '18px', height: '18px', accentColor: accentColor }} />
                            개인정보 수집 및 이용 동의
                         </label>
@@ -175,7 +175,8 @@ const BookingModal = ({ isOpen, onClose, productTitle, accentColor }) => {
                         borderRadius: '100px', 
                         justifyContent: 'center', 
                         marginTop: '10px',
-                        background: accentColor || 'var(--primary)'
+                        background: accentColor || 'var(--primary)',
+                        color: '#ffffff'
                       }}
                     >
                       {loading ? <Loader2 className="animate-spin" size={20} /> : (
@@ -196,7 +197,7 @@ const BookingModal = ({ isOpen, onClose, productTitle, accentColor }) => {
                         style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: '#fff', zIndex: 10, padding: '40px', display: 'flex', flexDirection: 'column' }}
                     >
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                            <h3 style={{ fontSize: '18px', fontWeight: '900' }}>개인정보 수집 및 이용</h3>
+                            <h3 style={{ fontSize: '18px', fontWeight: '900', color: '#0F172A' }}>개인정보 수집 및 이용</h3>
                             <button onClick={() => setShowPrivacyDetail(false)} style={{ border: 'none', background: 'none', cursor: 'pointer' }}><X size={24} /></button>
                         </div>
                         <div style={{ flex: 1, overflowY: 'auto', fontSize: '13px', lineHeight: '1.7', color: '#475569', background: '#f8fafc', padding: '24px', borderRadius: '20px' }}>
