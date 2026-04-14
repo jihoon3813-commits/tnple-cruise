@@ -7,9 +7,51 @@ import AdminReviewManager from './AdminReviewManager';
 import AdminProductDetailEditor from './AdminProductDetailEditor';
 import AdminReservationManager from './AdminReservationManager';
 import AdminSettings from './AdminSettings';
+import { useConfig } from '../context/ConfigContext';
 
 const Admin = () => {
+  const { config } = useConfig();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [passwordInput, setPasswordInput] = useState("");
   const location = useLocation();
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    const correctPassword = config?.adminPassword || "1111";
+    if (passwordInput === correctPassword) {
+      setIsAuthenticated(true);
+    } else {
+      alert("비밀번호가 올바르지 않습니다.");
+    }
+  };
+
+  if (!isAuthenticated) {
+    return (
+      <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-sub)' }}>
+        <form onSubmit={handleLogin} style={{ background: '#fff', padding: '40px', borderRadius: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.1)', width: '100%', maxWidth: '400px', textAlign: 'center' }}>
+          <div style={{ width: '64px', height: '64px', background: 'var(--primary)', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
+            <ShieldCheck size={32} color="#fff" />
+          </div>
+          <h2 style={{ fontSize: '24px', fontWeight: '800', marginBottom: '8px' }}>Admin Login</h2>
+          <p style={{ color: 'var(--text-muted)', fontSize: '14px', marginBottom: '32px' }}>관리자 비밀번호를 입력하세요.</p>
+          
+          <input 
+            type="password" 
+            className="form-control" 
+            placeholder="비밀번호 입력" 
+            value={passwordInput}
+            onChange={(e) => setPasswordInput(e.target.value)}
+            style={{ marginBottom: '16px', textAlign: 'center', fontSize: '18px', letterSpacing: '0.2em' }}
+            autoFocus
+          />
+          
+          <button type="submit" className="luxury-btn" style={{ width: '100%', justifyContent: 'center', padding: '14px' }}>접속하기</button>
+          
+          <p style={{ marginTop: '24px', fontSize: '12px', color: 'var(--text-muted)' }}>초기 비밀번호는 1111 입니다.</p>
+        </form>
+      </div>
+    );
+  }
 
   const navItems = [
     { path: '/admin', name: '홈페이지 편집', icon: <HomeIcon size={20} /> },

@@ -43,6 +43,7 @@ export const ConfigProvider = ({ children }) => {
   const updateProductDetailBrandingMutation = useMutation(api.siteConfig.updateProductDetailBranding);
   const updatePrivacyPolicyMutation = useMutation(api.siteConfig.updatePrivacyPolicy);
   const updateGlobalSettingsMutation = useMutation(api.siteConfig.updateGlobalSettings);
+  const updateAdminPasswordMutation = useMutation(api.siteConfig.updateAdminPassword);
   const addReservationMutation = useMutation(api.reservations.add);
   const reservationsData = useQuery(api.reservations.list);
 
@@ -209,6 +210,11 @@ export const ConfigProvider = ({ children }) => {
     });
   };
 
+  const updateAdminPassword = async (password) => {
+    await updateAdminPasswordMutation({ password });
+  };
+
+
   const deleteProduct = async (id) => {
     await deleteProductMutation({ id });
   };
@@ -242,6 +248,7 @@ export const ConfigProvider = ({ children }) => {
       updateProductDetailBranding,
       updatePrivacyPolicy,
       updateGlobalSettings,
+      updateAdminPassword,
       addReservation,
       reservations: reservationsData || []
     }}>

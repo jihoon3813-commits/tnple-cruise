@@ -193,6 +193,28 @@ const AdminSettings = () => {
             style={{ lineHeight: '1.6', fontSize: '14px' }}
          />
       </div>
+
+      <div className="admin-card" style={{ border: '1px solid #fee2e2' }}>
+         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+            <div style={{ padding: '8px', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', borderRadius: '10px' }}><Shield size={20} /></div>
+            <h3 style={{ fontSize: '16px', fontWeight: '800' }}>관리자 보안 설정</h3>
+         </div>
+         <div style={{ maxWidth: '400px' }}>
+            <div className="form-group">
+               <label style={{ fontSize: '13px', fontWeight: '700', marginBottom: '8px', display: 'block' }}>관리자 접속 비밀번호</label>
+               <input 
+                  type="text" 
+                  className="form-control" 
+                  value={settings.adminPassword || "1111"}
+                  onChange={e => setSettings({ ...settings, adminPassword: e.target.value })}
+                  placeholder="비밀번호 설정"
+               />
+               <p style={{ marginTop: '12px', fontSize: '12px', color: 'var(--text-muted)' }}>
+                  어드민 접속 시 사용할 비밀번호입니다. (초기값: 1111)
+               </p>
+            </div>
+         </div>
+      </div>
     </div>
   );
 };

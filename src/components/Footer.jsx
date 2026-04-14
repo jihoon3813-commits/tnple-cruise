@@ -1,6 +1,7 @@
 import { useConfig } from '../context/ConfigContext';
 import SafeMedia from './SafeMedia';
 import { Ship, Instagram, Facebook, Twitter } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
   const context = useConfig();
@@ -61,10 +62,13 @@ const Footer = () => {
 
         <div style={{ borderTop: `1px solid ${hasLogo ? 'var(--border-light)' : 'rgba(255,255,255,0.05)'}`, paddingTop: '40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: hasLogo ? '#94a3b8' : '#555', fontSize: '12px' }}>
           <p>© 2026 올리고크루즈 멤버십. All rights reserved.</p>
-          <div style={{ display: 'flex', gap: '20px', color: hasLogo ? '#64748b' : '#fff' }}>
-            <Instagram size={18} />
-            <Facebook size={18} />
-            <Twitter size={18} />
+          <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: '20px', color: hasLogo ? '#64748b' : '#fff' }}>
+              <Instagram size={18} />
+              <Facebook size={18} />
+              <Twitter size={18} />
+            </div>
+            <Link to="/admin" style={{ color: 'inherit', textDecoration: 'none', opacity: 0.3, fontSize: '10px' }}>Admin</Link>
           </div>
         </div>
       </div>

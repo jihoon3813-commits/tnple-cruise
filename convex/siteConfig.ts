@@ -108,15 +108,24 @@ export const updatePrivacyPolicy = mutation({
 
 export const updateGlobalSettings = mutation({
   args: {
-    logo: v.optional(v.string()),
-    favicon: v.optional(v.string()),
     ogImage: v.optional(v.string()),
     metaDescription: v.optional(v.string()),
+    adminPassword: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const existing = await ctx.db.query("siteConfig").first();
     if (existing) {
       await ctx.db.patch(existing._id, args);
+    }
+  },
+});
+
+export const updateAdminPassword = mutation({
+  args: { password: v.string() },
+  handler: async (ctx, args) => {
+    const existing = await ctx.db.query("siteConfig").first();
+    if (existing) {
+      await ctx.db.patch(existing._id, { adminPassword: args.password });
     }
   },
 });
