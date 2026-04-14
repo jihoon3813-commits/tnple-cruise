@@ -13,7 +13,7 @@ export const add = mutation({
     author: v.optional(v.string()), // Use author instead of user for better schema alignment
     user: v.optional(v.string()), // Fallback
     productTitle: v.optional(v.string()),
-    rating: v.number(),
+    rating: v.optional(v.number()),
     content: v.string(),
     images: v.optional(v.array(v.string())),
   },
@@ -33,9 +33,10 @@ export const update = mutation({
   args: {
     id: v.id("reviews"),
     author: v.optional(v.string()),
+    user: v.optional(v.string()), // Support legacy field
     productTitle: v.optional(v.string()),
-    rating: v.number(),
-    content: v.string(),
+    rating: v.optional(v.number()),
+    content: v.optional(v.string()),
     images: v.optional(v.array(v.string())),
   },
   handler: async (ctx, args) => {

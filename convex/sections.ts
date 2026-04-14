@@ -1,6 +1,21 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 
+const buttonStylesValidator = v.optional(v.object({
+  bgColor: v.optional(v.string()),
+  borderColor: v.optional(v.string()),
+  textColor: v.optional(v.string()),
+  size: v.optional(v.string()),
+}));
+
+const cardStylesValidator = v.optional(v.object({
+  shadow: v.optional(v.number()),
+  borderRadius: v.optional(v.number()),
+  borderWidth: v.optional(v.number()),
+  borderColor: v.optional(v.string()),
+  bgColor: v.optional(v.string()),
+}));
+
 const typographyValidator = v.optional(v.object({
   title: v.optional(v.object({
     color: v.optional(v.string()),
@@ -42,21 +57,6 @@ const itemsValidator = v.optional(v.array(v.object({
     content: v.optional(v.object({ color: v.optional(v.string()), fontSize: v.optional(v.number()) })),
   })),
 })));
-
-const buttonStylesValidator = v.optional(v.object({
-  bgColor: v.optional(v.string()),
-  borderColor: v.optional(v.string()),
-  textColor: v.optional(v.string()),
-  size: v.optional(v.string()),
-}));
-
-const cardStylesValidator = v.optional(v.object({
-  shadow: v.optional(v.number()),
-  borderRadius: v.optional(v.number()),
-  borderWidth: v.optional(v.number()),
-  borderColor: v.optional(v.string()),
-  bgColor: v.optional(v.string()),
-}));
 
 export const list = query({
   args: {},

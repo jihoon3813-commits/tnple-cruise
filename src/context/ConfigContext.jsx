@@ -180,13 +180,13 @@ export const ConfigProvider = ({ children }) => {
   };
 
   const addProduct = async (data) => {
-    const { title, description, price, thumbnails, paymentType, downPayment, installments, scheduleImage, schedule, typography } = data;
-    await addProductMutation({ title, description, price, thumbnails, paymentType, downPayment, installments, scheduleImage, schedule, typography });
+    const { title, description, price, originalPrice, thumbnails, paymentType, downPayment, installments, scheduleImage, schedule, typography } = data;
+    await addProductMutation({ title, description, price, originalPrice, thumbnails, paymentType, downPayment, installments, scheduleImage, schedule, typography });
   };
 
   const updateProduct = async (id, data) => {
-    const { title, description, price, thumbnails, paymentType, downPayment, installments, scheduleImage, schedule, typography } = data;
-    await updateProductMutation({ id, title, description, price, thumbnails, paymentType, downPayment, installments, scheduleImage, schedule, typography });
+    const { title, description, price, originalPrice, thumbnails, paymentType, downPayment, installments, scheduleImage, schedule, typography } = data;
+    await updateProductMutation({ id, title, description, price, originalPrice, thumbnails, paymentType, downPayment, installments, scheduleImage, schedule, typography });
   };
 
   const updateProductBranding = async (data) => {

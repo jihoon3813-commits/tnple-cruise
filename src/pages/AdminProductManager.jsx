@@ -174,15 +174,28 @@ const AdminProductManager = () => {
             <div style={{ padding: '24px' }}>
                <h3 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '8px', color: 'var(--text-main)' }}>{product.title}</h3>
                <div style={{ display: 'flex', gap: '12px', color: 'var(--text-muted)', fontSize: '13px', marginBottom: '16px' }}><div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><MapPin size={14} /> 지중해</div><div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Clock size={14} /> 14일</div></div>
-               <div style={{ borderTop: '1px solid var(--border-light)', paddingTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    {product.originalPrice > 0 && product.originalPrice > product.price && (
-                      <span style={{ fontSize: '12px', color: 'var(--text-muted)', textDecoration: 'line-through', marginBottom: '2px' }}>{product.originalPrice.toLocaleString()}원</span>
-                    )}
-                    <span style={{ fontSize: '18px', fontWeight: '800', color: 'var(--primary)' }}>{product.price?.toLocaleString()}원</span>
-                  </div>
-                  <span style={{ fontSize: '11px', fontWeight: '700', padding: '4px 10px', background: 'var(--bg-sub)', color: 'var(--text-muted)', borderRadius: '6px' }}>{product.paymentType === 'full' ? '일시불' : '분할납부'}</span>
-               </div>
+                <div style={{ borderTop: '1px solid var(--border-light)', paddingTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                   {product.paymentType === 'split' ? (
+                     <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '600' }}>예약금</span>
+                        <span style={{ fontSize: '18px', fontWeight: '800', color: 'var(--primary)' }}>{product.downPayment?.toLocaleString()}원</span>
+                        <span style={{ fontSize: '10px', color: '#3b82f6', fontWeight: '700', marginTop: '2px' }}>* 잔금 여행후 납부</span>
+                     </div>
+                   ) : (
+                     <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        {product.originalPrice > 0 && (
+                          <span style={{ fontSize: '12px', color: 'var(--text-muted)', textDecoration: 'line-through', marginBottom: '2px' }}>{product.originalPrice.toLocaleString()}원</span>
+                        )}
+                        <span style={{ fontSize: '18px', fontWeight: '800', color: 'var(--text-main)' }}>{product.price?.toLocaleString()}원</span>
+                        {product.originalPrice > product.price ? (
+                          <span style={{ fontSize: '10px', color: '#ef4444', fontWeight: '700', marginTop: '2px' }}>* {(product.originalPrice - product.price).toLocaleString()}원 할인됨</span>
+                        ) : (
+                          <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '700', marginTop: '2px' }}>* 특별 정가 적용</span>
+                        )}
+                     </div>
+                   )}
+                   <span style={{ fontSize: '11px', fontWeight: '700', padding: '4px 10px', background: 'var(--bg-sub)', color: 'var(--text-muted)', borderRadius: '6px' }}>{product.paymentType === 'full' ? '일시불' : '분할납부'}</span>
+                </div>
             </div>
           </motion.div>
         ))}

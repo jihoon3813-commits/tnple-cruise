@@ -362,8 +362,9 @@ const Home = () => {
   };
 
   const [selectedReview, setSelectedReview] = useState(null);
+  const [reviewIdx, setReviewIdx] = useState(0);
 
-  const renderReviews = () => {
+   const renderReviews = () => {
     const rb = config.reviewSectionBranding;
     if (!rb?.show || !config.reviews?.length) return null;
     const isMobile = window.innerWidth < 768;
@@ -374,7 +375,7 @@ const Home = () => {
             {(rb.layout === 'grid' || isMobile) ? (
                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '32px' }}>
                   {config.reviews.map((rev, i) => (
-                    <div key={i} onClick={() => setSelectedReview(rev)} className="admin-card review-card-hover" style={{ padding: '0', background: '#fff', borderRadius: '32px', display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 20px 40px rgba(0,0,0,0.06)', border: '1px solid var(--border-light)', cursor: 'pointer', transition: 'all 0.3s ease' }}>
+                    <div key={i} onClick={() => { setReviewIdx(0); setSelectedReview(rev); }} className="admin-card review-card-hover" style={{ padding: '0', background: '#fff', borderRadius: '32px', display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 20px 40px rgba(0,0,0,0.06)', border: 'none', cursor: 'pointer', transition: 'all 0.3s ease' }}>
                         {rev.images && rev.images.length > 0 && (
                            <div style={{ position: 'relative' }}>
                               <div style={{ display: 'flex', gap: '2px', overflowX: 'auto', scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none', msOverflowStyle: 'none' }} className="hide-scrollbar">
@@ -416,7 +417,7 @@ const Home = () => {
               <div style={{ position: 'relative', overflow: 'hidden', padding: '16px 0' }}>
                 <div className="hide-scrollbar" style={{ display: 'flex', gap: '24px', overflowX: 'auto', paddingBottom: '32px', scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch' }}>
                   {config.reviews.map((rev, i) => (
-                    <div key={i} onClick={() => setSelectedReview(rev)} style={{ minWidth: isMobile ? '320px' : '450px', background: '#fff', borderRadius: '32px', overflow: 'hidden', scrollSnapAlign: 'start', boxShadow: '0 20px 40px rgba(0,0,0,0.06)', border: '1px solid var(--border-light)', cursor: 'pointer' }}>
+                    <div key={i} onClick={() => { setReviewIdx(0); setSelectedReview(rev); }} style={{ minWidth: isMobile ? '320px' : '450px', background: '#fff', borderRadius: '32px', overflow: 'hidden', scrollSnapAlign: 'start', boxShadow: '0 20px 40px rgba(0,0,0,0.06)', border: 'none', cursor: 'pointer' }}>
                       {rev.images?.[0] && <div style={{ height: '240px' }}><SafeMedia src={rev.images[0]} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>}
                       <div style={{ padding: '32px' }}>
                         <div style={{ display: 'flex', gap: '4px', color: '#fbbf24', marginBottom: '16px' }}>{[...Array(5)].map((_, j) => <Star key={j} size={16} fill={j < (rev.rating || 5) ? "#fbbf24" : "none"} />)}</div>
@@ -443,46 +444,66 @@ const Home = () => {
                      initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }}
                      style={{ background: '#fff', width: '95%', maxWidth: '1100px', borderRadius: isMobile ? '0' : '40px', overflow: 'hidden', display: 'flex', flexDirection: isMobile ? 'column' : 'row', maxHeight: isMobile ? '100%' : '85vh', position: 'relative', boxShadow: '0 50px 100px rgba(0,0,0,0.5)' }}
                      onClick={e => e.stopPropagation()}
-                  >
-                     <button onClick={() => setSelectedReview(null)} style={{ position: 'absolute', top: '24px', right: '24px', zIndex: 100, background: 'rgba(255,255,255,0.9)', color: '#000', border: 'none', borderRadius: '50%', width: '44px', height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}><X size={24} /></button>
-                     
-                     <div style={{ flex: 1.4, background: '#000', position: 'relative', minHeight: isMobile ? '350px' : 'auto' }}>
-                        <div className="hide-scrollbar" style={{ display: 'flex', overflowX: 'auto', scrollSnapType: 'x mandatory', height: '100%', alignItems: 'center' }}>
-                           {(selectedReview.images && selectedReview.images.length > 0) ? selectedReview.images.map((img, idx) => (
-                              <div key={idx} style={{ minWidth: '100%', height: '100%', scrollSnapAlign: 'start', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                 <SafeMedia src={img} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                              </div>
-                           )) : (
-                              <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#333' }}>
-                                 <User size={100} opacity={0.1} />
-                              </div>
-                           )}
-                        </div>
-                        {selectedReview.images?.length > 1 && (
-                           <div style={{ position: 'absolute', bottom: '24px', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '8px' }}>
-                              {selectedReview.images.map((_, idx) => (
-                                 <div key={idx} style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#fff', opacity: 0.5 }}></div>
-                              ))}
-                           </div>
-                        )}
-                     </div>
+                   >
+                      <button onClick={() => setSelectedReview(null)} style={{ position: 'absolute', top: '24px', right: '24px', zIndex: 100, background: 'rgba(255,255,255,0.9)', color: '#000', border: 'none', borderRadius: '50%', width: '44px', height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}><X size={24} /></button>
+                      
+                      <div style={{ flex: 1.4, background: '#000', position: 'relative', minHeight: isMobile ? '400px' : 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                         <AnimatePresence mode="wait">
+                            <motion.div 
+                              key={reviewIdx}
+                              initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
+                              transition={{ duration: 0.3 }}
+                              style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                            >
+                               {selectedReview.images?.[reviewIdx] ? (
+                                  <SafeMedia src={selectedReview.images[reviewIdx]} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                               ) : (
+                                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#555' }}>
+                                     <User size={100} opacity={0.1} />
+                                  </div>
+                               )}
+                            </motion.div>
+                         </AnimatePresence>
 
-                     <div style={{ flex: 1, padding: isMobile ? '32px' : '60px', overflowY: 'auto', textAlign: 'left', background: '#fff', display: 'flex', flexDirection: 'column' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '40px' }}>
-                           <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--primary), #60a5fa)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900', fontSize: '24px', boxShadow: '0 8px 16px var(--primary)40' }}>{(selectedReview.author || selectedReview.user)?.[0]}</div>
-                           <div>
-                              <h3 style={{ fontSize: '22px', fontWeight: '900', color: '#0F172A', marginBottom: '6px' }}>{selectedReview.author || selectedReview.user}</h3>
-                              <div style={{ display: 'flex', gap: '4px', color: '#fbbf24', marginBottom: '6px' }}>
-                                 {[...Array(5)].map((_, j) => <Star key={j} size={18} fill={j < (selectedReview.rating || 5) ? "#fbbf24" : "none"} />)}
-                              </div>
-                              <div style={{ fontSize: '14px', color: 'var(--primary)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{selectedReview.productTitle}</div>
-                           </div>
-                        </div>
-                        <p style={{ fontSize: '20px', lineHeight: '1.8', color: '#334155', fontWeight: '500', whiteSpace: 'pre-wrap', flex: 1 }}>"{selectedReview.content}"</p>
-                        <div style={{ marginTop: 'auto', paddingTop: '40px', borderTop: '1px solid #f1f5f9', color: '#94a3b8', fontSize: '14px', fontStyle: 'italic' }}>
-                           “올리고크루즈와 함께한 소중한 여행 기록입니다.”
-                        </div>
-                     </div>
+                         {selectedReview.images?.length > 1 && (
+                            <>
+                               <button 
+                                 onClick={() => setReviewIdx((reviewIdx - 1 + selectedReview.images.length) % selectedReview.images.length)}
+                                 style={{ position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(4px)', border: 'none', borderRadius: '50%', width: '44px', height: '44px', color: '#fff', cursor: 'pointer', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                               >
+                                  <ChevronLeft size={24} />
+                               </button>
+                               <button 
+                                 onClick={() => setReviewIdx((reviewIdx + 1) % selectedReview.images.length)}
+                                 style={{ position: 'absolute', right: '20px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(4px)', border: 'none', borderRadius: '50%', width: '44px', height: '44px', color: '#fff', cursor: 'pointer', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                               >
+                                  <ChevronRight size={24} />
+                               </button>
+                               <div style={{ position: 'absolute', bottom: '24px', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '8px', zIndex: 10 }}>
+                                  {selectedReview.images.map((_, idx) => (
+                                     <div key={idx} style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#fff', opacity: idx === reviewIdx ? 1 : 0.4, transition: '0.3s' }}></div>
+                                  ))}
+                               </div>
+                            </>
+                         )}
+                      </div>
+
+                      <div style={{ flex: 1, padding: isMobile ? '32px' : '60px', overflowY: 'auto', textAlign: 'left', background: '#fff', display: 'flex', flexDirection: 'column' }}>
+                         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '40px' }}>
+                            <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--primary), #60a5fa)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900', fontSize: '24px', boxShadow: '0 8px 16px var(--primary)40' }}>{(selectedReview.author || selectedReview.user)?.[0]}</div>
+                            <div>
+                               <h3 style={{ fontSize: '22px', fontWeight: '900', color: '#0F172A', marginBottom: '6px' }}>{selectedReview.author || selectedReview.user}</h3>
+                               <div style={{ display: 'flex', gap: '4px', color: '#fbbf24', marginBottom: '6px' }}>
+                                  {[...Array(5)].map((_, j) => <Star key={j} size={18} fill={j < (selectedReview.rating || 5) ? "#fbbf24" : "none"} />)}
+                               </div>
+                               <div style={{ fontSize: '14px', color: 'var(--primary)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{selectedReview.productTitle}</div>
+                            </div>
+                         </div>
+                         <p style={{ fontSize: '20px', lineHeight: '1.8', color: '#334155', fontWeight: '500', whiteSpace: 'pre-wrap', flex: 1 }}>"{selectedReview.content}"</p>
+                         <div style={{ marginTop: 'auto', paddingTop: '40px', borderTop: '1px solid #f1f5f9', color: '#94a3b8', fontSize: '14px', fontStyle: 'italic' }}>
+                            “올리고크루즈와 함께한 소중한 여행 기록입니다.”
+                         </div>
+                      </div>
                   </motion.div>
                </div>
             )}
@@ -523,17 +544,41 @@ const Home = () => {
                            <p style={{ ...getStyle('description'), marginBottom: '24px', opacity: 0.7, height: '44px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>{product.description}</p>
                            
                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderTop: '1px solid var(--border-light)', paddingTop: '20px' }}>
-                              <div>
-                                 <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700', display: 'block', marginBottom: '4px' }}>Starting From</span>
-                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    {product.originalPrice > 0 && product.originalPrice > product.price && (
-                                      <>
-                                        <span style={{ fontSize: '14px', color: 'var(--text-muted)', textDecoration: 'line-through', fontWeight: '500' }}>{product.originalPrice.toLocaleString()}원</span>
-                                        <span style={{ fontSize: '14px', color: '#ef4444', fontWeight: '900' }}>{Math.round((1 - product.price / product.originalPrice) * 100)}%</span>
-                                      </>
-                                    )}
-                                 </div>
-                                 <span style={{ fontSize: '26px', fontWeight: '900', color: 'var(--primary)', letterSpacing: '-1px', display: 'block', marginTop: '-4px' }}>{product.price?.toLocaleString()}<small style={{fontSize:'14px', fontWeight:'700', marginLeft:'2px'}}>원</small></span>
+                              <div style={{ flex: 1 }}>
+                                 {product.paymentType === 'split' ? (
+                                   <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minHeight: '84px', justifyContent: 'center' }}>
+                                      <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+                                         <span style={{ fontSize: '12px', color: '#94a3b8', fontWeight: '600' }}>총 {product.originalPrice?.toLocaleString() || product.price?.toLocaleString()}원</span>
+                                         <span style={{ fontSize: '10px', padding: '2px 6px', background: '#f1f5f9', color: '#64748B', borderRadius: '4px', fontWeight: '800' }}>분할납부</span>
+                                      </div>
+                                      <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
+                                         <span style={{ fontSize: '13px', fontWeight: '800', color: 'var(--primary)' }}>예약금</span>
+                                         <span style={{ fontSize: '24px', fontWeight: '900', color: 'var(--primary)', letterSpacing: '-1px' }}>{(product.downPayment || 0).toLocaleString()}</span>
+                                         <span style={{ fontSize: '14px', fontWeight: '800', color: 'var(--primary)' }}>원</span>
+                                      </div>
+                                      <p style={{ fontSize: '11px', color: '#3b82f6', fontWeight: '700', margin: '4px 0 0 0' }}>* 잔금은 여행을 다녀오신 후 납부</p>
+                                   </div>
+                                 ) : (
+                                   <div style={{ display: 'flex', flexDirection: 'column', minHeight: '84px', justifyContent: 'center' }}>
+                                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minHeight: '20px' }}>
+                                         {product.originalPrice > 0 && (
+                                           <span style={{ fontSize: '14px', color: '#94a3b8', textDecoration: 'line-through', fontWeight: '500' }}>{product.originalPrice.toLocaleString()}원</span>
+                                         )}
+                                         {product.originalPrice > product.price && (
+                                           <span style={{ fontSize: '13px', color: '#ef4444', fontWeight: '900' }}>{Math.round((1 - product.price / product.originalPrice) * 100)}% OFF</span>
+                                         )}
+                                      </div>
+                                      <div style={{ display: 'flex', alignItems: 'baseline', gap: '2px', marginTop: '2px' }}>
+                                         <span style={{ fontSize: '28px', fontWeight: '900', color: '#0F172A', letterSpacing: '-1px' }}>{product.price?.toLocaleString()}</span>
+                                         <span style={{ fontSize: '16px', fontWeight: '800', color: '#0F172A' }}>원</span>
+                                      </div>
+                                      {product.originalPrice > product.price ? (
+                                        <p style={{ fontSize: '11px', color: '#ef4444', fontWeight: '700', margin: '4px 0 0 0' }}>* 총 {(product.originalPrice - product.price).toLocaleString()}원 즉시 할인됨</p>
+                                      ) : (
+                                        <p style={{ fontSize: '11px', color: '#64748B', fontWeight: '700', margin: '4px 0 0 0' }}>* 프리미엄 특별가 적용</p>
+                                      )}
+                                   </div>
+                                 )}
                               </div>
                               <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--bg-sub)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', transition: '0.3s' }} className="product-go-icon">
                                  <ArrowRight size={20} />
