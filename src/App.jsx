@@ -9,32 +9,9 @@ import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
 
 import { useConfig } from './context/ConfigContext';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2, Ship } from 'lucide-react';
 
 function App() {
-  const { config, loading } = useConfig();
-
-  React.useEffect(() => {
-    if (loading || !config) return;
-
-    try {
-      if (config.faviconUrl) {
-        const link = document.querySelector("link[rel~='icon']") || document.createElement('link');
-        link.type = 'image/x-icon';
-        link.rel = 'icon';
-        link.href = config.faviconUrl;
-        document.getElementsByTagName('head')[0].appendChild(link);
-      }
-
-      if (config.metaDescription) {
-        const meta = document.querySelector('meta[name="description"]') || document.createElement('meta');
-        meta.name = "description";
-        meta.content = config.metaDescription;
-        document.getElementsByTagName('head')[0].appendChild(meta);
-      }
-    } catch (e) { console.error(e); }
-  }, [config, loading]);
+  const { loading } = useConfig();
 
   if (loading) {
     return (
