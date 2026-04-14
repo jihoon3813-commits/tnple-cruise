@@ -3,7 +3,41 @@ import { useConfig } from '../context/ConfigContext';
 import { Plus, Trash2, Save, Monitor, Layers, Image as ImageIcon, Palette, Type, Link as LinkIcon, Upload, Loader2, Play, ChevronUp, ChevronDown, Check, X, Settings2, Grid, List, Activity, MoveVertical, MousePointerClick, Sun, Moon, Coffee, Cloud, Target, Droplets, Package, Layout, Sparkles, PlusCircle, XCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// --- Sub-components moved outside to prevent remounting on every state update ---
+// --- Improved Input Components with Local State to prevent cursor jumps ---
+
+const DebouncedInput = ({ value, onChange, className, type = "text", ...props }) => {
+  const [localValue, setLocalValue] = useState(value);
+  useEffect(() => { setLocalValue(value); }, [value]);
+  const timerRef = useRef();
+
+  const handleLocalChange = (e) => {
+    const val = e.target.value;
+    setLocalValue(val);
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => {
+      onChange(val);
+    }, 500);
+  };
+
+  return <input {...props} type={type} className={className} value={localValue || ""} onChange={handleLocalChange} />;
+};
+
+const DebouncedTextarea = ({ value, onChange, className, ...props }) => {
+  const [localValue, setLocalValue] = useState(value);
+  useEffect(() => { setLocalValue(value); }, [value]);
+  const timerRef = useRef();
+
+  const handleLocalChange = (e) => {
+    const val = e.target.value;
+    setLocalValue(val);
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => {
+      onChange(val);
+    }, 500);
+  };
+
+  return <textarea {...props} className={className} value={localValue || ""} onChange={handleLocalChange} />;
+};
 
 const MediaInput = ({ label, value, onChange, uploadFile }) => {
   const [loading, setLoading] = useState(false);
@@ -20,7 +54,7 @@ const MediaInput = ({ label, value, onChange, uploadFile }) => {
     <div className="form-group" style={{ marginBottom: '16px' }}>
       <label style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-muted)' }}>{label}</label>
       <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
-        <input className="form-control" value={value || ""} onChange={e => onChange(e.target.value)} placeholder="URL 또는 업로드" />
+        <DebouncedInput className="form-control" value={value || ""} onChange={onChange} placeholder="URL 또는 업로드" />
         <button className="luxury-btn outline" style={{ padding: '0 12px' }} onClick={() => fileRef.current.click()} disabled={loading}>
           {loading ? <Loader2 className="animate-spin" size={16} /> : <Upload size={16} />}
         </button>
@@ -103,7 +137,7 @@ const TypographyTool = ({ data, target, onUpdate, showStyle = false }) => {
             onClick={e => e.stopPropagation()}
           />
         </div>
-        <div className="form-group"><label style={{ fontSize: '11px', fontWeight: 700 }}>크기</label><input type="number" className="form-control" value={typo.fontSize || 16} onChange={e => update('fontSize', parseInt(e.target.value))} onClick={e => e.stopPropagation()} /></div>
+        <div className="form-group"><label style={{ fontSize: '11px', fontWeight: 700 }}>크기</label><DebouncedInput type="number" className="form-control" value={typo.fontSize || 16} onChange={val => update('fontSize', parseInt(val))} onClick={e => e.stopPropagation()} /></div>
         <div className="form-group"><label style={{ fontSize: '11px', fontWeight: 700 }}>정렬</label><select className="form-control" value={typo.textAlign || 'left'} onChange={e => update('textAlign', e.target.value)} onClick={e => e.stopPropagation()}><option value="left">Left</option><option value="center">Center</option><option value="right">Right</option></select></div>
       </div>
       {showStyle && (
@@ -335,10 +369,10 @@ const AdminHomeEditor = () => {
 
                  {heroTab === 'content' && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                       <div className="form-group"><label>상단 강조 문구</label><input className="form-control" value={heroForm?.aboveTitle || ""} onChange={e => setHeroForm({...heroForm, aboveTitle: e.target.value})} /></div>
-                       <div className="form-group"><label>메인 타이틀</label><textarea className="form-control" value={heroForm?.title} onChange={e => setHeroForm({...heroForm, title: e.target.value})} rows={3} /></div>
-                       <div className="form-group"><label>서브 타이틀</label><textarea className="form-control" value={heroForm?.subtitle} onChange={e => setHeroForm({...heroForm, subtitle: e.target.value})} rows={2} /></div>
-                       <div className="form-group"><label>하단 상세 문구</label><input className="form-control" value={heroForm?.belowTitle || ""} onChange={e => setHeroForm({...heroForm, belowTitle: e.target.value})} /></div>
+                       <div className="form-group"><label>상단 강조 문구</label><DebouncedInput className="form-control" value={heroForm?.aboveTitle || ""} onChange={val => setHeroForm({...heroForm, aboveTitle: val})} /></div>
+                       <div className="form-group"><label>메인 타이틀</label><DebouncedTextarea className="form-control" value={heroForm?.title} onChange={val => setHeroForm({...heroForm, title: val})} rows={3} /></div>
+                       <div className="form-group"><label>서브 타이틀</label><DebouncedTextarea className="form-control" value={heroForm?.subtitle} onChange={val => setHeroForm({...heroForm, subtitle: val})} rows={2} /></div>
+                       <div className="form-group"><label>하단 상세 문구</label><DebouncedInput className="form-control" value={heroForm?.belowTitle || ""} onChange={val => setHeroForm({...heroForm, belowTitle: val})} /></div>
                     </div>
                  )}
 
@@ -408,7 +442,7 @@ const AdminHomeEditor = () => {
                                  <span style={{ fontWeight: 800, fontSize: '13px' }}>버튼 #{idx+1} 편집</span>
                                  <button style={{ color: '#ef4444', border: 'none', background: 'none' }} onClick={() => setHeroForm({...heroForm, buttons: heroForm.buttons.filter((_,i) => i !== idx)})}><Trash2 size={16}/></button>
                               </div>
-                              <div className="form-group" style={{ marginBottom: '12px' }}><label style={{fontSize:'11px'}}>버튼 문구</label><input className="form-control" value={btn.text} onChange={e => { const b=[...heroForm.buttons]; b[idx]={...b[idx], text:e.target.value}; setHeroForm({...heroForm, buttons:b})}} /></div>
+                              <div className="form-group" style={{ marginBottom: '12px' }}><label style={{fontSize:'11px'}}>버튼 문구</label><DebouncedInput className="form-control" value={btn.text} onChange={val => { const b=[...heroForm.buttons]; b[idx]={...b[idx], text:val}; setHeroForm({...heroForm, buttons:b})}} /></div>
                               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                                  <div className="form-group"><label style={{fontSize:'11px'}}>배경색</label><input type="color" className="form-control" value={btn.style?.bgColor} onChange={e => { const b=[...heroForm.buttons]; b[idx]={...b[idx], style:{...b[idx].style, bgColor:e.target.value}}; setHeroForm({...heroForm, buttons:b})}} onClick={e => e.stopPropagation()} /></div>
                                  <div className="form-group"><label style={{fontSize:'11px'}}>글자색</label><input type="color" className="form-control" value={btn.style?.textColor} onChange={e => { const b=[...heroForm.buttons]; b[idx]={...b[idx], style:{...b[idx].style, textColor:e.target.value}}; setHeroForm({...heroForm, buttons:b})}} onClick={e => e.stopPropagation()} /></div>
@@ -473,9 +507,9 @@ const AdminHomeEditor = () => {
 
                           {editTab === 'content' && (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                               <div className="form-group"><label>상단 보조 타이틀 (모든 스타일 적용)</label><input className="form-control" value={section.aboveTitle || ""} onChange={e => handleSectionUpdate(section.id, { ...section, aboveTitle: e.target.value })} /></div>
-                               <div className="form-group"><label>섹션 타이틀 (줄바꿈 가능)</label><textarea className="form-control" value={section.title} onChange={e => handleSectionUpdate(section.id, { ...section, title: e.target.value })} rows={2} /></div>
-                               <div className="form-group"><label>서브 설명 (줄바꿈 가능)</label><textarea className="form-control" value={section.content} onChange={e => handleSectionUpdate(section.id, { ...section, content: e.target.value })} rows={4} /></div>
+                               <div className="form-group"><label>상단 보조 타이틀 (모든 스타일 적용)</label><DebouncedInput className="form-control" value={section.aboveTitle || ""} onChange={val => handleSectionUpdate(section.id, { ...section, aboveTitle: val })} /></div>
+                               <div className="form-group"><label>섹션 타이틀 (줄바꿈 가능)</label><DebouncedTextarea className="form-control" value={section.title} onChange={val => handleSectionUpdate(section.id, { ...section, title: val })} rows={2} /></div>
+                               <div className="form-group"><label>서브 설명 (줄바꿈 가능)</label><DebouncedTextarea className="form-control" value={section.content} onChange={val => handleSectionUpdate(section.id, { ...section, content: val })} rows={4} /></div>
                                
                                <div style={{ borderTop: '1px solid var(--border-light)', paddingTop: '24px' }}>
                                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
@@ -490,14 +524,14 @@ const AdminHomeEditor = () => {
                                      {(section.items || []).map((item, i) => (
                                        <div key={i} style={{ background: 'var(--bg-sub)', padding: '20px', borderRadius: '16px', border: '1px solid var(--border-light)' }}>
                                           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
-                                             <div className="form-group" style={{ width: '60px' }}><label style={{fontSize:'10px'}}>번호</label><input className="form-control" value={item.number} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], number:e.target.value}; handleSectionUpdate(section.id, { ...section, items: ni }); }} /></div>
+                                             <div className="form-group" style={{ width: '60px' }}><label style={{fontSize:'10px'}}>번호</label><DebouncedInput className="form-control" value={item.number} onChange={val => { const ni=[...section.items]; ni[i]={...ni[i], number:val}; handleSectionUpdate(section.id, { ...section, items: ni }); }} /></div>
                                              <button style={{ color: '#ef4444', border: 'none', background: 'none' }} onClick={() => { const ni=section.items.filter((_, idx)=>idx!==i); handleSectionUpdate(section.id, { ...section, items: ni }); }}><Trash2 size={16}/></button>
                                           </div>
                                           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                                             <div className="form-group"><label style={{fontSize:'10px'}}>상단 소제목 (예: 국가)</label><input className="form-control" value={item.aboveTitle} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], aboveTitle:e.target.value}; handleSectionUpdate(section.id, { ...section, items: ni }); }} /></div>
-                                             <div className="form-group"><label style={{fontSize:'10px'}}>우측 태그 (예: 도심 출발)</label><input className="form-control" value={item.tag} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], tag:e.target.value}; handleSectionUpdate(section.id, { ...section, items: ni }); }} /></div>
-                                             <div className="form-group" style={{ gridColumn: 'span 2' }}><label style={{fontSize:'10px'}}>항목 타이틀</label><input className="form-control" value={item.title} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], title:e.target.value}; handleSectionUpdate(section.id, { ...section, items: ni }); }} /></div>
-                                             <div className="form-group" style={{ gridColumn: 'span 2' }}><label style={{fontSize:'10px'}}>항목 설명</label><textarea className="form-control" value={item.content} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], content:e.target.value}; handleSectionUpdate(section.id, { ...section, items: ni }); }} rows={2} /></div>
+                                             <div className="form-group"><label style={{fontSize:'10px'}}>상단 소제목 (예: 국가)</label><DebouncedInput className="form-control" value={item.aboveTitle} onChange={val => { const ni=[...section.items]; ni[i]={...ni[i], aboveTitle:val}; handleSectionUpdate(section.id, { ...section, items: ni }); }} /></div>
+                                             <div className="form-group"><label style={{fontSize:'10px'}}>우측 태그 (예: 도심 출발)</label><DebouncedInput className="form-control" value={item.tag} onChange={val => { const ni=[...section.items]; ni[i]={...ni[i], tag:val}; handleSectionUpdate(section.id, { ...section, items: ni }); }} /></div>
+                                             <div className="form-group" style={{ gridColumn: 'span 2' }}><label style={{fontSize:'10px'}}>항목 타이틀</label><DebouncedInput className="form-control" value={item.title} onChange={val => { const ni=[...section.items]; ni[i]={...ni[i], title:val}; handleSectionUpdate(section.id, { ...section, items: ni }); }} /></div>
+                                             <div className="form-group" style={{ gridColumn: 'span 2' }}><label style={{fontSize:'10px'}}>항목 설명</label><DebouncedTextarea className="form-control" value={item.content} onChange={val => { const ni=[...section.items]; ni[i]={...ni[i], content:val}; handleSectionUpdate(section.id, { ...section, items: ni }); }} rows={2} /></div>
                                           </div>
                                        </div>
                                      ))}
@@ -559,7 +593,7 @@ const AdminHomeEditor = () => {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
                  <div className="form-group">
                     <label>섹션 메인 타이틀</label>
-                    <input className="form-control" value={productBrandingForm?.title || "추천 패키지"} onChange={e => setProductBrandingForm({...productBrandingForm, title: e.target.value})} />
+                    <DebouncedInput className="form-control" value={productBrandingForm?.title || "추천 패키지"} onChange={val => setProductBrandingForm({...productBrandingForm, title: val})} />
                  </div>
                  
                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
@@ -567,14 +601,14 @@ const AdminHomeEditor = () => {
                        <label>타이틀 글씨 색상</label>
                        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginTop: '8px' }}>
                           <input type="color" className="form-control" style={{ width: '60px', height: '42px', padding: '4px' }} value={productBrandingForm?.titleColor?.startsWith('#') ? productBrandingForm.titleColor : "#000000"} onChange={e => setProductBrandingForm({...productBrandingForm, titleColor: e.target.value})} onClick={e => e.stopPropagation()} />
-                          <input className="form-control" value={productBrandingForm?.titleColor || "#000000"} onChange={e => setProductBrandingForm({...productBrandingForm, titleColor: e.target.value})} onClick={e => e.stopPropagation()} />
+                          <DebouncedInput className="form-control" value={productBrandingForm?.titleColor || "#000000"} onChange={val => setProductBrandingForm({...productBrandingForm, titleColor: val})} onClick={e => e.stopPropagation()} />
                        </div>
                     </div>
                     <div className="form-group">
                        <label>섹션 전체 배경색</label>
                        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginTop: '8px' }}>
                           <input type="color" className="form-control" style={{ width: '60px', height: '42px', padding: '4px' }} value={productBrandingForm?.bgColor?.startsWith('#') ? productBrandingForm.bgColor : "#ffffff"} onChange={e => setProductBrandingForm({...productBrandingForm, bgColor: e.target.value})} onClick={e => e.stopPropagation()} />
-                          <input className="form-control" value={productBrandingForm?.bgColor || "#ffffff"} onChange={e => setProductBrandingForm({...productBrandingForm, bgColor: e.target.value})} onClick={e => e.stopPropagation()} />
+                          <DebouncedInput className="form-control" value={productBrandingForm?.bgColor || "#ffffff"} onChange={val => setProductBrandingForm({...productBrandingForm, bgColor: val})} onClick={e => e.stopPropagation()} />
                        </div>
                     </div>
                  </div>
@@ -605,7 +639,7 @@ const AdminHomeEditor = () => {
                    <>
                      <div className="form-group">
                         <label>섹션 메인 타이틀</label>
-                        <input className="form-control" value={reviewBrandingForm?.title || "여행 후기"} onChange={e => setReviewBrandingForm({...reviewBrandingForm, title: e.target.value})} />
+                        <DebouncedInput className="form-control" value={reviewBrandingForm?.title || "여행 후기"} onChange={val => setReviewBrandingForm({...reviewBrandingForm, title: val})} />
                      </div>
                      
                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
