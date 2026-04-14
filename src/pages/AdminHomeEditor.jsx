@@ -39,7 +39,7 @@ const DebouncedTextarea = ({ value, onChange, className, ...props }) => {
   return <textarea {...props} className={className} value={localValue || ""} onChange={handleLocalChange} />;
 };
 
-const MediaInput = ({ label, value, onChange, uploadFile }) => {
+const MediaInput = ({ label, value, onChange, uploadFile, accept }) => {
   const [loading, setLoading] = useState(false);
   const fileRef = useRef();
   const onFileChange = async (e) => {
@@ -70,9 +70,9 @@ const MediaInput = ({ label, value, onChange, uploadFile }) => {
         <button className="luxury-btn outline" style={{ padding: '0 12px' }} onClick={() => fileRef.current.click()} disabled={loading}>
           {loading ? <Loader2 className="animate-spin" size={16} /> : <Upload size={16} />}
         </button>
-        <input type="file" ref={fileRef} hidden onChange={onFileChange} accept={props.accept || "image/*,video/*"} />
+        <input type="file" ref={fileRef} hidden onChange={onFileChange} accept={accept || "image/*,video/*"} />
       </div>
-      {(props.accept?.includes('video') || (value && (value.includes('video') || value.includes('mp4')))) && (
+      {(accept?.includes('video') || (value && (value.includes('video') || value.includes('mp4')))) && (
         <p style={{ fontSize: '11px', color: 'var(--primary)', marginTop: '4px', fontWeight: '600' }}>
           * 동영상은 MP4/WebM 형식을 권장하며, 용량이 크면 로딩에 시간이 걸릴 수 있습니다.
         </p>
