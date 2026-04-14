@@ -65,7 +65,8 @@ const MediaInput = ({ label, value, onChange, uploadFile, accept }) => {
   const renderPreview = () => {
     if (!value) return null;
     const isStorageId = value.startsWith('storage:');
-    const finalUrl = isStorageId ? `${import.meta.env.VITE_CONVEX_URL}/api/storage?id=${value.split(':')[1]}` : value;
+    const convexSiteUrl = import.meta.env.VITE_CONVEX_SITE_URL || import.meta.env.VITE_CONVEX_URL.replace('.cloud', '.site');
+    const finalUrl = isStorageId ? `${convexSiteUrl}/api/storage?id=${value.split(':')[1]}` : value;
     const isVideo = value.includes('video') || value.includes('mp4') || accept?.includes('video');
     
     return (
@@ -121,12 +122,17 @@ const MultiMediaInput = ({ label, values = [], onChange, uploadFile }) => {
     <div className="form-group" style={{ marginBottom: '16px', gridColumn: 'span 2' }}>
       <label style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-muted)' }}>{label} ({values.length})</label>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '12px', marginTop: '12px' }}>
-        {values.map((url, i) => (
-          <div key={i} style={{ position: 'relative', aspectRatio: '1', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-light)' }}>
-            <img src={url.startsWith('storage:') ? `${import.meta.env.VITE_CONVEX_URL}/api/storage?id=${url.split(':')[1]}` : url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            <button onClick={() => removeImage(i)} style={{ position: 'absolute', top: '4px', right: '4px', background: 'rgba(255,0,0,0.8)', color: '#fff', border: 'none', borderRadius: '50%', padding: '4px', cursor: 'pointer', display: 'flex' }}><X size={12}/></button>
-          </div>
-        ))}
+        {values.map((url, i) => {
+          const isStorageId = url.startsWith('storage:');
+          const convexSiteUrl = import.meta.env.VITE_CONVEX_SITE_URL || import.meta.env.VITE_CONVEX_URL.replace('.cloud', '.site');
+          const finalUrl = isStorageId ? `${convexSiteUrl}/api/storage?id=${url.split(':')[1]}` : url;
+          return (
+            <div key={i} style={{ position: 'relative', aspectRatio: '1', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-light)' }}>
+              <img src={finalUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <button onClick={() => removeImage(i)} style={{ position: 'absolute', top: '4px', right: '4px', background: 'rgba(255,0,0,0.8)', color: '#fff', border: 'none', borderRadius: '50%', padding: '4px', cursor: 'pointer', display: 'flex' }}><X size={12}/></button>
+            </div>
+          );
+        })}
         <div 
           onClick={() => fileRef.current.click()}
           style={{ aspectRatio: '1', borderRadius: '8px', border: '2px dashed var(--border-light)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', background: 'var(--bg-sub)' }}

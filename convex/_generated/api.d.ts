@@ -9,6 +9,7 @@
  */
 
 import type * as files from "../files.js";
+import type * as http from "../http.js";
 import type * as init from "../init.js";
 import type * as products from "../products.js";
 import type * as reservations from "../reservations.js";
@@ -24,6 +25,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   files: typeof files;
+  http: typeof http;
   init: typeof init;
   products: typeof products;
   reservations: typeof reservations;
