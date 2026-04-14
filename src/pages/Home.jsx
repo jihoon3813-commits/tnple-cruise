@@ -224,7 +224,17 @@ const Home = () => {
                          <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} viewport={{ once: true }} style={{ ...getCardStyle({ padding: 0 }), display: 'flex', flexDirection: 'column' }}>
                             <div style={{ position: 'relative', width: '100%', aspectRatio: '4/3', overflow: 'hidden' }}>
                                {item.image ? <SafeMedia src={item.image} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ width: '100%', height: '100%', background: 'var(--bg-sub)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>이미지 없음</div>}
-                               {item.number && <div style={{ position: 'absolute', top: '16px', left: '16px', background: '#fff', padding: '4px 12px', borderRadius: '4px', fontSize: '11px', fontWeight: '800', border: '1px solid var(--border-light)' }}>{item.number}차</div>}
+                               {item.number && (
+                                 <div style={{ 
+                                   position: 'absolute', top: '16px', left: '16px', 
+                                   background: 'var(--primary)', color: '#fff', 
+                                   padding: '6px 14px', borderRadius: '6px', 
+                                   fontSize: '12px', fontWeight: '900', 
+                                   boxShadow: '0 4px 12px var(--primary)40' 
+                                 }}>
+                                   {item.number}차
+                                 </div>
+                               )}
                             </div>
                             <div style={{ padding: '24px' }}>
                                {item.aboveTitle && <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--text-muted)', marginBottom: '8px' }}>{item.aboveTitle}</div>}
