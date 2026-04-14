@@ -221,6 +221,25 @@ const TypographyTool = ({ data, target, onUpdate, showStyle = false }) => {
   );
 };
 
+const SubTitleEditor = ({ label, text, style = {}, onTextChange, onStyleChange }) => {
+  return (
+    <div style={{ background: '#f8fafc', padding: '20px', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
+       <label style={{ fontSize: '12px', fontWeight: '800', marginBottom: '8px', display: 'block' }}>{label}</label>
+       <DebouncedInput className="form-control" value={text || ""} onChange={onTextChange} placeholder="문구를 입력하세요" />
+       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '12px' }}>
+          <div className="form-item">
+             <label style={{ fontSize: '10px', color: '#64748b' }}>글자 크기 (px)</label>
+             <DebouncedInput type="number" className="form-control" style={{ fontSize: '13px' }} value={style.fontSize || 14} onChange={val => onStyleChange('fontSize', val)} />
+          </div>
+          <div className="form-item">
+             <label style={{ fontSize: '10px', color: '#64748b' }}>문구 색상</label>
+             <input type="color" className="form-control" style={{ height: '38px', padding: '4px' }} value={style.color || '#64748b'} onChange={e => onStyleChange('color', e.target.value)} />
+          </div>
+       </div>
+    </div>
+  );
+};
+
 const CATEGORIES = [
   { id: 'theme', name: '전체 디자인 테마', icon: <Palette size={20} /> },
   { id: 'hero', name: '히어로 섹션 편집', icon: <Layout size={20} /> },
@@ -880,6 +899,23 @@ const AdminHomeEditor = () => {
                     <DebouncedInput className="form-control" value={productBrandingForm?.title || "추천 패키지"} onChange={val => setProductBrandingForm({...productBrandingForm, title: val})} />
                  </div>
                  
+                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                    <SubTitleEditor 
+                       label="타이틀 상단 보조 문구" 
+                       text={productBrandingForm?.subTitleTop} 
+                       style={productBrandingForm?.subTitleTopStyle}
+                       onTextChange={val => setProductBrandingForm({...productBrandingForm, subTitleTop: val})}
+                       onStyleChange={(field, val) => setProductBrandingForm({...productBrandingForm, subTitleTopStyle: {...(productBrandingForm.subTitleTopStyle || {}), [field]: val}})}
+                    />
+                    <SubTitleEditor 
+                       label="타이틀 하단 보조 문구" 
+                       text={productBrandingForm?.subTitleBottom} 
+                       style={productBrandingForm?.subTitleBottomStyle}
+                       onTextChange={val => setProductBrandingForm({...productBrandingForm, subTitleBottom: val})}
+                       onStyleChange={(field, val) => setProductBrandingForm({...productBrandingForm, subTitleBottomStyle: {...(productBrandingForm.subTitleBottomStyle || {}), [field]: val}})}
+                    />
+                 </div>
+
                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
                     <div className="form-group">
                        <label>타이틀 글씨 색상</label>

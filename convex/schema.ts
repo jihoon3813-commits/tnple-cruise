@@ -42,6 +42,10 @@ export default defineSchema({
       title: v.optional(v.string()),
       titleColor: v.optional(v.string()),
       bgColor: v.optional(v.string()),
+      subTitleTop: v.optional(v.string()),
+      subTitleTopStyle: v.optional(v.object({ color: v.optional(v.string()), fontSize: v.optional(v.number()) })),
+      subTitleBottom: v.optional(v.string()),
+      subTitleBottomStyle: v.optional(v.object({ color: v.optional(v.string()), fontSize: v.optional(v.number()) })),
     })),
     reviewSectionBranding: v.optional(v.object({
       show: v.optional(v.boolean()),
@@ -49,6 +53,10 @@ export default defineSchema({
       titleColor: v.optional(v.string()),
       bgColor: v.optional(v.string()),
       layout: v.optional(v.string()), // "slider", "grid"
+      subTitleTop: v.optional(v.string()),
+      subTitleTopStyle: v.optional(v.object({ color: v.optional(v.string()), fontSize: v.optional(v.number()) })),
+      subTitleBottom: v.optional(v.string()),
+      subTitleBottomStyle: v.optional(v.object({ color: v.optional(v.string()), fontSize: v.optional(v.number()) })),
     })),
     productDetailBranding: v.optional(v.object({
       layout: v.optional(v.string()), // "luxury", "split", "modern"

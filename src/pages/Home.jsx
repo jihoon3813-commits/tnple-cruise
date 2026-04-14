@@ -371,7 +371,31 @@ const Home = () => {
     return (
       <section id="home-reviews" style={{ padding: isMobile ? '40px 0' : '80px 0', background: rb.bgColor || 'var(--bg-sub)' }}>
          <div className="container" style={{ padding: isMobile ? '0 20px' : 'inherit' }}>
-            <div style={{ textAlign: 'center', marginBottom: isMobile ? '32px' : '80px' }}><h2 style={{ fontSize: isMobile ? '28px' : '48px', fontWeight: '800', color: rb.titleColor || 'var(--text-main)' }}>{rb.title || "여행 후기"}</h2></div>
+            <div style={{ textAlign: 'center', marginBottom: isMobile ? '32px' : '80px' }}>
+               {rb.subTitleTop && (
+                  <span style={{ 
+                     fontSize: `${rb.subTitleTopStyle?.fontSize || 13}px`,
+                     color: rb.subTitleTopStyle?.color || 'var(--primary)',
+                     fontWeight: '800',
+                     letterSpacing: '0.1em',
+                     display: 'block',
+                     marginBottom: '12px'
+                  }}>
+                     {rb.subTitleTop}
+                  </span>
+               )}
+               <h2 style={{ fontSize: isMobile ? '28px' : '48px', fontWeight: '800', color: rb.titleColor || 'var(--text-main)' }}>{rb.title || "여행 후기"}</h2>
+               {rb.subTitleBottom && (
+                  <p style={{ 
+                     fontSize: `${rb.subTitleBottomStyle?.fontSize || 16}px`,
+                     color: rb.subTitleBottomStyle?.color || '#64748b',
+                     marginTop: '16px',
+                     fontWeight: '500'
+                  }}>
+                     {rb.subTitleBottom}
+                  </p>
+               )}
+            </div>
             {(rb.layout === 'grid' || isMobile) ? (
                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '32px' }}>
                   {config.reviews.map((rev, i) => (
@@ -522,8 +546,31 @@ const Home = () => {
       <section id="products" style={{ padding: isMobile ? '60px 0' : '100px 0', background: config.productListBranding?.bgColor || 'var(--bg-main)' }}>
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: isMobile ? '32px' : '64px' }}>
-             <span style={{ fontSize: '13px', fontWeight: '800', color: 'var(--primary)', letterSpacing: '0.1em', display: 'block', marginBottom: '12px' }}>CURATED SELECTION</span>
+             {config.productListBranding?.subTitleTop ? (
+                <span style={{ 
+                  fontSize: `${config.productListBranding.subTitleTopStyle?.fontSize || 13}px`,
+                  color: config.productListBranding.subTitleTopStyle?.color || 'var(--primary)',
+                  fontWeight: '800', 
+                  letterSpacing: '0.1em', 
+                  display: 'block', 
+                  marginBottom: '12px' 
+                }}>
+                  {config.productListBranding.subTitleTop}
+                </span>
+             ) : (
+                <span style={{ fontSize: '13px', fontWeight: '800', color: 'var(--primary)', letterSpacing: '0.1em', display: 'block', marginBottom: '12px' }}>CURATED SELECTION</span>
+             )}
              <h2 style={{ fontSize: isMobile ? '32px' : '48px', fontWeight: '900', color: config.productListBranding?.titleColor || 'var(--text-main)', letterSpacing: '-0.03em' }}>{config.productListBranding?.title || "추천 패키지"}</h2>
+             {config.productListBranding?.subTitleBottom && (
+                <p style={{ 
+                  fontSize: `${config.productListBranding.subTitleBottomStyle?.fontSize || 16}px`,
+                  color: config.productListBranding.subTitleBottomStyle?.color || '#64748b',
+                  marginTop: '14px',
+                  fontWeight: '500'
+                }}>
+                  {config.productListBranding.subTitleBottom}
+                </p>
+             )}
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '32px' }}>
             {products.map((product, idx) => {
