@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useConfig } from '../context/ConfigContext';
-import { Plus, Trash2, Save, Monitor, Layers, Image as ImageIcon, Palette, Type, Link as LinkIcon, Upload, Loader2, Play, ChevronUp, ChevronDown, Check, X, Settings2, Grid, List, Activity, MoveVertical, MousePointerClick, Sun, Moon, Coffee, Cloud, Target, Droplets, Package, Layout, Sparkles, PlusCircle, XCircle } from 'lucide-react';
+import { Plus, Trash2, Save, Monitor, Layers, Image as ImageIcon, Palette, Type, Link as LinkIcon, Upload, Loader2, Play, ChevronUp, ChevronDown, Check, X, Settings2, Grid, List, Activity, MoveVertical, MousePointerClick, Sun, Moon, Coffee, Cloud, Target, Droplets, Package, Layout, Sparkles, PlusCircle, XCircle, CreditCard } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // --- Improved Input Components with Local State to prevent cursor jumps ---
@@ -15,7 +15,7 @@ const DebouncedInput = ({ value, onChange, className, type = "text", ...props })
     setLocalValue(val);
     if (timerRef.current) clearTimeout(timerRef.current);
     timerRef.current = setTimeout(() => {
-      onChange(val);
+      onChange(type === 'number' ? parseInt(val) : val);
     }, 500);
   };
 
@@ -137,7 +137,7 @@ const TypographyTool = ({ data, target, onUpdate, showStyle = false }) => {
             onClick={e => e.stopPropagation()}
           />
         </div>
-        <div className="form-group"><label style={{ fontSize: '11px', fontWeight: 700 }}>크기</label><DebouncedInput type="number" className="form-control" value={typo.fontSize || 16} onChange={val => update('fontSize', parseInt(val))} onClick={e => e.stopPropagation()} /></div>
+        <div className="form-group"><label style={{ fontSize: '11px', fontWeight: 700 }}>크기</label><DebouncedInput type="number" className="form-control" value={typo.fontSize || 16} onChange={val => update('fontSize', val)} onClick={e => e.stopPropagation()} /></div>
         <div className="form-group"><label style={{ fontSize: '11px', fontWeight: 700 }}>정렬</label><select className="form-control" value={typo.textAlign || 'left'} onChange={e => update('textAlign', e.target.value)} onClick={e => e.stopPropagation()}><option value="left">Left</option><option value="center">Center</option><option value="right">Right</option></select></div>
       </div>
       {showStyle && (
@@ -289,6 +289,7 @@ const AdminHomeEditor = () => {
         title: { fontSize: 42, color: "#0F172A", textAlign: "left" },
         content: { fontSize: 18, color: "#64748B", textAlign: "left" }
       },
+      cardStyles: { shadow: 0.1, borderRadius: 24, borderWidth: 1, borderColor: "#e2e8f0", bgColor: "#ffffff" },
       showButton: true,
       buttonText: "자세히 보기",
       buttonLink: "",
@@ -492,8 +493,8 @@ const AdminHomeEditor = () => {
                     {activeSectionId === section.id && (
                        <div style={{ padding: '32px' }}>
                           <div style={{ display: 'flex', gap: '8px', marginBottom: '32px', flexWrap: 'wrap' }}>
-                            {['style', 'content', 'visual', 'typography', 'button'].map(t => (
-                              <button key={t} onClick={() => setEditTab(t)} className={`luxury-btn ${editTab === t ? '' : 'outline'}`} style={{ padding: '8px 16px', borderRadius: '8px', fontSize: '11px' }}>{t.toUpperCase()}</button>
+                            {['style', 'content', 'visual', 'card', 'typography', 'button'].map(t => (
+                              <button key={t} onClick={() => setEditTab(t)} className={`luxury-btn ${editTab === t ? '' : 'outline'}`} style={{ padding: '8px 16px', borderRadius: '8px', fontSize: '11px' }}>{t.toUpperCase() === 'CARD' ? <CreditCard size={14}/> : t.toUpperCase()}</button>
                             ))}
                           </div>
                           
@@ -539,8 +540,8 @@ const AdminHomeEditor = () => {
                                </div>
 
                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', borderTop: '1px solid var(--border-light)', paddingTop: '24px' }}>
-                                  <div className="form-group"><label>상단 여백</label><input type="number" className="form-control" value={section.paddingTop} onChange={e => handleSectionUpdate(section.id, { ...section, paddingTop: parseInt(e.target.value) })} /></div>
-                                  <div className="form-group"><label>하단 여백</label><input type="number" className="form-control" value={section.paddingBottom} onChange={e => handleSectionUpdate(section.id, { ...section, paddingBottom: parseInt(e.target.value) })} /></div>
+                                  <div className="form-group"><label>상단 여백</label><DebouncedInput type="number" className="form-control" value={section.paddingTop} onChange={val => handleSectionUpdate(section.id, { ...section, paddingTop: val })} /></div>
+                                  <div className="form-group"><label>하단 여백</label><DebouncedInput type="number" className="form-control" value={section.paddingBottom} onChange={val => handleSectionUpdate(section.id, { ...section, paddingBottom: val })} /></div>
                                </div>
                             </div>
                           )}
@@ -565,6 +566,19 @@ const AdminHomeEditor = () => {
                                   </div>
                                </div>
                             </div>
+                          )}
+
+                          {editTab === 'card' && (
+                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+                                <div className="form-group" style={{ gridColumn: 'span 2' }}>
+                                  <label>그림자 농도 ({section.cardStyles?.shadow ?? 0.1})</label>
+                                  <input type="range" min="0" max="0.5" step="0.01" className="form-control" value={section.cardStyles?.shadow ?? 0.1} onChange={e => handleSectionUpdate(section.id, { ...section, cardStyles: { ...section.cardStyles, shadow: parseFloat(e.target.value) } })} />
+                                </div>
+                                <div className="form-group"><label>모서리 둥글기 (px)</label><DebouncedInput type="number" className="form-control" value={section.cardStyles?.borderRadius ?? 24} onChange={val => handleSectionUpdate(section.id, { ...section, cardStyles: { ...section.cardStyles, borderRadius: val } })} /></div>
+                                <div className="form-group"><label>테두리 두께 (px)</label><DebouncedInput type="number" className="form-control" value={section.cardStyles?.borderWidth ?? 1} onChange={val => handleSectionUpdate(section.id, { ...section, cardStyles: { ...section.cardStyles, borderWidth: val } })} /></div>
+                                <div className="form-group"><label>카드 배경색</label><input type="color" className="form-control" style={{ height: 42, padding: 4 }} value={section.cardStyles?.bgColor || "#ffffff"} onChange={e => handleSectionUpdate(section.id, { ...section, cardStyles: { ...section.cardStyles, bgColor: e.target.value } })} /></div>
+                                <div className="form-group"><label>테두리 색상</label><input type="color" className="form-control" style={{ height: 42, padding: 4 }} value={section.cardStyles?.borderColor || "#e2e8f0"} onChange={e => handleSectionUpdate(section.id, { ...section, cardStyles: { ...section.cardStyles, borderColor: e.target.value } })} /></div>
+                             </div>
                           )}
 
                           {editTab === 'typography' && (

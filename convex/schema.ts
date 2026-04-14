@@ -99,6 +99,13 @@ export default defineSchema({
     bgType: v.optional(v.string()), // "color", "image", "video"
     bgUrl: v.optional(v.string()), // For image/video backgrounds
     bgOpacity: v.optional(v.number()), // 0 to 1
+    cardStyles: v.optional(v.object({
+      shadow: v.optional(v.number()), // 0 to 1 intensity
+      borderRadius: v.optional(v.number()), // px
+      borderWidth: v.optional(v.number()), // px
+      borderColor: v.optional(v.string()),
+      bgColor: v.optional(v.string()),
+    })),
     paddingTop: v.optional(v.number()), // px
     paddingBottom: v.optional(v.number()), // px
     order: v.optional(v.number()),

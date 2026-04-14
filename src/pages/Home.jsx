@@ -124,7 +124,7 @@ const Home = () => {
   };
 
   const renderSection = (section) => {
-    const { style, typography, items, layout, bgColor, bgType, bgUrl, image, images, bgOpacity, paddingTop, paddingBottom } = section;
+    const { style, typography, items, layout, bgColor, bgType, bgUrl, image, images, bgOpacity, paddingTop, paddingBottom, cardStyles } = section;
     const isMobile = window.innerWidth < 768;
     const hasMedia = image || (images && images.length > 0);
     
@@ -145,6 +145,20 @@ const Home = () => {
       </div>
     );
 
+    const getCardStyle = () => {
+       const cs = cardStyles || {};
+       return {
+          background: cs.bgColor || (theme === 'midnight' ? 'rgba(255,255,255,0.05)' : '#fff'),
+          padding: isMobile ? '24px' : '32px',
+          borderRadius: `${cs.borderRadius ?? 24}px`,
+          border: `${cs.borderWidth ?? 1}px solid ${cs.borderColor || (theme === 'midnight' ? 'rgba(255,255,255,0.1)' : 'var(--border-light)')}`,
+          boxShadow: `0 15px 45px rgba(0,0,0,${cs.shadow ?? 0.08})`,
+          display: 'flex',
+          gap: isMobile ? '16px' : '24px',
+          alignItems: 'start'
+       };
+    };
+
     return (
       <section key={section.id} style={wrapperStyle}>
         {bgType !== 'color' && bgUrl && <div style={{ position: 'absolute', inset: 0, zIndex: 0, opacity: bgOpacity ?? 1 }}><SafeMedia src={bgUrl} type={bgType} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>}
@@ -161,7 +175,7 @@ const Home = () => {
                 </div>
                 <div style={{ order: layout === 'right' ? 1 : 2, display: 'flex', flexDirection: 'column', gap: '20px' }}>
                    {(items || []).map((item, i) => (
-                     <motion.div key={i} initial={{ opacity:0, x: 20 }} whileInView={{ opacity:1, x: 0 }} transition={{ delay: i * 0.1 }} viewport={{ once: true }} style={{ background: theme === 'midnight' ? 'rgba(255,255,255,0.05)' : '#fff', padding: isMobile ? '24px' : '32px', borderRadius: '24px', border: theme === 'midnight' ? '1px solid rgba(255,255,255,0.1)' : '1px solid var(--border-light)', display: 'flex', gap: isMobile ? '16px' : '24px', alignItems: 'start',boxShadow: '0 15px 45px rgba(0,0,0,0.08)' }}>
+                     <motion.div key={i} initial={{ opacity:0, x: 20 }} whileInView={{ opacity:1, x: 0 }} transition={{ delay: i * 0.1 }} viewport={{ once: true }} style={getCardStyle()}>
                         <div style={{ width: isMobile ? '40px' : '56px', height: isMobile ? '40px' : '56px', flexShrink: 0, border: '2px solid var(--primary)', color: 'var(--primary)', opacity: 0.8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: isMobile ? '13px' : '16px', fontWeight: '900', borderRadius: '12px' }}>{item.number}</div>
                         <div style={{ flex: 1 }}>
                            {item.aboveTitle && <div style={{ fontSize: '12px', fontWeight: '900', color: 'var(--primary)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{item.aboveTitle}</div>}
@@ -179,7 +193,7 @@ const Home = () => {
 
           {style === 'split-card' && (
              <div style={{ display: isMobile ? 'block' : 'grid', gridTemplateColumns: '1fr 1fr', gap: isMobile ? '32px' : '48px' }}>
-                <div style={{ background: theme === 'midnight' ? 'rgba(255,255,255,0.05)' : '#fff', borderRadius: '40px', padding: isMobile ? '32px 20px' : '80px', border: '1px solid var(--border-light)', order: layout === 'right' ? 2 : 1, boxShadow: '0 20px 50px rgba(0,0,0,0.05)' }}>{header}</div>
+                <div style={{ ...getCardStyle(), padding: isMobile ? '32px 20px' : '80px', flexDirection: 'column', order: layout === 'right' ? 2 : 1 }}>{header}</div>
                 <div style={{ order: layout === 'right' ? 1 : 2 }}><MediaGallery images={images} singleImage={image} /></div>
              </div>
           )}
@@ -203,7 +217,7 @@ const Home = () => {
                  <div style={{ marginBottom: isMobile ? '32px' : 0 }}>{header}<div style={{marginTop:'32px'}}><MediaGallery images={images} singleImage={image} /></div></div>
                  <div style={{ display: 'grid', gridTemplateColumns: (items || []).length > 2 && !isMobile ? '1fr 1fr' : '1fr', gap: '20px' }}>
                     {(items || []).map((item, i) => (
-                       <motion.div key={i} whileHover={{ y: -5 }} style={{ padding: '32px', borderRadius: '24px', background: theme === 'midnight' ? 'rgba(255,255,255,0.05)' : '#fff', border: '1px solid var(--border-light)', display: 'flex', gap: '20px', boxShadow: '0 10px 30px rgba(0,0,0,0.04)' }}>
+                       <motion.div key={i} whileHover={{ y: -5 }} style={getCardStyle()}>
                           <div style={{ width: '40px', height: '40px', background: 'var(--primary)', color: '#fff', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900', flexShrink: 0 }}>{item.number || i + 1}</div>
                           <div><h4 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '8px', color: 'var(--text-main)' }}>{item.title}</h4><p style={{ color: 'var(--text-muted)', fontSize: '14px', lineHeight: '1.6' }}>{item.content}</p></div>
                        </motion.div>

@@ -37,6 +37,14 @@ const buttonStylesValidator = v.optional(v.object({
   size: v.optional(v.string()),
 }));
 
+const cardStylesValidator = v.optional(v.object({
+  shadow: v.optional(v.number()),
+  borderRadius: v.optional(v.number()),
+  borderWidth: v.optional(v.number()),
+  borderColor: v.optional(v.string()),
+  bgColor: v.optional(v.string()),
+}));
+
 export const list = query({
   args: {},
   handler: async (ctx) => {
@@ -59,6 +67,7 @@ export const add = mutation({
     buttonText: v.optional(v.string()),
     buttonLink: v.optional(v.string()),
     buttonStyles: buttonStylesValidator,
+    cardStyles: cardStylesValidator,
     bgColor: v.optional(v.string()),
     bgType: v.string(),
     bgUrl: v.optional(v.string()),
@@ -88,6 +97,7 @@ export const update = mutation({
     buttonText: v.optional(v.string()),
     buttonLink: v.optional(v.string()),
     buttonStyles: buttonStylesValidator,
+    cardStyles: cardStylesValidator,
     bgColor: v.optional(v.string()),
     bgType: v.optional(v.string()),
     bgUrl: v.optional(v.string()),
