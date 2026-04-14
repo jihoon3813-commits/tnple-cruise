@@ -170,7 +170,9 @@ const Home = () => {
                 <div style={{ order: layout === 'right' ? 2 : 1 }}>
                    <div style={{ marginBottom: '48px' }}>
                       {header}
-                      {image && <SafeMedia src={image} style={{ width: '100%', borderRadius: '24px', boxShadow: 'var(--shadow-lg)' }} />}
+                      <div style={{ marginTop: '32px' }}>
+                         <MediaGallery images={images} singleImage={image} />
+                      </div>
                    </div>
                 </div>
                 <div style={{ order: layout === 'right' ? 1 : 2, display: 'flex', flexDirection: 'column', gap: '20px' }}>
