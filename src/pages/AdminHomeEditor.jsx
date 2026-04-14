@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useConfig } from '../context/ConfigContext';
-import { Plus, Trash2, Save, Monitor, Layers, Image as ImageIcon, Palette, Type, Link as LinkIcon, Upload, Loader2, Play, ChevronUp, ChevronDown, Check, X, Settings2, Grid, List, Activity, MoveVertical, MousePointerClick, Sun, Moon, Coffee, Cloud, Target, Droplets, Package, Layout, Sparkles, PlusCircle, XCircle, CreditCard } from 'lucide-react';
+import { Plus, Trash2, Save, Monitor, Layers, Image as ImageIcon, Palette, Type, Link as LinkIcon, Upload, Loader2, Play, ChevronUp, ChevronDown, Check, X, Settings2, Grid, List, Activity, MoveVertical, MousePointerClick, Sun, Moon, Coffee, Cloud, Target, Droplets, Package, Layout, Sparkles, PlusCircle, XCircle, CreditCard, ListChecks } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // --- Improved Input Components with Local State to prevent cursor jumps ---
@@ -514,25 +514,51 @@ const AdminHomeEditor = () => {
                                
                                <div style={{ borderTop: '1px solid var(--border-light)', paddingTop: '24px' }}>
                                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                                     <label style={{ fontWeight: 800 }}>상세 아이템/텍스트 박스 리스트</label>
+                                     <label style={{ fontWeight: 800 }}>상세 아이템/투어 카드 리스트</label>
                                      <button className="luxury-btn outline" style={{ padding: '6px 12px', fontSize: '11px' }} onClick={() => {
                                         const items = section.items || [];
-                                        const newItem = { id: Date.now().toString(), title: "새로운 항목", content: "설명", aboveTitle: "", tag: "", number: (items.length + 1).toString().padStart(2, '0') };
+                                        const newItem = { id: Date.now().toString(), title: "새로운 항목", content: "설명", aboveTitle: "", aboveTitle2: "", tag: "", number: (items.length + 1).toString().padStart(2, '0'), highlights: [], highlightStyle: "dot" };
                                         handleSectionUpdate(section.id, { ...section, items: [...items, newItem] });
                                      }}><Plus size={14} /> 추가</button>
                                   </div>
-                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                                      {(section.items || []).map((item, i) => (
-                                       <div key={i} style={{ background: 'var(--bg-sub)', padding: '20px', borderRadius: '16px', border: '1px solid var(--border-light)' }}>
-                                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
-                                             <div className="form-group" style={{ width: '60px' }}><label style={{fontSize:'10px'}}>번호</label><DebouncedInput className="form-control" value={item.number} onChange={val => { const ni=[...section.items]; ni[i]={...ni[i], number:val}; handleSectionUpdate(section.id, { ...section, items: ni }); }} /></div>
+                                       <div key={i} style={{ background: 'var(--bg-sub)', padding: '24px', borderRadius: '20px', border: '1px solid var(--border-light)' }}>
+                                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
+                                             <div style={{ display: 'flex', gap: '12px' }}>
+                                                <div className="form-group" style={{ width: '60px' }}><label style={{fontSize:'10px'}}>번호</label><DebouncedInput className="form-control" value={item.number} onChange={val => { const ni=[...section.items]; ni[i]={...ni[i], number:val}; handleSectionUpdate(section.id, { ...section, items: ni }); }} /></div>
+                                                <MediaInput label="아이템 개별 이미지" value={item.image} onChange={v => { const ni=[...section.items]; ni[i]={...ni[i], image: v}; handleSectionUpdate(section.id, { ...section, items: ni }); }} uploadFile={uploadFile} />
+                                             </div>
                                              <button style={{ color: '#ef4444', border: 'none', background: 'none' }} onClick={() => { const ni=section.items.filter((_, idx)=>idx!==i); handleSectionUpdate(section.id, { ...section, items: ni }); }}><Trash2 size={16}/></button>
                                           </div>
+                                          
                                           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                                             <div className="form-group"><label style={{fontSize:'10px'}}>상단 소제목 (예: 국가)</label><DebouncedInput className="form-control" value={item.aboveTitle} onChange={val => { const ni=[...section.items]; ni[i]={...ni[i], aboveTitle:val}; handleSectionUpdate(section.id, { ...section, items: ni }); }} /></div>
-                                             <div className="form-group"><label style={{fontSize:'10px'}}>우측 태그 (예: 도심 출발)</label><DebouncedInput className="form-control" value={item.tag} onChange={val => { const ni=[...section.items]; ni[i]={...ni[i], tag:val}; handleSectionUpdate(section.id, { ...section, items: ni }); }} /></div>
-                                             <div className="form-group" style={{ gridColumn: 'span 2' }}><label style={{fontSize:'10px'}}>항목 타이틀</label><DebouncedInput className="form-control" value={item.title} onChange={val => { const ni=[...section.items]; ni[i]={...ni[i], title:val}; handleSectionUpdate(section.id, { ...section, items: ni }); }} /></div>
-                                             <div className="form-group" style={{ gridColumn: 'span 2' }}><label style={{fontSize:'10px'}}>항목 설명</label><DebouncedTextarea className="form-control" value={item.content} onChange={val => { const ni=[...section.items]; ni[i]={...ni[i], content:val}; handleSectionUpdate(section.id, { ...section, items: ni }); }} rows={2} /></div>
+                                             <div className="form-group"><label style={{fontSize:'10px'}}>최상단 소제목 (예: 1일차)</label><DebouncedInput className="form-control" value={item.aboveTitle} onChange={val => { const ni=[...section.items]; ni[i]={...ni[i], aboveTitle:val}; handleSectionUpdate(section.id, { ...section, items: ni }); }} /></div>
+                                             <div className="form-group"><label style={{fontSize:'10px'}}>타이틀 바로 위 (예: 싱가포르)</label><DebouncedInput className="form-control" value={item.aboveTitle2} onChange={val => { const ni=[...section.items]; ni[i]={...ni[i], aboveTitle2:val}; handleSectionUpdate(section.id, { ...section, items: ni }); }} /></div>
+                                             <div className="form-group" style={{ gridColumn: 'span 2' }}><label style={{fontSize:'10px'}}>메인 타이틀</label><DebouncedInput className="form-control" value={item.title} onChange={val => { const ni=[...section.items]; ni[i]={...ni[i], title:val}; handleSectionUpdate(section.id, { ...section, items: ni }); }} /></div>
+                                             <div className="form-group" style={{ gridColumn: 'span 2' }}><label style={{fontSize:'10px'}}>하단 설명</label><DebouncedTextarea className="form-control" value={item.content} onChange={val => { const ni=[...section.items]; ni[i]={...ni[i], content:val}; handleSectionUpdate(section.id, { ...section, items: ni }); }} rows={3} /></div>
+                                             <div className="form-group" style={{ gridColumn: 'span 2' }}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                                                   <label style={{fontSize:'10px', fontWeight: '800'}}><ListChecks size={12}/> 주요 하이라이트 (불렛 리스트)</label>
+                                                   <select className="form-control" style={{ width: '100px', fontSize: '10px', height: '24px', padding: '0 4px' }} value={item.highlightStyle || 'dot'} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], highlightStyle: e.target.value}; handleSectionUpdate(section.id, { ...section, items: ni }); }}>
+                                                      <option value="dot">기본 점 (●)</option>
+                                                      <option value="dash">대시 (—)</option>
+                                                      <option value="star">별 (★)</option>
+                                                   </select>
+                                                </div>
+                                                <DebouncedTextarea 
+                                                   className="form-control" 
+                                                   style={{ fontSize: '12px' }}
+                                                   placeholder="행을 나누어 입력하세요 (엔터로 구분)" 
+                                                   value={(item.highlights || []).join('\n')} 
+                                                   onChange={val => { 
+                                                      const ni=[...section.items]; 
+                                                      ni[i]={...ni[i], highlights: val.split('\n').filter(s => s.trim() !== "")}; 
+                                                      handleSectionUpdate(section.id, { ...section, items: ni }); 
+                                                   }} 
+                                                   rows={3} 
+                                                />
+                                             </div>
                                              
                                              <div style={{ gridColumn: 'span 2', background: '#fff', padding: '16px', borderRadius: '12px', marginTop: '12px' }}>
                                                 <label style={{ fontSize: '11px', fontWeight: '800', marginBottom: '10px', display: 'block' }}>글자 색상 개별 설정</label>
@@ -628,7 +654,7 @@ const AdminHomeEditor = () => {
                     <DebouncedInput className="form-control" value={productBrandingForm?.title || "추천 패키지"} onChange={val => setProductBrandingForm({...productBrandingForm, title: val})} />
                  </div>
                  
-                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+                 <div style={{ display: 'grid', gridTemplateColumns: 'fr 1fr', gap: '24px' }}>
                     <div className="form-group">
                        <label>타이틀 글씨 색상</label>
                        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginTop: '8px' }}>

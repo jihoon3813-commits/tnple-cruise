@@ -25,9 +25,13 @@ const itemsValidator = v.optional(v.array(v.object({
   title: v.string(),
   content: v.string(),
   number: v.optional(v.string()),
+  image: v.optional(v.string()),
   aboveTitle: v.optional(v.string()),
+  aboveTitle2: v.optional(v.string()),
   tag: v.optional(v.string()),
   icon: v.optional(v.string()),
+  highlights: v.optional(v.array(v.string())),
+  highlightStyle: v.optional(v.string()),
   typography: v.optional(v.object({
     above: v.optional(v.object({ color: v.optional(v.string()), fontSize: v.optional(v.number()) })),
     title: v.optional(v.object({ color: v.optional(v.string()), fontSize: v.optional(v.number()) })),

@@ -64,9 +64,13 @@ export default defineSchema({
       title: v.string(),
       content: v.string(),
       number: v.optional(v.string()), 
-      aboveTitle: v.optional(v.string()), 
+      image: v.optional(v.string()), // Per-item image
+      aboveTitle: v.optional(v.string()), // Top small text
+      aboveTitle2: v.optional(v.string()), // Above title small text
       tag: v.optional(v.string()), 
       icon: v.optional(v.string()),
+      highlights: v.optional(v.array(v.string())), // Bullet points
+      highlightStyle: v.optional(v.string()), // Bullet style
       typography: v.optional(v.object({
         above: v.optional(v.object({ color: v.optional(v.string()), fontSize: v.optional(v.number()) })),
         title: v.optional(v.object({ color: v.optional(v.string()), fontSize: v.optional(v.number()) })),

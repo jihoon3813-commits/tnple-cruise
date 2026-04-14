@@ -99,7 +99,11 @@ export const ConfigProvider = ({ children }) => {
     await addSectionMutation({ 
       title, content, aboveTitle, image, images, layout, 
       style: style || "classic", 
-      items: items || [],
+      items: (items || []).map(item => ({
+        ...item,
+        highlights: item.highlights || [],
+        highlightStyle: item.highlightStyle || "dot"
+      })),
       typography: typography || {},
       showButton: showButton ?? true, 
       buttonText: buttonText || "자세히 보기",
@@ -119,7 +123,13 @@ export const ConfigProvider = ({ children }) => {
   const updateSection = async (id, data) => {
     const { title, content, image, images, layout, style, items, typography, showButton, buttonText, buttonLink, buttonStyles, cardStyles, bgColor, bgType, bgUrl, bgOpacity, paddingTop, paddingBottom, order, aboveTitle } = data;
     await updateSectionMutation({ 
-      id, title, content, image, images, layout, style, items, typography,
+      id, title, content, image, images, layout, style, 
+      items: (items || []).map(item => ({
+        ...item,
+        highlights: item.highlights || [],
+        highlightStyle: item.highlightStyle || "dot"
+      })),
+      typography,
       showButton: Boolean(showButton), 
       buttonText, buttonLink, buttonStyles, cardStyles,
       aboveTitle,

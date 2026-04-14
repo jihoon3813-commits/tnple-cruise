@@ -97,12 +97,12 @@ const Home = () => {
   const { hero, sections, products, theme } = config;
   useEffect(() => { document.body.className = `theme-${theme || 'white'}`; }, [theme]);
 
-  const CustomButton = ({ section }) => {
+  const CustomButton = ({ section, isSmall = false }) => {
     if (!section.showButton) return null;
     const styles = section.buttonStyles || {};
     const sizeMap = { small: { padding: '8px 20px', fontSize: '12px' }, medium: { padding: '10px 28px', fontSize: '13px' }, large: { padding: '14px 40px', fontSize: '15px' } };
     const isMobile = window.innerWidth < 768;
-    const currentSize = sizeMap[isMobile ? 'small' : (styles.size || 'medium')];
+    const currentSize = sizeMap[isSmall || isMobile ? 'small' : (styles.size || 'medium')];
     return <Link to={section.buttonLink || "/"} style={{ ...currentSize, backgroundColor: styles.bgColor || 'var(--primary)', color: styles.textColor || '#ffffff', border: `2px solid ${styles.borderColor || styles.bgColor || 'var(--primary)'}`, borderRadius: '100px', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '8px', textDecoration: 'none', transition: '0.3s', boxShadow: '0 4px 14px rgba(0,0,0,0.1)' }}>{section.buttonText || "자세히 보기"} <ArrowRight size={16} /></Link>;
   };
 
@@ -145,23 +145,21 @@ const Home = () => {
       </div>
     );
 
-    const getCardStyle = () => {
-       const cs = cardStyles || {};
+    const getCardStyle = (customStyles = {}) => {
+       const cs = { ...cardStyles, ...customStyles };
        return {
           background: cs.bgColor || (theme === 'midnight' ? 'rgba(255,255,255,0.05)' : '#fff'),
           padding: isMobile ? '24px' : '32px',
           borderRadius: `${cs.borderRadius ?? 24}px`,
           border: `${cs.borderWidth ?? 1}px solid ${cs.borderColor || (theme === 'midnight' ? 'rgba(255,255,255,0.1)' : 'var(--border-light)')}`,
           boxShadow: `0 15px 45px rgba(0,0,0,${cs.shadow ?? 0.08})`,
-          display: 'flex',
-          gap: isMobile ? '16px' : '24px',
-          alignItems: 'start'
+          overflow: 'hidden'
        };
     };
 
     const getItemTextStyle = (item, type, defaultSize) => {
         const itemTypo = item.typography?.[type] || {};
-        const sectionTypo = typography?.[type === 'above' ? 'title' /* fallback to title's color if above is missing */ : type] || {};
+        const sectionTypo = typography?.[type === 'above' ? 'title' : type] || {};
         return {
             color: itemTypo.color || sectionTypo.color || (type === 'content' ? 'var(--text-muted)' : 'var(--text-main)'),
             fontSize: `${itemTypo.fontSize || defaultSize}px`,
@@ -187,7 +185,7 @@ const Home = () => {
                 </div>
                 <div style={{ order: layout === 'right' ? 1 : 2, display: 'flex', flexDirection: 'column', gap: '20px' }}>
                    {(items || []).map((item, i) => (
-                     <motion.div key={i} initial={{ opacity:0, x: 20 }} whileInView={{ opacity:1, x: 0 }} transition={{ delay: i * 0.1 }} viewport={{ once: true }} style={getCardStyle()}>
+                     <motion.div key={i} initial={{ opacity:0, x: 20 }} whileInView={{ opacity:1, x: 0 }} transition={{ delay: i * 0.1 }} viewport={{ once: true }} style={{ ...getCardStyle(), display: 'flex', gap: isMobile ? '16px' : '24px', alignItems: 'start' }}>
                         <div style={{ width: isMobile ? '40px' : '56px', height: isMobile ? '40px' : '56px', flexShrink: 0, border: '2px solid var(--primary)', color: 'var(--primary)', opacity: 0.8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: isMobile ? '13px' : '16px', fontWeight: '900', borderRadius: '12px' }}>{item.number}</div>
                         <div style={{ flex: 1 }}>
                            {item.aboveTitle && <div style={{ marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.05em', ...getItemTextStyle(item, 'above', 12) }}>{item.aboveTitle}</div>}
@@ -220,7 +218,43 @@ const Home = () => {
           {style === 'gallery' && (
              <div>
                 {header}
-                <div style={{ marginTop: '48px' }}><MediaGallery images={images} singleImage={image} style="gallery" /></div>
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '24px', marginTop: '48px' }}>
+                   {items && items.length > 0 ? (
+                      items.map((item, i) => (
+                         <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} viewport={{ once: true }} style={{ ...getCardStyle({ padding: 0 }), display: 'flex', flexDirection: 'column' }}>
+                            <div style={{ position: 'relative', width: '100%', aspectRatio: '4/3', overflow: 'hidden' }}>
+                               {item.image ? <SafeMedia src={item.image} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ width: '100%', height: '100%', background: 'var(--bg-sub)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>이미지 없음</div>}
+                               {item.number && <div style={{ position: 'absolute', top: '16px', left: '16px', background: '#fff', padding: '4px 12px', borderRadius: '4px', fontSize: '11px', fontWeight: '800', border: '1px solid var(--border-light)' }}>{item.number}차</div>}
+                            </div>
+                            <div style={{ padding: '24px' }}>
+                               {item.aboveTitle && <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--text-muted)', marginBottom: '8px' }}>{item.aboveTitle}</div>}
+                               {item.aboveTitle2 && <div style={{ ...getItemTextStyle(item, 'above', 11), marginBottom: '4px', opacity: 0.8 }}>{item.aboveTitle2}</div>}
+                               <h4 style={{ ...getItemTextStyle(item, 'title', 20), marginBottom: '16px' }}>{item.title}</h4>
+                               <p style={{ ...getItemTextStyle(item, 'content', 14), lineHeight: '1.6', marginBottom: '20px' }}>{item.content}</p>
+                               
+                               {item.highlights && item.highlights.length > 0 && (
+                                  <div style={{ borderTop: '1px solid var(--border-light)', paddingTop: '20px' }}>
+                                     <div style={{ fontSize: '11px', fontWeight: '900', color: 'var(--primary)', marginBottom: '10px', textTransform: 'uppercase' }}>주요 하이라이트</div>
+                                     <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                        {item.highlights.map((h, j) => (
+                                           <li key={j} style={{ fontSize: '13px', color: 'var(--text-main)', display: 'flex', gap: '8px', alignItems: 'center', fontWeight: '600' }}>
+                                              <span style={{ color: 'var(--primary)', flexShrink: 0 }}>
+                                                 {item.highlightStyle === 'star' ? '★' : (item.highlightStyle === 'dash' ? '—' : '●')}
+                                              </span>
+                                              {h}
+                                           </li>
+                                        ))}
+                                     </ul>
+                                  </div>
+                               )}
+                               <div style={{ marginTop: '24px' }}><CustomButton section={{ ...section, buttonText: "상세 정보 보기 >", showButton: true }} isSmall={true} /></div>
+                            </div>
+                         </motion.div>
+                      ))
+                   ) : (
+                      <div style={{ gridColumn: 'span 3' }}><MediaGallery images={images} singleImage={image} style="gallery" /></div>
+                   )}
+                </div>
              </div>
           )}
 
@@ -229,7 +263,7 @@ const Home = () => {
                  <div style={{ marginBottom: isMobile ? '32px' : 0 }}>{header}<div style={{marginTop:'32px'}}><MediaGallery images={images} singleImage={image} /></div></div>
                  <div style={{ display: 'grid', gridTemplateColumns: (items || []).length > 2 && !isMobile ? '1fr 1fr' : '1fr', gap: '20px' }}>
                     {(items || []).map((item, i) => (
-                       <motion.div key={i} whileHover={{ y: -5 }} style={getCardStyle()}>
+                       <motion.div key={i} whileHover={{ y: -5 }} style={{ ...getCardStyle(), display: 'flex', gap: isMobile ? '16px' : '24px', alignItems: 'start' }}>
                           <div style={{ width: '40px', height: '40px', background: 'var(--primary)', color: '#fff', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900', flexShrink: 0 }}>{item.number || i + 1}</div>
                           <div>
                             <h4 style={{ ...getItemTextStyle(item, 'title', 18), marginBottom: '8px' }}>{item.title}</h4>
