@@ -519,23 +519,23 @@ const AdminHomeEditor = () => {
                           <label style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '20px', display: 'block' }}>실시간 버튼 디자인 미리보기</label>
                           <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
                              {(heroForm.buttons && heroForm.buttons.length > 0) ? (
-                               heroForm.buttons.map(btn => (
-                                 <div 
-                                   key={btn.id}
-                                   style={{ 
-                                     padding: btn.style?.size === 'large' ? '16px 40px' : (btn.style?.size === 'small' ? '8px 20px' : '12px 32px'),
-                                     background: btn.style?.bgColor || 'var(--primary)',
-                                     color: btn.style?.textColor || '#fff',
-                                     border: `2px solid ${btn.style?.borderColor || btn.style?.bgColor || 'var(--primary)'}`,
-                                     borderRadius: '100px',
-                                     fontWeight: '800',
-                                     fontSize: btn.style?.size === 'large' ? '16px' : (btn.style?.size === 'small' ? '12px' : '14px'),
-                                     boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                                   }}
-                                 >
-                                    {btn.text}
-                                 </div>
-                               ))
+                                heroForm.buttons.map(btn => (
+                                  <div 
+                                    key={btn.id}
+                                    style={{ 
+                                      padding: btn.style?.size === 'large' ? '16px 40px' : (btn.style?.size === 'small' ? '8px 20px' : '12px 32px'),
+                                      background: btn.style?.bgColor || 'var(--primary)',
+                                      color: btn.style?.textColor || '#fff',
+                                      border: `2px solid ${btn.style?.borderColor || btn.style?.bgColor || 'var(--primary)'}`,
+                                      borderRadius: '100px',
+                                      fontWeight: '800',
+                                      fontSize: btn.style?.size === 'large' ? '16px' : (btn.style?.size === 'small' ? '12px' : '14px'),
+                                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                                    }}
+                                  >
+                                     {btn.text}
+                                  </div>
+                                ))
                              ) : (
                                <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>버튼이 없습니다. (홈페이지에서도 숨겨집니다)</p>
                              )}
@@ -706,16 +706,37 @@ const AdminHomeEditor = () => {
                                                       <label style={{fontSize:'9px'}}>본문 색상</label>
                                                       <input type="color" className="form-control" value={item.typography?.content?.color || "#64748B"} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], typography: { ...ni[i].typography, content: { ...ni[i].typography?.content, color: e.target.value } } }; handleSectionUpdate(section.id, { ...section, items: ni }); }} />
                                                    </div>
+                                                   <div className="form-group">
+                                                       <label style={{fontSize:'9px'}}>하이라이트 제목 색상</label>
+                                                       <input type="color" className="form-control" value={item.typography?.highlights?.labelColor || "var(--primary)"} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], typography: { ...ni[i].typography, highlights: { ...ni[i].typography?.highlights, labelColor: e.target.value } } }; handleSectionUpdate(section.id, { ...section, items: ni }); }} />
+                                                   </div>
+                                                   <div className="form-group" style={{ gridColumn: 'span 2' }}>
+                                                       <label style={{fontSize:'9px'}}>리스트 텍스트 색상</label>
+                                                       <input type="color" className="form-control" value={item.typography?.highlights?.color || "var(--text-main)"} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], typography: { ...ni[i].typography, highlights: { ...ni[i].typography?.highlights, color: e.target.value } } }; handleSectionUpdate(section.id, { ...section, items: ni }); }} />
+                                                   </div>
                                                 </div>
                                              </div>
 
                                              <div style={{ gridColumn: 'span 2', background: 'rgba(37, 99, 235, 0.03)', padding: '20px', borderRadius: '16px', marginTop: '12px', border: '1px solid rgba(37, 99, 235, 0.1)' }}>
                                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                                                    <label style={{ fontSize: '11px', fontWeight: '900', color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '6px' }}><MousePointerClick size={14}/> 아이템 개별 버튼 설정</label>
-                                                   <div className="form-check form-switch" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                      <input type="checkbox" checked={item.showButton || false} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], showButton: e.target.checked}; handleSectionUpdate(section.id, { ...section, items: ni }); }} style={{ width: '32px', height: '16px', cursor: 'pointer' }} />
-                                                      <span style={{ fontSize: '10px', fontWeight: '700' }}>버튼 활성화</span>
-                                                   </div>
+                                                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                       <button 
+                                                         onClick={() => { const ni=[...section.items]; ni[i]={...ni[i], showButton: !item.showButton}; handleSectionUpdate(section.id, { ...section, items: ni }); }}
+                                                         style={{ 
+                                                           width: '40px', height: '20px', borderRadius: '10px', 
+                                                           background: item.showButton ? 'var(--primary)' : '#cbd5e1',
+                                                           position: 'relative', border: 'none', cursor: 'pointer', transition: '0.3s'
+                                                         }}
+                                                       >
+                                                          <div style={{ 
+                                                            width: '16px', height: '16px', background: '#fff', borderRadius: '50%',
+                                                            position: 'absolute', top: '2px', left: item.showButton ? '22px' : '2px',
+                                                            transition: '0.2s'
+                                                          }} />
+                                                       </button>
+                                                       <span style={{ fontSize: '10px', fontWeight: '700', color: item.showButton ? 'var(--primary)' : 'var(--text-muted)' }}>{item.showButton ? "활성화됨" : "비활성화"}</span>
+                                                    </div>
                                                 </div>
                                                 
                                                 {item.showButton && (
@@ -728,7 +749,6 @@ const AdminHomeEditor = () => {
                                                         <div className="form-group"><label style={{fontSize:'9px'}}>배경색</label><input type="color" className="form-control" style={{height:'32px', padding:'2px'}} value={item.buttonStyles?.bgColor || "#2563EB"} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], buttonStyles: { ...ni[i].buttonStyles, bgColor: e.target.value } }; handleSectionUpdate(section.id, { ...section, items: ni }); }} /></div>
                                                         <div className="form-group"><label style={{fontSize:'9px'}}>글자색</label><input type="color" className="form-control" style={{height:'32px', padding:'2px'}} value={item.buttonStyles?.textColor || "#ffffff"} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], buttonStyles: { ...ni[i].buttonStyles, textColor: e.target.value } }; handleSectionUpdate(section.id, { ...section, items: ni }); }} /></div>
                                                         <div className="form-group"><label style={{fontSize:'9px'}}>테두리색</label><input type="color" className="form-control" style={{height:'32px', padding:'2px'}} value={item.buttonStyles?.borderColor || "#2563EB"} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], buttonStyles: { ...ni[i].buttonStyles, borderColor: e.target.value } }; handleSectionUpdate(section.id, { ...section, items: ni }); }} /></div>
-
                                                      </div>
                                                   </div>
                                                 )}
