@@ -67,14 +67,28 @@ const MediaInput = ({ label, value, onChange, uploadFile, accept }) => {
     const isStorageId = value.startsWith('storage:');
     const convexSiteUrl = import.meta.env.VITE_CONVEX_SITE_URL || import.meta.env.VITE_CONVEX_URL.replace('.cloud', '.site');
     const finalUrl = isStorageId ? `${convexSiteUrl}/api/storage?id=${value.split(':')[1]}` : value;
-    const isVideo = value.includes('video') || value.includes('mp4') || accept?.includes('video');
+    
+    const isYouTube = finalUrl?.includes('youtube.com') || finalUrl?.includes('youtu.be');
+    const getYouTubeId = (url) => {
+      const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+      const match = url.match(regExp);
+      return (match && match[2].length === 11) ? match[2] : null;
+    };
+
+    const isVideo = value.includes('video') || value.includes('mp4') || value.includes('webm') || accept?.includes('video') || isYouTube;
     
     return (
-      <div style={{ marginTop: '12px', width: '100%', maxWidth: '200px', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border-light)', background: '#fff' }}>
-        {isVideo ? (
-          <video src={finalUrl} style={{ width: '100%', display: 'block' }} muted />
+      <div style={{ marginTop: '12px', width: '100%', maxWidth: '280px', aspectRatio: '16/9', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border-light)', background: '#000', position: 'relative' }}>
+        {isYouTube ? (
+          <iframe
+            src={`https://www.youtube.com/embed/${getYouTubeId(finalUrl)}?controls=1&mute=1&autoplay=0`}
+            style={{ width: '100%', height: '100%', border: 'none' }}
+            allowFullScreen
+          />
+        ) : isVideo ? (
+          <video src={finalUrl} style={{ width: '100%', height: '100%', display: 'block', objectFit: 'contain' }} controls muted />
         ) : (
-          <img src={finalUrl} style={{ width: '100%', display: 'block' }} alt="Preview" />
+          <img src={finalUrl} style={{ width: '100%', height: '100%', display: 'block', objectFit: 'cover' }} alt="Preview" />
         )}
       </div>
     );
@@ -738,7 +752,7 @@ const AdminHomeEditor = () => {
                                <div className="form-group"><label>배경 타입</label><select className="form-control" value={section.bgType} onChange={e => handleSectionUpdate(section.id, { ...section, bgType: e.target.value })}><option value="color">단색</option><option value="image">이미지</option><option value="video">동영상</option></select></div>
                                {section.bgType === 'color' ? (
                                   <div className="form-group"><label>배경 색상</label><input type="color" className="form-control" style={{ height: 42, padding: 4 }} value={section.bgColor} onChange={e => handleSectionUpdate(section.id, { ...section, bgColor: e.target.value })} onClick={e => e.stopPropagation()} /></div>
-                               ) : (<MediaInput label="배경 URL" value={section.bgUrl} onChange={v => handleSectionUpdate(section.id, { ...section, bgUrl: v })} uploadFile={uploadFile} />)}
+                               ) : (<MediaInput label="배경 URL" value={section.bgUrl} onChange={v => handleSectionUpdate(section.id, { ...section, bgUrl: v })} uploadFile={uploadFile} accept={section.bgType === 'video' ? "video/*" : "image/*,video/*"} />)}
                                <div className="form-group">
                                   <label>배경 투명도/밝기 ({section.bgOpacity})</label>
                                   <input type="range" min="0" max="1" step="0.1" className="form-control" value={section.bgOpacity} onChange={e => handleSectionUpdate(section.id, { ...section, bgOpacity: parseFloat(e.target.value) })} onClick={e => e.stopPropagation()} />
