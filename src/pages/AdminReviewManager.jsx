@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useConfig } from '../context/ConfigContext';
-import { Star, Trash2, Plus, X, MessageSquare, User, Smile, Upload, Loader2, PlusCircle } from 'lucide-react';
+import { Star, Trash2, Edit2, Plus, X, MessageSquare, User, Smile, Upload, Loader2, PlusCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import SafeMedia from '../components/SafeMedia';
 
@@ -51,9 +51,10 @@ const MultiMediaInput = ({ label, values = [], onChange, uploadFile }) => {
 };
 
 const AdminReviewManager = () => {
-  const { config, addReview, deleteReview, uploadFile } = useConfig();
-  const [isAdding, setIsAdding] = useState(false);
-  const [newReview, setNewReview] = useState({
+  const { config, addReview, updateReview, deleteReview, uploadFile } = useConfig();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [form, setForm] = useState({
     author: "",
     rating: 5,
     content: "",
@@ -61,17 +62,38 @@ const AdminReviewManager = () => {
     productTitle: ""
   });
 
+  const handleEdit = (review) => {
+    setEditingId(review.id);
+    setForm({
+      author: review.author || review.user || "",
+      rating: review.rating || 5,
+      content: review.content || "",
+      images: review.images || [],
+      productTitle: review.productTitle || ""
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleAddNew = () => {
+    setEditingId(null);
+    setForm({ author: "", rating: 5, content: "", images: [], productTitle: "" });
+    setIsModalOpen(true);
+  };
+
   const handleSave = async () => {
-    if (!newReview.author || !newReview.content) {
+    if (!form.author || !form.content) {
       alert("작성자명과 내용을 입력해주세요.");
       return;
     }
     try {
-      await addReview(newReview);
-      setIsAdding(false);
-      setNewReview({ author: "", rating: 5, content: "", images: [], productTitle: "" });
+      if (editingId) {
+        await updateReview(editingId, form);
+      } else {
+        await addReview(form);
+      }
+      setIsModalOpen(false);
     } catch (e) {
-      alert("리뷰 등록 실패: " + e.message);
+      alert("저장 실패: " + e.message);
     }
   };
 
@@ -79,7 +101,7 @@ const AdminReviewManager = () => {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
          <h2 style={{ fontSize: '20px', fontWeight: '800' }}>고객 여행 후기 관리</h2>
-         <button className="luxury-btn" onClick={() => setIsAdding(true)}>
+         <button className="luxury-btn" onClick={handleAddNew}>
             <Plus size={16} /> 신규 리뷰 등록
          </button>
       </div>
@@ -104,9 +126,14 @@ const AdminReviewManager = () => {
                   </div>
                 </div>
               </div>
-              <button onClick={() => deleteReview(review.id)} style={{ color: '#ef4444', border: 'none', background: 'none', cursor: 'pointer' }}>
-                <Trash2 size={16} />
-              </button>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button onClick={() => handleEdit(review)} style={{ color: 'var(--primary)', border: 'none', background: 'none', cursor: 'pointer' }}>
+                  <Edit2 size={16} />
+                </button>
+                <button onClick={() => deleteReview(review.id)} style={{ color: '#ef4444', border: 'none', background: 'none', cursor: 'pointer' }}>
+                  <Trash2 size={16} />
+                </button>
+              </div>
             </div>
             
             {review.productTitle && <div style={{ fontSize: '11px', color: 'var(--primary)', fontWeight: '800', marginBottom: '8px', textTransform: 'uppercase' }}>{review.productTitle}</div>}
@@ -127,7 +154,7 @@ const AdminReviewManager = () => {
       </div>
 
       <AnimatePresence>
-        {isAdding && (
+        {isModalOpen && (
           <div style={{ 
             position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', 
             background: 'rgba(15, 23, 42, 0.4)', backdropFilter: 'blur(8px)', 
@@ -142,10 +169,10 @@ const AdminReviewManager = () => {
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '32px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <Smile className="text-primary" size={20} />
-                  <h2 style={{ fontSize: '20px', fontWeight: '800' }}>새 여행 후기 등록</h2>
+                  {editingId ? <Edit2 className="text-primary" size={20} /> : <Smile className="text-primary" size={20} />}
+                  <h2 style={{ fontSize: '20px', fontWeight: '800' }}>{editingId ? "여행 후기 수정" : "새 여행 후기 등록"}</h2>
                 </div>
-                <button onClick={() => setIsAdding(false)} style={{ border: 'none', background: 'none', cursor: 'pointer' }}><X size={24} /></button>
+                <button onClick={() => setIsModalOpen(false)} style={{ border: 'none', background: 'none', cursor: 'pointer' }}><X size={24} /></button>
               </div>
               
               <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -154,8 +181,8 @@ const AdminReviewManager = () => {
                      <label style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>회원 이름</label>
                      <input 
                        className="form-control" 
-                       value={newReview.author}
-                       onChange={e => setNewReview({...newReview, author: e.target.value})}
+                       value={form.author}
+                       onChange={e => setForm({...form, author: e.target.value})}
                        placeholder="성함을 입력하세요"
                      />
                    </div>
@@ -163,7 +190,7 @@ const AdminReviewManager = () => {
                      <label style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>만족도 (1-5)</label>
                      <div style={{ display: 'flex', gap: '4px', height: '42px', alignItems: 'center' }}>
                         {[1,2,3,4,5].map(s => (
-                           <Star key={s} size={24} onClick={() => setNewReview({...newReview, rating: s})} fill={s <= newReview.rating ? "var(--accent)" : "none"} color="var(--accent)" style={{ cursor: 'pointer' }} />
+                           <Star key={s} size={24} onClick={() => setForm({...form, rating: s})} fill={s <= form.rating ? "var(--accent)" : "none"} color="var(--accent)" style={{ cursor: 'pointer' }} />
                         ))}
                      </div>
                    </div>
@@ -173,8 +200,8 @@ const AdminReviewManager = () => {
                   <label style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>관련 상품명 (선택)</label>
                   <input 
                     className="form-control" 
-                    value={newReview.productTitle}
-                    onChange={e => setNewReview({...newReview, productTitle: e.target.value})}
+                    value={form.productTitle}
+                    onChange={e => setForm({...form, productTitle: e.target.value})}
                     placeholder="예: 싱가포르 3박 4일 프리미엄"
                   />
                 </div>
@@ -183,22 +210,22 @@ const AdminReviewManager = () => {
                   <label style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>후기 내용</label>
                   <textarea 
                     className="form-control" rows={5}
-                    value={newReview.content}
-                    onChange={e => setNewReview({...newReview, content: e.target.value})}
+                    value={form.content}
+                    onChange={e => setForm({...form, content: e.target.value})}
                     placeholder="소중한 여행 경험을 공유해주세요."
                   />
                 </div>
 
                 <MultiMediaInput 
                   label="여행 사진 업로드 (여러장 가능)" 
-                  values={newReview.images} 
-                  onChange={v => setNewReview({...newReview, images: v})} 
+                  values={form.images} 
+                  onChange={v => setForm({...form, images: v})} 
                   uploadFile={uploadFile} 
                 />
 
                 <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
-                  <button className="luxury-btn outline" style={{ flex: 1, borderRadius: '10px' }} onClick={() => setIsAdding(false)}>취소</button>
-                  <button className="luxury-btn" style={{ flex: 1, borderRadius: '10px' }} onClick={handleSave}>후기 저장하기</button>
+                  <button className="luxury-btn outline" style={{ flex: 1, borderRadius: '10px' }} onClick={() => setIsModalOpen(false)}>취소</button>
+                  <button className="luxury-btn" style={{ flex: 1, borderRadius: '10px' }} onClick={handleSave}>저장하기</button>
                 </div>
               </div>
             </motion.div>

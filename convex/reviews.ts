@@ -28,3 +28,18 @@ export const remove = mutation({
     await ctx.db.delete(args.id);
   },
 });
+
+export const update = mutation({
+  args: {
+    id: v.id("reviews"),
+    author: v.optional(v.string()),
+    productTitle: v.optional(v.string()),
+    rating: v.number(),
+    content: v.string(),
+    images: v.optional(v.array(v.string())),
+  },
+  handler: async (ctx, args) => {
+    const { id, ...rest } = args;
+    await ctx.db.patch(id, rest);
+  },
+});

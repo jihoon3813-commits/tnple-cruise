@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useConfig } from '../context/ConfigContext';
-import { ArrowRight, Star, ExternalLink, ChevronLeft, ChevronRight, User, CheckCircle2, MapPin, Calendar, CreditCard } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, Star, ExternalLink, ChevronLeft, ChevronRight, User, X, CheckCircle2, MapPin, Calendar, CreditCard } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import SafeMedia from '../components/SafeMedia';
 
@@ -361,6 +361,8 @@ const Home = () => {
     return (<section style={wrapperStyle}><div style={{ position: 'absolute', inset: 0, zIndex: 0 }}><BgMedia /></div><div style={{ ...containerStyle, display: 'flex', justifyContent: (isMobile || textPosition === 'center') ? 'center' : (textPosition === 'right' ? 'flex-end' : 'flex-start') }}><div style={{ maxWidth: '900px', textAlign: isMobile ? 'center' : 'inherit' }}><HeroText hero={hero} /></div></div></section>);
   };
 
+  const [selectedReview, setSelectedReview] = useState(null);
+
   const renderReviews = () => {
     const rb = config.reviewSectionBranding;
     if (!rb?.show || !config.reviews?.length) return null;
@@ -372,42 +374,18 @@ const Home = () => {
             {(rb.layout === 'grid' || isMobile) ? (
                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '32px' }}>
                   {config.reviews.map((rev, i) => (
-                    <div key={i} className="admin-card" style={{ padding: '0', background: '#fff', borderRadius: '32px', display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 20px 40px rgba(0,0,0,0.06)', border: '1px solid var(--border-light)' }}>
+                    <div key={i} onClick={() => setSelectedReview(rev)} className="admin-card review-card-hover" style={{ padding: '0', background: '#fff', borderRadius: '32px', display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 20px 40px rgba(0,0,0,0.06)', border: '1px solid var(--border-light)', cursor: 'pointer', transition: 'all 0.3s ease' }}>
                         {rev.images && rev.images.length > 0 && (
                            <div style={{ position: 'relative' }}>
-                              <div style={{ 
-                                display: 'flex', 
-                                gap: '2px', 
-                                overflowX: 'auto', 
-                                scrollSnapType: 'x mandatory',
-                                WebkitOverflowScrolling: 'touch',
-                                scrollbarWidth: 'none',
-                                msOverflowStyle: 'none'
-                              }} className="hide-scrollbar">
+                              <div style={{ display: 'flex', gap: '2px', overflowX: 'auto', scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none', msOverflowStyle: 'none' }} className="hide-scrollbar">
                                  {rev.images.map((img, idx) => (
-                                    <div key={idx} style={{ 
-                                      minWidth: '100%', 
-                                      height: isMobile ? '280px' : '360px', 
-                                      scrollSnapAlign: 'start' 
-                                    }}>
+                                    <div key={idx} style={{ minWidth: '100%', height: isMobile ? '280px' : '360px', scrollSnapAlign: 'start' }}>
                                        <SafeMedia src={img} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                     </div>
                                  ))}
                               </div>
                               {rev.images.length > 1 && (
-                                <div style={{ 
-                                  position: 'absolute', 
-                                  bottom: '16px', 
-                                  left: '50%', 
-                                  transform: 'translateX(-50%)', 
-                                  display: 'flex', 
-                                  gap: '6px',
-                                  padding: '8px 12px',
-                                  background: 'rgba(0,0,0,0.3)',
-                                  backdropFilter: 'blur(8px)',
-                                  borderRadius: '100px',
-                                  zIndex: 10
-                                }}>
+                                <div style={{ position: 'absolute', bottom: '16px', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '6px', padding: '8px 12px', background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(8px)', borderRadius: '100px', zIndex: 10 }}>
                                    {rev.images.map((_, idx) => (
                                       <div key={idx} style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#fff', opacity: 0.5 }}></div>
                                    ))}
@@ -428,16 +406,91 @@ const Home = () => {
                                  {[...Array(5)].map((_, j) => <Star key={j} size={14} fill={j < (rev.rating || 5) ? "#fbbf24" : "none"} />)}
                               </div>
                            </div>
-                           <p style={{ fontSize: '16px', lineHeight: '1.8', color: '#334155', fontWeight: '500', fontStyle: 'italic', margin: 0, textAlign: 'left' }}>"{rev.content}"</p>
+                           <p style={{ fontSize: '16px', lineHeight: '1.8', color: '#334155', fontWeight: '500', fontStyle: 'italic', margin: 0, textAlign: 'left', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>"{rev.content}"</p>
+                           <div style={{ marginTop: '20px', color: 'var(--primary)', fontWeight: '700', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '4px' }}>자세히 보기 <ArrowUpRight size={14} /></div>
                         </div>
                     </div>
                   ))}
                </div>
-            ) : (<div style={{ position: 'relative', overflow: 'hidden', padding: '16px 0' }}><div className="hide-scrollbar" style={{ display: 'flex', gap: '24px', overflowX: 'auto', paddingBottom: '32px', scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch' }}>{config.reviews.map((rev, i) => (<div key={i} style={{ minWidth: isMobile ? '320px' : '450px', background: '#fff', borderRadius: '32px', overflow: 'hidden', scrollSnapAlign: 'start', boxShadow: '0 20px 40px rgba(0,0,0,0.06)', border: '1px solid var(--border-light)' }}>{rev.images?.[0] && <div style={{ height: '240px' }}><SafeMedia src={rev.images[0]} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>}<div style={{ padding: '32px' }}><div style={{ display: 'flex', gap: '4px', color: '#fbbf24', marginBottom: '16px' }}>{[...Array(5)].map((_, j) => <Star key={j} size={16} fill={j < (rev.rating || 5) ? "#fbbf24" : "none"} />)}</div><p style={{ fontSize: '16px', lineHeight: '1.7', color: '#334155', marginBottom: '24px', fontStyle: 'italic', textAlign: 'left' }}>"{rev.content}"</p><div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}><div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--primary), #60a5fa)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800' }}>{(rev.author || rev.user)?.[0]}</div><div style={{textAlign:'left'}}><div style={{ fontWeight: '800', color: '#0F172A' }}>{rev.author || rev.user}</div><div style={{ fontSize: '12px', color: '#64748B' }}>{rev.productTitle}</div></div></div></div></div>))}</div></div>)}
+            ) : (
+              <div style={{ position: 'relative', overflow: 'hidden', padding: '16px 0' }}>
+                <div className="hide-scrollbar" style={{ display: 'flex', gap: '24px', overflowX: 'auto', paddingBottom: '32px', scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch' }}>
+                  {config.reviews.map((rev, i) => (
+                    <div key={i} onClick={() => setSelectedReview(rev)} style={{ minWidth: isMobile ? '320px' : '450px', background: '#fff', borderRadius: '32px', overflow: 'hidden', scrollSnapAlign: 'start', boxShadow: '0 20px 40px rgba(0,0,0,0.06)', border: '1px solid var(--border-light)', cursor: 'pointer' }}>
+                      {rev.images?.[0] && <div style={{ height: '240px' }}><SafeMedia src={rev.images[0]} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>}
+                      <div style={{ padding: '32px' }}>
+                        <div style={{ display: 'flex', gap: '4px', color: '#fbbf24', marginBottom: '16px' }}>{[...Array(5)].map((_, j) => <Star key={j} size={16} fill={j < (rev.rating || 5) ? "#fbbf24" : "none"} />)}</div>
+                        <p style={{ fontSize: '16px', lineHeight: '1.7', color: '#334155', marginBottom: '24px', fontStyle: 'italic', textAlign: 'left', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>"{rev.content}"</p>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--primary), #60a5fa)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800' }}>{(rev.author || rev.user)?.[0]}</div>
+                          <div style={{textAlign:'left'}}><div style={{ fontWeight: '800', color: '#0F172A' }}>{rev.author || rev.user}</div><div style={{ fontSize: '12px', color: '#64748B' }}>{rev.productTitle}</div></div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
          </div>
+
+         <AnimatePresence>
+            {selectedReview && (
+               <div 
+                 style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(16px)', zIndex: 3000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: isMobile ? '0' : '40px' }}
+                 onClick={() => setSelectedReview(null)}
+               >
+                  <motion.div 
+                     initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                     style={{ background: '#fff', width: '95%', maxWidth: '1100px', borderRadius: isMobile ? '0' : '40px', overflow: 'hidden', display: 'flex', flexDirection: isMobile ? 'column' : 'row', maxHeight: isMobile ? '100%' : '85vh', position: 'relative', boxShadow: '0 50px 100px rgba(0,0,0,0.5)' }}
+                     onClick={e => e.stopPropagation()}
+                  >
+                     <button onClick={() => setSelectedReview(null)} style={{ position: 'absolute', top: '24px', right: '24px', zIndex: 100, background: 'rgba(255,255,255,0.9)', color: '#000', border: 'none', borderRadius: '50%', width: '44px', height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}><X size={24} /></button>
+                     
+                     <div style={{ flex: 1.4, background: '#000', position: 'relative', minHeight: isMobile ? '350px' : 'auto' }}>
+                        <div className="hide-scrollbar" style={{ display: 'flex', overflowX: 'auto', scrollSnapType: 'x mandatory', height: '100%', alignItems: 'center' }}>
+                           {(selectedReview.images && selectedReview.images.length > 0) ? selectedReview.images.map((img, idx) => (
+                              <div key={idx} style={{ minWidth: '100%', height: '100%', scrollSnapAlign: 'start', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                 <SafeMedia src={img} style={{ width: '100%', height: '100%', ObjectFit: 'contain' }} />
+                              </div>
+                           )) : (
+                              <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#333' }}>
+                                 <User size={100} opacity={0.1} />
+                              </div>
+                           )}
+                        </div>
+                        {selectedReview.images?.length > 1 && (
+                           <div style={{ position: 'absolute', bottom: '24px', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '8px' }}>
+                              {selectedReview.images.map((_, idx) => (
+                                 <div key={idx} style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#fff', opacity: 0.5 }}></div>
+                              ))}
+                           </div>
+                        )}
+                     </div>
+
+                     <div style={{ flex: 1, padding: isMobile ? '32px' : '60px', overflowY: 'auto', textAlign: 'left', background: '#fff', display: 'flex', flexDirection: 'column' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '40px' }}>
+                           <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--primary), #60a5fa)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900', fontSize: '24px', boxShadow: '0 8px 16px var(--primary)40' }}>{(selectedReview.author || selectedReview.user)?.[0]}</div>
+                           <div>
+                              <h3 style={{ fontSize: '22px', fontWeight: '900', color: '#0F172A', marginBottom: '6px' }}>{selectedReview.author || selectedReview.user}</h3>
+                              <div style={{ display: 'flex', gap: '4px', color: '#fbbf24', marginBottom: '6px' }}>
+                                 {[...Array(5)].map((_, j) => <Star key={j} size={18} fill={j < (selectedReview.rating || 5) ? "#fbbf24" : "none"} />)}
+                              </div>
+                              <div style={{ fontSize: '14px', color: 'var(--primary)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{selectedReview.productTitle}</div>
+                           </div>
+                        </div>
+                        <p style={{ fontSize: '20px', lineHeight: '1.8', color: '#334155', fontWeight: '500', whiteSpace: 'pre-wrap', flex: 1 }}>"{selectedReview.content}"</p>
+                        <div style={{ marginTop: 'auto', paddingTop: '40px', borderTop: '1px solid #f1f5f9', color: '#94a3b8', fontSize: '14px', fontStyle: 'italic' }}>
+                           “올리고크루즈와 함께한 소중한 여행 기록입니다.”
+                        </div>
+                     </div>
+                  </motion.div>
+               </div>
+            )}
+         </AnimatePresence>
       </section>
     );
   };
+
 
   const isMobile = window.innerWidth < 768;
 

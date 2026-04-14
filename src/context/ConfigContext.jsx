@@ -35,6 +35,7 @@ export const ConfigProvider = ({ children }) => {
   const updateProductMutation = useMutation(api.products.update);
   const deleteProductMutation = useMutation(api.products.remove);
   const addReviewMutation = useMutation(api.reviews.add);
+  const updateReviewMutation = useMutation(api.reviews.update);
   const deleteReviewMutation = useMutation(api.reviews.remove);
   const seedMutation = useMutation(api.init.seed);
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
@@ -238,6 +239,10 @@ export const ConfigProvider = ({ children }) => {
     await deleteReviewMutation({ id });
   };
 
+  const updateReview = async (id, data) => {
+    await updateReviewMutation({ id, ...data });
+  };
+
   return (
     <ConfigContext.Provider value={{
       config,
@@ -252,6 +257,7 @@ export const ConfigProvider = ({ children }) => {
       updateProduct,
       deleteProduct,
       addReview,
+      updateReview,
       deleteReview,
       updateProductBranding,
       updateReviewBranding,
