@@ -36,15 +36,11 @@ const Footer = () => {
           </div>
 
           <div>
-            <h4 style={{ fontSize: '18px', marginBottom: '30px' }}>뉴스레터</h4>
-            <p style={{ color: '#8c95a1', fontSize: '14px', marginBottom: '20px' }}>뉴스레터를 구독하고 최신 소식과 독점 혜택을 받아보세요.</p>
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <input 
-                type="email" 
-                placeholder="이메일 주소" 
-                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', padding: '12px', color: '#fff', width: '100%' }} 
-              />
-              <button className="luxury-button" style={{ padding: '0 20px', fontSize: '12px' }}>구독</button>
+            <h4 style={{ fontSize: '18px', marginBottom: '30px' }}>CS CENTER</h4>
+            <div style={{ color: '#8c95a1', fontSize: '14px', lineHeight: '1.8' }}>
+               <p style={{ fontSize: '24px', fontWeight: '800', color: '#fff', marginBottom: '10px' }}>1600-0000</p>
+               <p>운영시간: 평일 09:00 ~ 18:00</p>
+               <p style={{ fontSize: '12px', marginTop: '4px' }}>점심시간: 12:00 ~ 13:00 (토/일/공휴일 휴무)</p>
             </div>
           </div>
         </div>
