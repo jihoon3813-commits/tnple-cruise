@@ -13,7 +13,40 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, Ship } from 'lucide-react';
 
 function App() {
-  const { loading } = useConfig();
+  const { config, loading } = useConfig();
+
+  React.useEffect(() => {
+    // 1. Favicon Update
+    if (config.faviconUrl) {
+      const link = document.querySelector("link[rel~='icon']") || document.createElement('link');
+      link.type = 'image/x-icon';
+      link.rel = 'icon';
+      link.href = config.faviconUrl;
+      document.getElementsByTagName('head')[0].appendChild(link);
+    }
+
+    // 2. Meta Description
+    if (config.metaDescription) {
+      const meta = document.querySelector('meta[name="description"]') || document.createElement('meta');
+      meta.name = "description";
+      meta.content = config.metaDescription;
+      document.getElementsByTagName('head')[0].appendChild(meta);
+      
+      // OG Description
+      const ogMeta = document.querySelector('meta[property="og:description"]') || document.createElement('meta');
+      ogMeta.setAttribute('property', 'og:description');
+      ogMeta.content = config.metaDescription;
+      document.getElementsByTagName('head')[0].appendChild(ogMeta);
+    }
+
+    // 3. OG Image
+    if (config.ogImageUrl) {
+      const ogImg = document.querySelector('meta[property="og:image"]') || document.createElement('meta');
+      ogImg.setAttribute('property', 'og:image');
+      ogImg.content = config.ogImageUrl;
+      document.getElementsByTagName('head')[0].appendChild(ogImg);
+    }
+  }, [config.faviconUrl, config.metaDescription, config.ogImageUrl]);
 
   return (
     <>

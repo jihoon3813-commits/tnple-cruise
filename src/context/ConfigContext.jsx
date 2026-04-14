@@ -41,6 +41,7 @@ export const ConfigProvider = ({ children }) => {
   const updateReviewBrandingMutation = useMutation(api.siteConfig.updateReviewBranding);
   const updateProductDetailBrandingMutation = useMutation(api.siteConfig.updateProductDetailBranding);
   const updatePrivacyPolicyMutation = useMutation(api.siteConfig.updatePrivacyPolicy);
+  const updateGlobalSettingsMutation = useMutation(api.siteConfig.updateGlobalSettings);
   const addReservationMutation = useMutation(api.reservations.add);
   const reservationsData = useQuery(api.reservations.list);
 
@@ -59,8 +60,23 @@ export const ConfigProvider = ({ children }) => {
     productListBranding: heroData?.productListBranding || { title: "추천 패키지", titleColor: "var(--text-main)", bgColor: "#ffffff" },
     reviewSectionBranding: heroData?.reviewSectionBranding || { show: true, title: "여행 후기", titleColor: "var(--text-main)", bgColor: "var(--bg-sub)", layout: "slider" },
     productDetailBranding: heroData?.productDetailBranding || { layout: "luxury", theme: "light", titleColor: "#0F172A", priceColor: "var(--primary)", accentColor: "var(--primary)", buttonColor: "var(--primary)", buttonTextColor: "#ffffff" },
-    privacyPolicy: heroData?.privacyPolicy || "개인정보 수집 및 이용에 동의합니다."
+    privacyPolicy: heroData?.privacyPolicy || "개인정보 수집 및 이용에 동의합니다.",
+    logo: heroData?.logo,
+    favicon: heroData?.favicon,
+    ogImage: heroData?.ogImage,
+    metaDescription: heroData?.metaDescription || "올리고 크루즈 - 프리미엄 크루즈 멤버십 서비스"
   }), [heroData, sectionsData, productsData, reviewsData]);
+
+  const resolvedLogo = useQuery(api.files.getUrl, config.logo?.startsWith('storage:') ? { storageId: config.logo.split('storage:')[1] } : "skip");
+  const resolvedFavicon = useQuery(api.files.getUrl, config.favicon?.startsWith('storage:') ? { storageId: config.favicon.split('storage:')[1] } : "skip");
+  const resolvedOgImage = useQuery(api.files.getUrl, config.ogImage?.startsWith('storage:') ? { storageId: config.ogImage.split('storage:')[1] } : "skip");
+
+  const finalConfig = useMemo(() => ({
+    ...config,
+    logoUrl: config.logo?.startsWith('storage:') ? resolvedLogo : config.logo,
+    faviconUrl: config.favicon?.startsWith('storage:') ? resolvedFavicon : config.favicon,
+    ogImageUrl: config.ogImage?.startsWith('storage:') ? resolvedOgImage : config.ogImage,
+  }), [config, resolvedLogo, resolvedFavicon, resolvedOgImage]);
 
   const uploadFile = async (file) => {
     const postUrl = await generateUploadUrl();
@@ -179,6 +195,10 @@ export const ConfigProvider = ({ children }) => {
     await updatePrivacyPolicyMutation({ content });
   };
 
+  const updateGlobalSettings = async (data) => {
+    await updateGlobalSettingsMutation(data);
+  };
+
   const addReservation = async (data) => {
     await addReservationMutation({
       ...data,
@@ -201,7 +221,7 @@ export const ConfigProvider = ({ children }) => {
 
   return (
     <ConfigContext.Provider value={{
-      config,
+      config: finalConfig,
       loading: heroData === undefined,
       uploadFile,
       updateHero,
@@ -218,6 +238,7 @@ export const ConfigProvider = ({ children }) => {
       updateReviewBranding,
       updateProductDetailBranding,
       updatePrivacyPolicy,
+      updateGlobalSettings,
       addReservation,
       reservations: reservationsData || []
     }}>
