@@ -206,19 +206,19 @@ const AdminHomeEditor = () => {
     setHeroForm({ ...heroForm, typography: updatedTypo });
   };
 
-  const handleSectionUpdate = async (id, field, value) => {
-    const section = config.sections.find(s => s.id === id);
-    if (!section) return;
-    await updateSection(id, { ...section, [field]: value });
+  const handleSectionUpdate = async (id, payload) => {
+    try {
+      await updateSection(id, payload);
+    } catch (e) {
+      console.error("Section update failed:", e);
+    }
   };
 
-  const handleTypographyUpdate = async (id, target, field, value) => {
-    const section = config.sections.find(s => s.id === id);
-    if (!section) return;
+  const handleTypographyUpdate = async (section, target, field, value) => {
     const typo = section.typography || {};
     const targetTypo = typo[target] || {};
     const updatedTypo = { ...typo, [target]: { ...targetTypo, [field]: value } };
-    await updateSection(id, { ...section, typography: updatedTypo });
+    await handleSectionUpdate(section.id, { ...section, typography: updatedTypo });
   };
 
   const handleMoveSection = async (id, direction) => {
@@ -262,8 +262,8 @@ const AdminHomeEditor = () => {
       bgColor: "#ffffff",
       bgType: "color",
       bgOpacity: 1,
-      paddingTop: 120,
-      paddingBottom: 120
+      paddingTop: 80,
+      paddingBottom: 80
     });
   };
 
@@ -339,14 +339,6 @@ const AdminHomeEditor = () => {
                        <div className="form-group"><label>메인 타이틀</label><textarea className="form-control" value={heroForm?.title} onChange={e => setHeroForm({...heroForm, title: e.target.value})} rows={3} /></div>
                        <div className="form-group"><label>서브 타이틀</label><textarea className="form-control" value={heroForm?.subtitle} onChange={e => setHeroForm({...heroForm, subtitle: e.target.value})} rows={2} /></div>
                        <div className="form-group"><label>하단 상세 문구</label><input className="form-control" value={heroForm?.belowTitle || ""} onChange={e => setHeroForm({...heroForm, belowTitle: e.target.value})} /></div>
-                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                          <div className="form-group"><label>가로 정렬</label><select className="form-control" value={heroForm?.textPosition} onChange={e => setHeroForm({...heroForm, textPosition: e.target.value})}><option value="left">Left</option><option value="center">Center</option><option value="right">Right</option></select></div>
-                          <div className="form-group"><label>세로 정렬</label><select className="form-control" value={heroForm?.verticalAlign || "middle"} onChange={e => setHeroForm({...heroForm, verticalAlign: e.target.value})}><option value="top">Top</option><option value="middle">Middle</option><option value="bottom">Bottom</option></select></div>
-                       </div>
-                       <div className="form-group" style={{ borderTop: '1px solid var(--border-light)', paddingTop: '20px' }}>
-                          <label>좌우 여백 (px) - {heroForm?.paddingX ?? 80}px</label>
-                          <input type="range" min="0" max="250" step="10" className="form-control" value={heroForm?.paddingX ?? 80} onChange={e => setHeroForm({...heroForm, paddingX: parseInt(e.target.value)})} />
-                       </div>
                     </div>
                  )}
 
@@ -454,7 +446,7 @@ const AdminHomeEditor = () => {
                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                           <span style={{ fontWeight: '900', color: 'var(--primary)', opacity: 0.3 }}>{idx + 1}</span>
                           <h3 style={{ fontSize: '16px', fontWeight: '800' }}>{section.title}</h3>
-                          <span style={{ fontSize: '11px', background: 'var(--primary)', color: '#fff', padding: '2px 8px', borderRadius: '4px' }}>{section.style?.toUpperCase()}</span>
+                          <span style={{ fontSize: '11px', background: 'var(--primary)', color: '#fff', padding: '2px 8px', borderRadius: '4px' }}>{(section.style || 'classic').toUpperCase()}</span>
                        </div>
                        <div style={{ display: 'flex', gap: '12px' }}>
                           <button onClick={e => { e.stopPropagation(); handleMoveSection(section.id, 'up'); }} style={{ border: 'none', background: 'none' }}><ChevronUp size={18} /></button>
@@ -474,36 +466,38 @@ const AdminHomeEditor = () => {
                           {editTab === 'style' && (
                              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
                                 {['classic', 'split-card', 'minimal-centered', 'gallery', 'feature-cards', 'process', 'luxury-row'].map(s => (
-                                  <div key={s} onClick={() => handleSectionUpdate(section.id, 'style', s)} style={{ padding: '20px', borderRadius: '16px', border: section.style === s ? '2px solid var(--primary)' : '1px solid var(--border-light)', cursor: 'pointer', textAlign: 'center' }}><p style={{ fontSize: '11px', fontWeight: '700' }}>{s.toUpperCase()}</p></div>
+                                  <div key={s} onClick={() => handleSectionUpdate(section.id, { ...section, style: s })} style={{ padding: '20px', borderRadius: '16px', border: section.style === s ? '2px solid var(--primary)' : '1px solid var(--border-light)', cursor: 'pointer', textAlign: 'center' }}><p style={{ fontSize: '11px', fontWeight: '700' }}>{s.toUpperCase()}</p></div>
                                 ))}
                              </div>
                           )}
 
                           {editTab === 'content' && (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                               <div className="form-group"><label>섹션 타이틀</label><input className="form-control" value={section.title} onChange={e => handleSectionUpdate(section.id, 'title', e.target.value)} /></div>
-                               <div className="form-group"><label>서브 설명</label><textarea className="form-control" value={section.content} onChange={e => handleSectionUpdate(section.id, 'content', e.target.value)} rows={4} /></div>
+                               <div className="form-group"><label>상단 보조 타이틀 (luxury-row 전용)</label><input className="form-control" value={section.aboveTitle || ""} onChange={e => handleSectionUpdate(section.id, { ...section, aboveTitle: e.target.value })} /></div>
+                               <div className="form-group"><label>섹션 타이틀 (줄바꿈 가능)</label><textarea className="form-control" value={section.title} onChange={e => handleSectionUpdate(section.id, { ...section, title: e.target.value })} rows={2} /></div>
+                               <div className="form-group"><label>서브 설명 (줄바꿈 가능)</label><textarea className="form-control" value={section.content} onChange={e => handleSectionUpdate(section.id, { ...section, content: e.target.value })} rows={4} /></div>
                                
                                <div style={{ borderTop: '1px solid var(--border-light)', paddingTop: '24px' }}>
                                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                                      <label style={{ fontWeight: 800 }}>상세 아이템/텍스트 박스 리스트</label>
                                      <button className="luxury-btn outline" style={{ padding: '6px 12px', fontSize: '11px' }} onClick={() => {
                                         const items = section.items || [];
-                                        handleSectionUpdate(section.id, 'items', [...items, { id: Date.now().toString(), title: "새로운 항목", content: "설명", aboveTitle: "", tag: "", number: (items.length + 1).toString().padStart(2, '0') }]);
+                                        const newItem = { id: Date.now().toString(), title: "새로운 항목", content: "설명", aboveTitle: "", tag: "", number: (items.length + 1).toString().padStart(2, '0') };
+                                        handleSectionUpdate(section.id, { ...section, items: [...items, newItem] });
                                      }}><Plus size={14} /> 추가</button>
                                   </div>
                                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                                      {(section.items || []).map((item, i) => (
                                        <div key={i} style={{ background: 'var(--bg-sub)', padding: '20px', borderRadius: '16px', border: '1px solid var(--border-light)' }}>
                                           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
-                                             <div className="form-group" style={{ width: '60px' }}><label style={{fontSize:'10px'}}>번호</label><input className="form-control" value={item.number} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], number:e.target.value}; handleSectionUpdate(section.id, 'items', ni); }} /></div>
-                                             <button style={{ color: '#ef4444', border: 'none', background: 'none' }} onClick={() => { const ni=section.items.filter((_, idx)=>idx!==i); handleSectionUpdate(section.id, 'items', ni); }}><Trash2 size={16}/></button>
+                                             <div className="form-group" style={{ width: '60px' }}><label style={{fontSize:'10px'}}>번호</label><input className="form-control" value={item.number} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], number:e.target.value}; handleSectionUpdate(section.id, { ...section, items: ni }); }} /></div>
+                                             <button style={{ color: '#ef4444', border: 'none', background: 'none' }} onClick={() => { const ni=section.items.filter((_, idx)=>idx!==i); handleSectionUpdate(section.id, { ...section, items: ni }); }}><Trash2 size={16}/></button>
                                           </div>
                                           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                                             <div className="form-group"><label style={{fontSize:'10px'}}>상단 소제목 (예: 국가)</label><input className="form-control" value={item.aboveTitle} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], aboveTitle:e.target.value}; handleSectionUpdate(section.id, 'items', ni); }} /></div>
-                                             <div className="form-group"><label style={{fontSize:'10px'}}>우측 태그 (예: 도심 출발)</label><input className="form-control" value={item.tag} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], tag:e.target.value}; handleSectionUpdate(section.id, 'items', ni); }} /></div>
-                                             <div className="form-group" style={{ gridColumn: 'span 2' }}><label style={{fontSize:'10px'}}>항목 타이틀</label><input className="form-control" value={item.title} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], title:e.target.value}; handleSectionUpdate(section.id, 'items', ni); }} /></div>
-                                             <div className="form-group" style={{ gridColumn: 'span 2' }}><label style={{fontSize:'10px'}}>항목 설명</label><textarea className="form-control" value={item.content} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], content:e.target.value}; handleSectionUpdate(section.id, 'items', ni); }} rows={2} /></div>
+                                             <div className="form-group"><label style={{fontSize:'10px'}}>상단 소제목 (예: 국가)</label><input className="form-control" value={item.aboveTitle} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], aboveTitle:e.target.value}; handleSectionUpdate(section.id, { ...section, items: ni }); }} /></div>
+                                             <div className="form-group"><label style={{fontSize:'10px'}}>우측 태그 (예: 도심 출발)</label><input className="form-control" value={item.tag} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], tag:e.target.value}; handleSectionUpdate(section.id, { ...section, items: ni }); }} /></div>
+                                             <div className="form-group" style={{ gridColumn: 'span 2' }}><label style={{fontSize:'10px'}}>항목 타이틀</label><input className="form-control" value={item.title} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], title:e.target.value}; handleSectionUpdate(section.id, { ...section, items: ni }); }} /></div>
+                                             <div className="form-group" style={{ gridColumn: 'span 2' }}><label style={{fontSize:'10px'}}>항목 설명</label><textarea className="form-control" value={item.content} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], content:e.target.value}; handleSectionUpdate(section.id, { ...section, items: ni }); }} rows={2} /></div>
                                           </div>
                                        </div>
                                      ))}
@@ -511,33 +505,29 @@ const AdminHomeEditor = () => {
                                </div>
 
                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', borderTop: '1px solid var(--border-light)', paddingTop: '24px' }}>
-                                  <div className="form-group"><label>상단 여백</label><input type="number" className="form-control" value={section.paddingTop} onChange={e => handleSectionUpdate(section.id, 'paddingTop', parseInt(e.target.value))} /></div>
-                                  <div className="form-group"><label>하단 여백</label><input type="number" className="form-control" value={section.paddingBottom} onChange={e => handleSectionUpdate(section.id, 'paddingBottom', parseInt(e.target.value))} /></div>
+                                  <div className="form-group"><label>상단 여백</label><input type="number" className="form-control" value={section.paddingTop} onChange={e => handleSectionUpdate(section.id, { ...section, paddingTop: parseInt(e.target.value) })} /></div>
+                                  <div className="form-group"><label>하단 여백</label><input type="number" className="form-control" value={section.paddingBottom} onChange={e => handleSectionUpdate(section.id, { ...section, paddingBottom: parseInt(e.target.value) })} /></div>
                                </div>
                             </div>
                           )}
 
                           {editTab === 'visual' && (
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-                               <MediaInput label="대표 메인 이미지 (상단/좌측)" value={section.image} onChange={v => handleSectionUpdate(section.id, 'image', v)} uploadFile={uploadFile} />
-                               <div className="form-group"><label>배경 타입</label><select className="form-control" value={section.bgType} onChange={e => handleSectionUpdate(section.id, 'bgType', e.target.value)}><option value="color">단색</option><option value="image">배경 이미지</option><option value="video">배경 동영상</option></select></div>
-                               
+                               <MediaInput label="대표 메인 이미지" value={section.image} onChange={v => handleSectionUpdate(section.id, { ...section, image: v })} uploadFile={uploadFile} />
+                               <div className="form-group"><label>배경 타입</label><select className="form-control" value={section.bgType} onChange={e => handleSectionUpdate(section.id, { ...section, bgType: e.target.value })}><option value="color">단색</option><option value="image">이미지</option><option value="video">동영상</option></select></div>
                                {section.bgType === 'color' ? (
-                                  <div className="form-group"><label>배경 색상</label><input type="color" className="form-control" style={{ height: 42, padding: 4 }} value={section.bgColor} onChange={e => handleSectionUpdate(section.id, 'bgColor', e.target.value)} onClick={e => e.stopPropagation()} /></div>
-                               ) : (<MediaInput label="배경 미디어 URL" value={section.bgUrl} onChange={v => handleSectionUpdate(section.id, 'bgUrl', v)} uploadFile={uploadFile} />)}
-                               
+                                  <div className="form-group"><label>배경 색상</label><input type="color" className="form-control" style={{ height: 42, padding: 4 }} value={section.bgColor} onChange={e => handleSectionUpdate(section.id, { ...section, bgColor: e.target.value })} onClick={e => e.stopPropagation()} /></div>
+                               ) : (<MediaInput label="배경 URL" value={section.bgUrl} onChange={v => handleSectionUpdate(section.id, { ...section, bgUrl: v })} uploadFile={uploadFile} />)}
                                <div className="form-group">
                                   <label>배경 투명도/밝기 ({section.bgOpacity})</label>
-                                  <input type="range" min="0" max="1" step="0.1" className="form-control" value={section.bgOpacity} onChange={e => handleSectionUpdate(section.id, 'bgOpacity', parseFloat(e.target.value))} onClick={e => e.stopPropagation()} />
-                               </div>
-
-                               <MultiMediaInput label="갤러리/추가 이미지 리스트" values={section.images || []} onChange={v => handleSectionUpdate(section.id, 'images', v)} uploadFile={uploadFile} />
-                               
+                                  <input type="range" min="0" max="1" step="0.1" className="form-control" value={section.bgOpacity} onChange={e => handleSectionUpdate(section.id, { ...section, bgOpacity: parseFloat(e.target.value) })} onClick={e => e.stopPropagation()} />
+                                </div>
+                               <MultiMediaInput label="갤러리/이미지 리스트" values={section.images || []} onChange={v => handleSectionUpdate(section.id, { ...section, images: v })} uploadFile={uploadFile} />
                                <div className="form-group" style={{ gridColumn: 'span 2' }}>
                                   <label>레이아웃 방향</label>
                                   <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
-                                     <button className={`luxury-btn ${section.layout === 'left' ? '' : 'outline'}`} onClick={() => handleSectionUpdate(section.id, 'layout', 'left')} style={{ flex: 1 }}>기본 (이미지 좌/우)</button>
-                                     <button className={`luxury-btn ${section.layout === 'right' ? '' : 'outline'}`} onClick={() => handleSectionUpdate(section.id, 'layout', 'right')} style={{ flex: 1 }}>반전 (방향 바꾸기)</button>
+                                     <button className={`luxury-btn ${section.layout === 'left' ? '' : 'outline'}`} onClick={() => handleSectionUpdate(section.id, { ...section, layout: 'left' })} style={{ flex: 1 }}>기본 (L)</button>
+                                     <button className={`luxury-btn ${section.layout === 'right' ? '' : 'outline'}`} onClick={() => handleSectionUpdate(section.id, { ...section, layout: 'right' })} style={{ flex: 1 }}>반전 (R)</button>
                                   </div>
                                </div>
                             </div>
@@ -545,8 +535,8 @@ const AdminHomeEditor = () => {
 
                           {editTab === 'typography' && (
                              <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-                                <div><label style={{ fontWeight: 800 }}>대제목(Title) 폰트</label><TypographyTool data={section} target="title" onUpdate={(t,f,v) => handleTypographyUpdate(section.id, t,f,v)} /></div>
-                                <div><label style={{ fontWeight: 800 }}>상세내용(Content) 폰트</label><TypographyTool data={section} target="content" onUpdate={(t,f,v) => handleTypographyUpdate(section.id, t,f,v)} /></div>
+                                <div><label style={{ fontWeight: 800 }}>타이틀 폰트</label><TypographyTool data={section} target="title" onUpdate={(t,f,v) => handleTypographyUpdate(section, t,f,v)} /></div>
+                                <div><label style={{ fontWeight: 800 }}>본문 폰트</label><TypographyTool data={section} target="content" onUpdate={(t,f,v) => handleTypographyUpdate(section, t,f,v)} /></div>
                              </div>
                           )}
                        </div>

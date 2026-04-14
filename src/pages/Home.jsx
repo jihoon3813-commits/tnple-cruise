@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useConfig } from '../context/ConfigContext';
-import { ArrowRight, Star, ExternalLink, ChevronLeft, ChevronRight, User } from 'lucide-react';
+import { ArrowRight, Star, ExternalLink, ChevronLeft, ChevronRight, User, CheckCircle2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import SafeMedia from '../components/SafeMedia';
 
@@ -19,6 +19,20 @@ const getTextStyle = (typo, type) => {
     lineHeight: t.lineHeight || 1.4,
     display: 'block'
   };
+};
+
+const MultiLineText = ({ text, style }) => {
+  if (!text) return null;
+  return (
+    <span style={style}>
+      {text.split('\n').map((line, i) => (
+        <React.Fragment key={i}>
+          {line}
+          {i !== text.split('\n').length - 1 && <br />}
+        </React.Fragment>
+      ))}
+    </span>
+  );
 };
 
 const WavyText = ({ text, style }) => {
@@ -42,7 +56,7 @@ const HeroText = ({ hero }) => {
     if (effect === 'box') return <motion.span initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} style={{ ...textStyle, display: 'inline-block', padding: '8px 20px', background: `${typo.color}15`, border: `1px solid ${typo.color}30`, borderRadius: '100px', marginBottom: '16px', fontWeight: '800' }}>{text}</motion.span>;
     if (effect === 'wavy' && type === 'above') return <WavyText text={text} style={{ ...textStyle, marginBottom: '16px', fontWeight: '800' }} />;
     if (effect === 'italic' && type === 'below') return <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ ...textStyle, fontStyle: 'italic', marginTop: '24px', opacity: 0.9 }}>{text}</motion.span>;
-    return <motion.span initial={{ opacity: 0, y: type === 'above' ? -10 : 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: type === 'above' ? 0 : 0.6 }} style={{ ...textStyle, marginBottom: type === 'above' ? '16px' : 0, marginTop: type === 'below' ? '24px' : 0, fontWeight: type === 'above' ? '800' : '400', opacity: type === 'below' ? 0.9 : 1 }}>{text}</motion.span>;
+    return <motion.span initial={{ opacity: 0, y: type === 'above' ? -10 : 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: type === 'above' ? 0 : 0.6 }} style={{ ...textStyle, marginBottom: type === 'above' ? '16px' : 0, marginTop: type === 'below' ? '24px' : 0, fontWeight: type === 'above' ? '800' : '400', opacity: type === 'below' ? 0.9 : 1 }}><MultiLineText text={text}/></motion.span>;
   };
   const renderButton = (btn) => {
     if (!btn.show) return null;
@@ -54,8 +68,8 @@ const HeroText = ({ hero }) => {
   return (
     <div style={{ position: 'relative', zIndex: 10, textAlign: hero.textPosition === 'center' ? 'center' : (hero.textPosition === 'right' ? 'right' : 'left') }}>
        {aboveTitle && renderTextEffect(aboveTitle, 'above')}
-       <motion.h1 initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} transition={{delay:0.2}} style={{ ...getTextStyle(typography, 'title'), fontWeight: '900', marginBottom: '32px' }}>{title?.split('\n').map((l,i) => <React.Fragment key={i}>{l}<br/></React.Fragment>)}</motion.h1>
-       {subtitle && <motion.p initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.4}} style={{ ...getTextStyle(typography, 'subtitle'), marginBottom: '32px' }}>{subtitle?.split('\n').map((l,i) => <React.Fragment key={i}>{l}<br/></React.Fragment>)}</motion.p>}
+       <motion.h1 initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} transition={{delay:0.2}} style={{ ...getTextStyle(typography, 'title'), fontWeight: '900', marginBottom: '32px' }}><MultiLineText text={title}/></motion.h1>
+       {subtitle && <motion.p initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.4}} style={{ ...getTextStyle(typography, 'subtitle'), marginBottom: '32px' }}><MultiLineText text={subtitle}/></motion.p>}
        {belowTitle && renderTextEffect(belowTitle, 'below')}
        <div style={{ display: 'flex', gap: '12px', marginTop: '48px', flexWrap: 'wrap', justifyContent: hero.textPosition === 'center' ? 'center' : (hero.textPosition === 'right' ? 'flex-end' : 'flex-start') }}>
           {buttons ? buttons.map(btn => renderButton(btn)) : (<><button className="luxury-btn">지금 시작하기 <ArrowRight size={18} /></button><button className="luxury-btn outline">패키지 보기</button></>)}
@@ -64,15 +78,16 @@ const HeroText = ({ hero }) => {
   );
 };
 
-const ImageSlider = ({ images = [] }) => {
+const ImageSlider = ({ images = [], singleImage }) => {
   const [current, setCurrent] = useState(0);
-  if (!images || images.length === 0) return null;
-  if (images.length === 1) return <SafeMedia src={images[0]} style={{ width: '100%', borderRadius: '16px', overflow: 'hidden' }} />;
+  const allImages = (images && images.length > 0) ? images : (singleImage ? [singleImage] : []);
+  if (allImages.length === 0) return null;
+  if (allImages.length === 1) return <SafeMedia src={allImages[0]} style={{ width: '100%', borderRadius: '24px', boxShadow: 'var(--shadow-lg)', display: 'block' }} />;
   return (
     <div style={{ position: 'relative', width: '100%', aspectRatio: '16/10', borderRadius: '24px', overflow: 'hidden', boxShadow: 'var(--shadow-lg)' }}>
-      <AnimatePresence mode="wait"><motion.div key={current} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.5 }} style={{ width: '100%', height: '100%' }}><SafeMedia src={images[current]} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></motion.div></AnimatePresence>
-      <button onClick={() => setCurrent((current - 1 + images.length) % images.length)} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.8)', border: 'none', padding: '12px', borderRadius: '50%', cursor: 'pointer', zIndex: 10, display: 'flex' }}><ChevronLeft size={20} /></button>
-      <button onClick={() => setCurrent((current + 1) % images.length)} style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.8)', border: 'none', padding: '12px', borderRadius: '50%', cursor: 'pointer', zIndex: 10, display: 'flex' }}><ChevronRight size={20} /></button>
+      <AnimatePresence mode="wait"><motion.div key={current} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.5 }} style={{ width: '100%', height: '100%' }}><SafeMedia src={allImages[current]} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></motion.div></AnimatePresence>
+      <button onClick={() => setCurrent((current - 1 + allImages.length) % allImages.length)} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.8)', border: 'none', padding: '12px', borderRadius: '50%', cursor: 'pointer', zIndex: 10, display: 'flex' }}><ChevronLeft size={20} /></button>
+      <button onClick={() => setCurrent((current + 1) % allImages.length)} style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.8)', border: 'none', padding: '12px', borderRadius: '50%', cursor: 'pointer', zIndex: 10, display: 'flex' }}><ChevronRight size={20} /></button>
     </div>
   );
 };
@@ -94,15 +109,41 @@ const Home = () => {
   const MediaGallery = ({ images = [], singleImage, style }) => {
     const allImages = (images && images.length > 0) ? images : (singleImage ? [singleImage] : []);
     if (allImages.length === 0) return null;
-    if (style === 'gallery') return <div style={{ columns: window.innerWidth < 768 ? '1' : '2', columnGap: '20px' }}>{allImages.map((img, i) => (<div key={i} style={{ marginBottom: '20px', borderRadius: '24px', overflow: 'hidden', breakInside: 'avoid' }}><SafeMedia src={img} style={{ width: '100%', display: 'block' }} /></div>))}</div>;
-    return <ImageSlider images={allImages} />;
+    if (style === 'gallery') {
+      return (
+        <div style={{ display: 'grid', gridTemplateColumns: window.innerWidth < 768 ? '1fr' : 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
+          {allImages.map((img, i) => (
+            <motion.div key={i} initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} style={{ borderRadius: '24px', overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
+              <SafeMedia src={img} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            </motion.div>
+          ))}
+        </div>
+      );
+    }
+    return <ImageSlider images={allImages} singleImage={singleImage} />;
   };
 
   const renderSection = (section) => {
     const { style, typography, items, layout, bgColor, bgType, bgUrl, image, images, bgOpacity, paddingTop, paddingBottom } = section;
     const isMobile = window.innerWidth < 768;
     const hasMedia = image || (images && images.length > 0);
-    const wrapperStyle = { position: 'relative', paddingTop: `${isMobile ? Math.min(50, paddingTop ?? 60) : (paddingTop ?? 120)}px`, paddingBottom: `${isMobile ? Math.min(50, paddingBottom ?? 60) : (paddingBottom ?? 120)}px`, background: bgType === 'color' ? (bgColor || '#ffffff') : 'transparent', overflow: 'hidden' };
+    
+    // Adjusted default padding (shorter than before)
+    const wrapperStyle = { 
+      position: 'relative', 
+      paddingTop: `${isMobile ? Math.min(40, paddingTop ?? 40) : (paddingTop ?? 80)}px`, 
+      paddingBottom: `${isMobile ? Math.min(40, paddingBottom ?? 40) : (paddingBottom ?? 80)}px`, 
+      background: bgType === 'color' ? (bgColor || 'transparent') : 'transparent', 
+      overflow: 'hidden' 
+    };
+
+    const header = (
+      <div style={{ marginBottom: isMobile ? '32px' : '48px', maxWidth: style === 'minimal-centered' ? '800px' : 'none', margin: style === 'minimal-centered' ? '0 auto' : '0' }}>
+         <h2 style={{ ...getTextStyle(typography, 'title'), marginBottom: '20px' }}><MultiLineText text={section.title}/></h2>
+         <p style={{ ...getTextStyle(typography, 'content'), opacity: 0.8 }}><MultiLineText text={section.content}/></p>
+         <div style={{marginTop: '24px'}}><CustomButton section={section} /></div>
+      </div>
+    );
 
     return (
       <section key={section.id} style={wrapperStyle}>
@@ -110,13 +151,13 @@ const Home = () => {
         <div style={{ position: 'absolute', inset: 0, background: bgType === 'color' ? 'transparent' : `rgba(255,255,255,${1 - (bgOpacity ?? 1)})`, zIndex: 0 }}></div>
         <div className="container" style={{ position: 'relative', zIndex: 1 }}>
           
-          {style === 'luxury-row' ? (
+          {style === 'luxury-row' && (
              <div style={{ display: isMobile ? 'block' : 'grid', gridTemplateColumns: layout === 'right' ? '1.2fr 1fr' : '1fr 1.2fr', gap: isMobile ? '40px' : '80px', alignItems: 'start' }}>
                 <div style={{ order: layout === 'right' ? 2 : 1 }}>
                    <div style={{ marginBottom: '48px' }}>
                       <span style={{ fontSize: '13px', fontWeight: '800', color: 'var(--primary)', letterSpacing: '0.1em', display: 'block', marginBottom: '12px', textTransform: 'uppercase' }}>{section.aboveTitle || "Promotion"}</span>
-                      <h2 style={{ ...getTextStyle(typography, 'title'), fontWeight: '900', marginBottom: '24px' }}>{section.title}</h2>
-                      <p style={{ ...getTextStyle(typography, 'content'), opacity: 0.8, marginBottom: '32px' }}>{section.content}</p>
+                      <h2 style={{ ...getTextStyle(typography, 'title'), fontWeight: '900', marginBottom: '24px' }}><MultiLineText text={section.title}/></h2>
+                      <p style={{ ...getTextStyle(typography, 'content'), opacity: 0.8, marginBottom: '32px' }}><MultiLineText text={section.content}/></p>
                       {image && <SafeMedia src={image} style={{ width: '100%', borderRadius: '24px', boxShadow: 'var(--shadow-lg)' }} />}
                    </div>
                 </div>
@@ -136,32 +177,66 @@ const Home = () => {
                    ))}
                 </div>
              </div>
-          ) : (
-             <>
-               {(style === 'classic' || !style) && (
-                 <div style={{ display: !hasMedia ? 'block' : (isMobile ? 'block' : 'flex'), textAlign: !hasMedia || isMobile ? 'center' : 'left', flexDirection: layout === 'right' ? 'row-reverse' : 'row', alignItems: 'center', gap: isMobile ? '32px' : '80px' }}>
-                   <div style={{ flex: 1, marginBottom: isMobile && hasMedia ? '32px' : 0 }}><h2 style={getTextStyle(typography, 'title')}>{section.title}</h2><p style={{ ...getTextStyle(typography, 'content'), marginBottom: '24px' }}>{section.content}</p><CustomButton section={section} /></div>
-                   {hasMedia && <div style={{ flex: 1 }}><MediaGallery images={images} singleImage={image} style={style} /></div>}
-                 </div>
-               )}
-               {style === 'feature-cards' && (
-                  <div style={{ display: isMobile ? 'block' : 'grid', gridTemplateColumns: hasMedia ? '1fr 1fr' : '1fr', gap: isMobile ? '32px' : '80px' }}>
-                     <div style={{ marginBottom: isMobile ? '32px' : 0 }}><h2 style={getTextStyle(typography, 'title')}>{section.title}</h2><p style={{ ...getTextStyle(typography, 'content'), marginBottom: '24px' }}>{section.content}</p><CustomButton section={section} /><div style={{marginTop:'32px'}}><MediaGallery images={images} singleImage={image} /></div></div>
-                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>{(items || []).map((item, i) => (<div key={i} className="admin-card" style={{ display: 'flex', gap: '16px', padding: isMobile ? '20px' : '40px', borderRadius: '20px', background: '#fff' }}><div style={{ fontSize: '16px', fontWeight: '900', color: 'var(--primary)', opacity: 0.3 }}>{item.number || `0${i+1}`}</div><div><h4 style={{ fontSize: '16px', fontWeight: '800', marginBottom: '6px' }}>{item.title}</h4><p style={{ color: 'var(--text-muted)', fontSize: '13px' }}>{item.content}</p></div></div>))}</div>
-                  </div>
-               )}
-               {style === 'process' && (
-                 <div style={{ textAlign: 'center' }}>
-                    <h2 style={{ ...getTextStyle(typography, 'title'), textAlign: 'center' }}>{section.title}</h2>
-                    <p style={{ ...getTextStyle(typography, 'content'), textAlign: 'center', margin: '0 auto 32px', maxWidth: '800px' }}>{section.content}</p>
-                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : `repeat(${(items || []).length || 1}, 1fr)`, gap: '24px' }}>
-                       {(items || []).map((item, i) => (<div key={i}><div style={{ width: '40px', height: '40px', background: 'var(--primary)', color: '#fff', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', fontSize: '16px', fontWeight: '800' }}>{item.number || i + 1}</div><h4 style={{ fontSize: '16px', fontWeight: '800', marginBottom: '8px' }}>{item.title}</h4><p style={{ color: 'var(--text-muted)', fontSize: '13px' }}>{item.content}</p></div>))}
-                    </div>
-                    <div style={{ marginTop: '40px' }}><CustomButton section={section} /></div>
-                 </div>
-               )}
-             </>
           )}
+
+          {style === 'split-card' && (
+             <div style={{ display: isMobile ? 'block' : 'grid', gridTemplateColumns: '1fr 1fr', gap: isMobile ? '32px' : '48px' }}>
+                <div style={{ background: theme === 'midnight' ? 'rgba(255,255,255,0.05)' : '#fff', borderRadius: '40px', padding: isMobile ? '32px 20px' : '80px', border: '1px solid var(--border-light)', order: layout === 'right' ? 2 : 1 }}>{header}</div>
+                <div style={{ order: layout === 'right' ? 1 : 2 }}><MediaGallery images={images} singleImage={image} /></div>
+             </div>
+          )}
+
+          {style === 'minimal-centered' && (
+             <div style={{ textAlign: 'center' }}>
+                {header}
+                {hasMedia && <div style={{ marginTop: '48px', maxWidth: '1000px', margin: '48px auto 0' }}><MediaGallery images={images} singleImage={image} /></div>}
+             </div>
+          )}
+
+          {style === 'gallery' && (
+             <div>
+                {header}
+                <div style={{ marginTop: '48px' }}><MediaGallery images={images} singleImage={image} style="gallery" /></div>
+             </div>
+          )}
+
+          {style === 'feature-cards' && (
+              <div style={{ display: isMobile ? 'block' : 'grid', gridTemplateColumns: hasMedia ? '1fr 1fr' : '1fr', gap: isMobile ? '32px' : '80px' }}>
+                 <div style={{ marginBottom: isMobile ? '32px' : 0 }}>{header}<div style={{marginTop:'32px'}}><MediaGallery images={images} singleImage={image} /></div></div>
+                 <div style={{ display: 'grid', gridTemplateColumns: (items || []).length > 2 && !isMobile ? '1fr 1fr' : '1fr', gap: '20px' }}>
+                    {(items || []).map((item, i) => (
+                       <motion.div key={i} whileHover={{ y: -5 }} style={{ padding: '32px', borderRadius: '24px', background: theme === 'midnight' ? 'rgba(255,255,255,0.05)' : '#fff', border: '1px solid var(--border-light)', display: 'flex', gap: '20px' }}>
+                          <div style={{ width: '40px', height: '40px', background: 'var(--primary)', color: '#fff', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900', flexShrink: 0 }}>{item.number || i + 1}</div>
+                          <div><h4 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '8px' }}>{item.title}</h4><p style={{ color: 'var(--text-muted)', fontSize: '14px', lineHeight: '1.6' }}>{item.content}</p></div>
+                       </motion.div>
+                    ))}
+                 </div>
+              </div>
+          )}
+
+          {style === 'process' && (
+            <div style={{ textAlign: 'center' }}>
+               {header}
+               <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : `repeat(${(items || []).length || 1}, 1fr)`, gap: '40px', marginTop: '64px' }}>
+                  {(items || []).map((item, i) => (
+                    <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} viewport={{ once: true }} style={{ position: 'relative' }}>
+                       <div style={{ width: '64px', height: '64px', background: 'var(--primary)', color: '#fff', borderRadius: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', fontSize: '20px', fontWeight: '900', boxShadow: '0 10px 20px var(--primary)30' }}>{item.number || i + 1}</div>
+                       <h4 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '12px' }}>{item.title}</h4>
+                       <p style={{ color: 'var(--text-muted)', fontSize: '14px', lineHeight: '1.6' }}>{item.content}</p>
+                       {!isMobile && i < (items.length - 1) && <ArrowRight style={{ position: 'absolute', top: '32px', right: '-40px', transform: 'translateX(50%)', opacity: 0.2 }} size={24} />}
+                    </motion.div>
+                  ))}
+               </div>
+            </div>
+          )}
+
+          {(style === 'classic' || !style) && (
+             <div style={{ display: !hasMedia ? 'block' : (isMobile ? 'block' : 'flex'), textAlign: !hasMedia || isMobile ? 'center' : 'left', flexDirection: layout === 'right' ? 'row-reverse' : 'row', alignItems: 'center', gap: isMobile ? '32px' : '80px' }}>
+               <div style={{ flex: 1, marginBottom: isMobile && hasMedia ? '32px' : 0 }}>{header}</div>
+               {hasMedia && <div style={{ flex: 1 }}><MediaGallery images={images} singleImage={image} /></div>}
+             </div>
+          )}
+
         </div>
       </section>
     );
