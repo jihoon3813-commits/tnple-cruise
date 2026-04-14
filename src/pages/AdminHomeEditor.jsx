@@ -4,10 +4,11 @@ import { Plus, Trash2, Save, Monitor, Layers, Image as ImageIcon, Palette, Type,
 import { motion, AnimatePresence } from 'framer-motion';
 
 const AdminHomeEditor = () => {
-  const { config, updateHero, updateTheme, updateSection, addSection, deleteSection, uploadFile, updateProductBranding } = useConfig();
+  const { config, updateHero, updateTheme, updateSection, addSection, deleteSection, uploadFile, updateProductBranding, updateReviewBranding } = useConfig();
   const [heroForm, setHeroForm] = useState(config.hero);
   const [productBrandingForm, setProductBrandingForm] = useState(config.productListBranding);
-  const [activeCategory, setActiveCategory] = useState('theme'); // 'theme', 'hero', 'sections', 'productList'
+  const [reviewBrandingForm, setReviewBrandingForm] = useState(config.reviewSectionBranding);
+  const [activeCategory, setActiveCategory] = useState('theme'); // 'theme', 'hero', 'sections', 'productList', 'reviews'
   const [activeSectionId, setActiveSectionId] = useState(null);
   const [heroTab, setHeroTab] = useState('style');
   const [editTab, setEditTab] = useState('style'); 
@@ -15,6 +16,7 @@ const AdminHomeEditor = () => {
   useEffect(() => {
     if (config.hero) setHeroForm(config.hero);
     if (config.productListBranding) setProductBrandingForm(config.productListBranding);
+    if (config.reviewSectionBranding) setReviewBrandingForm(config.reviewSectionBranding);
   }, [config]);
 
   const handleHeroSave = async () => {
@@ -31,6 +33,7 @@ const AdminHomeEditor = () => {
     { id: 'hero', name: '히어로 섹션 편집', icon: <Layout size={20} /> },
     { id: 'sections', name: '홍보 섹션 상세 관리', icon: <Layers size={20} /> },
     { id: 'productList', name: '상품 리스트 브랜딩', icon: <Package size={20} /> },
+    { id: 'reviews', name: '여행후기 섹션 브랜딩', icon: <Activity size={20} /> },
   ];
 
   const handleHeroTypoUpdate = (target, field, value) => {
@@ -457,6 +460,56 @@ const AdminHomeEditor = () => {
                        여기서 <strong>타이틀 글씨 색상</strong>을 수동으로 검정색(#000000) 또는 테마에 맞는 색상으로 지정해 주세요.
                     </p>
                  </div>
+              </div>
+            </section>
+          )}
+
+          {activeCategory === 'reviews' && (
+            <section className="admin-card">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{ padding: '10px', background: 'rgba(37, 99, 235, 0.1)', borderRadius: '12px', color: 'var(--primary)' }}><Activity size={24} /></div>
+                    <h2 style={{ fontSize: '20px', fontWeight: '800' }}>메인 여행후기 섹션 브랜딩</h2>
+                 </div>
+                 <button className="luxury-btn" onClick={() => updateReviewBranding(reviewBrandingForm)}><Save size={18} /> 설정 저장</button>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+                 <div className="form-group">
+                    <label>메인페이지 노출 여부</label>
+                    <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                       <button className={`luxury-btn ${reviewBrandingForm?.show ? '' : 'outline'}`} onClick={() => setReviewBrandingForm({...reviewBrandingForm, show: true})} style={{ flex: 1 }}>표시함 (ON)</button>
+                       <button className={`luxury-btn ${!reviewBrandingForm?.show ? '' : 'outline'}`} onClick={() => setReviewBrandingForm({...reviewBrandingForm, show: false})} style={{ flex: 1 }}>숨김 (OFF)</button>
+                    </div>
+                 </div>
+
+                 {reviewBrandingForm?.show && (
+                   <>
+                     <div className="form-group">
+                        <label>섹션 메인 타이틀</label>
+                        <input className="form-control" value={reviewBrandingForm?.title || "여행 후기"} onChange={e => setReviewBrandingForm({...reviewBrandingForm, title: e.target.value})} />
+                     </div>
+                     
+                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+                        <div className="form-group">
+                           <label>타이틀 글씨 색상</label>
+                           <input type="color" className="form-control" style={{ height: 42, padding: 4 }} value={reviewBrandingForm?.titleColor || "#000000"} onChange={e => setReviewBrandingForm({...reviewBrandingForm, titleColor: e.target.value})} />
+                        </div>
+                        <div className="form-group">
+                           <label>섹션 전체 배경색</label>
+                           <input type="color" className="form-control" style={{ height: 42, padding: 4 }} value={reviewBrandingForm?.bgColor || "#f8fafc"} onChange={e => setReviewBrandingForm({...reviewBrandingForm, bgColor: e.target.value})} />
+                        </div>
+                     </div>
+
+                     <div className="form-group">
+                        <label>레이아웃 스타일</label>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginTop: '8px' }}>
+                           <button className={`luxury-btn ${reviewBrandingForm?.layout === 'slider' ? '' : 'outline'}`} onClick={() => setReviewBrandingForm({...reviewBrandingForm, layout: 'slider'})} style={{ fontSize: '12px' }}>슬라이드 (Slider)</button>
+                           <button className={`luxury-btn ${reviewBrandingForm?.layout === 'grid' ? '' : 'outline'}`} onClick={() => setReviewBrandingForm({...reviewBrandingForm, layout: 'grid'})} style={{ fontSize: '12px' }}>그리드 (Grid)</button>
+                        </div>
+                     </div>
+                   </>
+                 )}
               </div>
             </section>
           )}

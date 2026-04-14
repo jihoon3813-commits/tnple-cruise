@@ -39,6 +39,13 @@ export default defineSchema({
         titleColor: v.optional(v.string()),
         bgColor: v.optional(v.string()),
       })),
+      reviewSectionBranding: v.optional(v.object({
+        show: v.optional(v.boolean()),
+        title: v.optional(v.string()),
+        titleColor: v.optional(v.string()),
+        bgColor: v.optional(v.string()),
+        layout: v.optional(v.string()), // "slider", "grid"
+      })),
     }),
   }),
   sections: defineTable({

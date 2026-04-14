@@ -244,10 +244,62 @@ const Home = () => {
     );
   };
 
+  const renderReviews = () => {
+    const rb = config.reviewSectionBranding;
+    if (!rb?.show || !config.reviews?.length) return null;
+
+    return (
+      <section style={{ padding: '120px 0', background: rb.bgColor || 'var(--bg-sub)' }}>
+         <div className="container">
+            <div style={{ textAlign: 'center', marginBottom: '80px' }}>
+               <h2 style={{ fontSize: '48px', fontWeight: '800', color: rb.titleColor || 'inherit' }}>
+                  {rb.title || "여행 후기"}
+               </h2>
+            </div>
+            
+            {rb.layout === 'grid' ? (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '24px' }}>
+                 {config.reviews.map((rev, i) => (
+                   <div key={i} className="admin-card" style={{ padding: '32px', background: '#fff', borderRadius: '24px' }}>
+                      <div style={{ display: 'flex', gap: '4px', color: '#fbbf24', marginBottom: '16px' }}>
+                         {[...Array(5)].map((_, j) => <Star key={j} size={16} fill={j < (rev.rating || 5) ? "#fbbf24" : "none"} />)}
+                      </div>
+                      <p style={{ fontSize: '16px', lineHeight: '1.8', color: 'var(--text-main)', marginBottom: '24px', fontWeight: '500' }}>"{rev.content}"</p>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                         <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--primary)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '14px' }}>{rev.author?.[0]}</div>
+                         <div><div style={{ fontWeight: '800', fontSize: '14px' }}>{rev.author}</div><div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{rev.productTitle}</div></div>
+                      </div>
+                   </div>
+                 ))}
+              </div>
+            ) : (
+              <div style={{ position: 'relative', overflow: 'hidden', padding: '20px 0' }}>
+                 <div style={{ display: 'flex', gap: '24px', overflowX: 'auto', paddingBottom: '20px', scrollSnapType: 'x mandatory' }}>
+                    {config.reviews.map((rev, i) => (
+                      <div key={i} style={{ minWidth: '350px', background: '#fff', padding: '40px', borderRadius: '32px', scrollSnapAlign: 'start', boxShadow: '0 10px 30px rgba(0,0,0,0.05)' }}>
+                         <div style={{ display: 'flex', gap: '4px', color: '#fbbf24', marginBottom: '20px' }}>
+                            {[...Array(5)].map((_, j) => <Star key={j} size={18} fill={j < (rev.rating || 5) ? "#fbbf24" : "none"} />)}
+                         </div>
+                         <p style={{ fontSize: '18px', lineHeight: '1.8', color: 'var(--text-main)', marginBottom: '32px', fontStyle: 'italic' }}>"{rev.content}"</p>
+                         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                            <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'var(--primary)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800' }}>{rev.author?.[0]}</div>
+                            <div><div style={{ fontWeight: '800' }}>{rev.author}</div><div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>{rev.productTitle}</div></div>
+                         </div>
+                      </div>
+                    ))}
+                 </div>
+              </div>
+            )}
+         </div>
+      </section>
+    );
+  };
+
   return (
     <div className="home-clean">
       {renderHero()}
       {sections.map(section => renderSection(section))}
+      {renderReviews()}
       <section id="products" style={{ padding: '120px 0', background: config.productListBranding?.bgColor || '#ffffff' }}>
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: '80px' }}>

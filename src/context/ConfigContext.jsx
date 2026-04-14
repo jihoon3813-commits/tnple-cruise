@@ -38,6 +38,7 @@ export const ConfigProvider = ({ children }) => {
   const seedMutation = useMutation(api.init.seed);
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
   const updateProductBrandingMutation = useMutation(api.siteConfig.updateProductBranding);
+  const updateReviewBrandingMutation = useMutation(api.siteConfig.updateReviewBranding);
 
   useEffect(() => {
     if (heroData === null) {
@@ -51,7 +52,8 @@ export const ConfigProvider = ({ children }) => {
     sections: sectionsData?.sort((a,b) => (a.order || 0) - (b.order || 0)).map(s => ({ ...s, id: s._id })) || [],
     products: productsData?.map(p => ({ ...p, id: p._id })) || [],
     reviews: reviewsData?.map(r => ({ ...r, id: r._id })) || [],
-    productListBranding: heroData?.productListBranding || { title: "추천 패키지", titleColor: "var(--text-main)", bgColor: "#ffffff" }
+    productListBranding: heroData?.productListBranding || { title: "추천 패키지", titleColor: "var(--text-main)", bgColor: "#ffffff" },
+    reviewSectionBranding: heroData?.reviewSectionBranding || { show: true, title: "여행 후기", titleColor: "var(--text-main)", bgColor: "var(--bg-sub)", layout: "slider" }
   }), [heroData, sectionsData, productsData, reviewsData]);
 
   const uploadFile = async (file) => {
@@ -141,6 +143,10 @@ export const ConfigProvider = ({ children }) => {
     await updateProductBrandingMutation(data);
   };
 
+  const updateReviewBranding = async (data) => {
+    await updateReviewBrandingMutation(data);
+  };
+
   const deleteProduct = async (id) => {
     await deleteProductMutation({ id });
   };
@@ -158,7 +164,8 @@ export const ConfigProvider = ({ children }) => {
       addProduct,
       updateProduct,
       deleteProduct,
-      updateProductBranding
+      updateProductBranding,
+      updateReviewBranding
     }}>
       {children}
     </ConfigContext.Provider>
