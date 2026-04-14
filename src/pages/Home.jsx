@@ -10,13 +10,13 @@ const getTextStyle = (typo, type) => {
   const t = typo[type];
   
   // Responsive font size calculation using clamp
-  // Mobile size (min) is roughly 70-80% of desktop size
+  // Mobile size (min) reduced from 75% to 55-60% for a "smaller" feel on mobile
   const desktopSize = t.fontSize || (type === 'title' ? 42 : 18);
-  const mobileSize = Math.max(14, Math.floor(desktopSize * 0.75));
+  const mobileSize = Math.max(12, Math.floor(desktopSize * 0.55));
   
   return {
     color: t.color,
-    fontSize: `clamp(${mobileSize}px, 5vw, ${desktopSize}px)`,
+    fontSize: `clamp(${mobileSize}px, 4.2vw, ${desktopSize}px)`,
     fontFamily: t.fontFamily,
     textAlign: t.textAlign || 'inherit',
     letterSpacing: t.letterSpacing ? `${t.letterSpacing}em` : undefined,
@@ -144,11 +144,11 @@ const Home = () => {
     const wrapperStyle = {
       position: 'relative', 
       height: isMobile ? 'auto' : '100vh', 
-      minHeight: isMobile ? '600px' : '800px', 
+      minHeight: isMobile ? '550px' : '800px', 
       overflow: 'hidden', 
       display: 'flex',
       alignItems: verticalAlign === 'top' ? 'flex-start' : (verticalAlign === 'bottom' ? 'flex-end' : 'center'),
-      padding: isMobile ? '120px 0 80px' : '120px 0'
+      padding: isMobile ? '100px 0 60px' : '120px 0'
     };
 
     const containerStyle = {
@@ -184,9 +184,9 @@ const Home = () => {
 
     if (style === 'split') {
        return (
-         <section style={{ ...wrapperStyle, display: isMobile ? 'block' : 'grid', gridTemplateColumns: '1fr 1fr', padding: isMobile ? '120px 0 0' : 0 }}>
+         <section style={{ ...wrapperStyle, display: isMobile ? 'block' : 'grid', gridTemplateColumns: '1fr 1fr', padding: isMobile ? '100px 0 0' : 0 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: `0 var(--container-padding, 80px)`, marginBottom: isMobile ? '40px' : 0 }}><HeroText hero={hero} /></div>
-            <div style={{ position: 'relative', height: isMobile ? '400px' : 'auto' }}><BgMedia /></div>
+            <div style={{ position: 'relative', height: isMobile ? '350px' : 'auto' }}><BgMedia /></div>
          </section>
        );
     }
@@ -196,7 +196,7 @@ const Home = () => {
          <section style={wrapperStyle}>
             <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}><BgMedia /></div>
             <div style={{ ...containerStyle, display: 'flex', justifyContent: (isMobile || textPosition === 'center') ? 'center' : (textPosition === 'right' ? 'flex-end' : 'flex-start') }}>
-               <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} style={{ background: 'var(--glass-white)', backdropFilter: 'blur(20px)', padding: isMobile ? '40px 24px' : '80px', borderRadius: isMobile ? '24px' : '40px', maxWidth: '750px', boxShadow: '0 30px 60px rgba(0,0,0,0.1)' }}>
+               <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} style={{ background: 'var(--glass-white)', backdropFilter: 'blur(20px)', padding: isMobile ? '32px 20px' : '80px', borderRadius: isMobile ? '20px' : '40px', maxWidth: '750px', boxShadow: '0 30px 60px rgba(0,0,0,0.1)' }}>
                   <HeroText hero={hero} />
                </motion.div>
             </div>
@@ -217,12 +217,17 @@ const Home = () => {
   const CustomButton = ({ section }) => {
     if (!section.showButton) return null;
     const styles = section.buttonStyles || {};
-    const sizeMap = { small: { padding: '8px 20px', fontSize: '13px' }, medium: { padding: '12px 32px', fontSize: '15px' }, large: { padding: '16px 48px', fontSize: '18px' } };
-    const currentSize = sizeMap[styles.size] || sizeMap.medium;
+    const sizeMap = { 
+      small: { padding: '8px 20px', fontSize: '12px' }, 
+      medium: { padding: '10px 28px', fontSize: '13px' }, 
+      large: { padding: '14px 40px', fontSize: '15px' } 
+    };
+    const isMobile = window.innerWidth < 768;
+    const currentSize = sizeMap[isMobile ? 'small' : (styles.size || 'medium')];
 
     return (
       <Link to={section.buttonLink || "/"} style={{ ...currentSize, backgroundColor: styles.bgColor || 'var(--primary)', color: styles.textColor || '#ffffff', border: `2px solid ${styles.borderColor || styles.bgColor || 'var(--primary)'}`, borderRadius: '100px', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '8px', textDecoration: 'none', transition: '0.3s', boxShadow: '0 4px 14px rgba(0,0,0,0.1)' }}>
-        {section.buttonText || "자세히 보기"} <ArrowRight size={18} />
+        {section.buttonText || "자세히 보기"} <ArrowRight size={16} />
       </Link>
     );
   };
@@ -230,7 +235,7 @@ const Home = () => {
   const MediaGallery = ({ images = [], singleImage, style }) => {
     const allImages = (images && images.length > 0) ? images : (singleImage ? [singleImage] : []);
     if (allImages.length === 0) return null;
-    if (style === 'gallery') return <div style={{ columns: window.innerWidth < 768 ? '1' : '2', columnGap: '24px' }}>{allImages.map((img, i) => (<div key={i} style={{ marginBottom: '24px', borderRadius: '32px', overflow: 'hidden', breakInside: 'avoid' }}><SafeMedia src={img} style={{ width: '100%', display: 'block' }} /></div>))}</div>;
+    if (style === 'gallery') return <div style={{ columns: window.innerWidth < 768 ? '1' : '2', columnGap: '20px' }}>{allImages.map((img, i) => (<div key={i} style={{ marginBottom: '20px', borderRadius: '24px', overflow: 'hidden', breakInside: 'avoid' }}><SafeMedia src={img} style={{ width: '100%', display: 'block' }} /></div>))}</div>;
     return <ImageSlider images={allImages} />;
   };
 
@@ -238,7 +243,7 @@ const Home = () => {
     const { style, typography, items, layout, bgColor, bgType, bgUrl, image, images, bgOpacity, paddingTop, paddingBottom } = section;
     const isMobile = window.innerWidth < 768;
     const hasMedia = image || (images && images.length > 0);
-    const wrapperStyle = { position: 'relative', paddingTop: `${isMobile ? Math.min(60, paddingTop ?? 80) : (paddingTop ?? 120)}px`, paddingBottom: `${isMobile ? Math.min(60, paddingBottom ?? 80) : (paddingBottom ?? 120)}px`, background: bgType === 'color' ? (bgColor || '#ffffff') : 'transparent', overflow: 'hidden' };
+    const wrapperStyle = { position: 'relative', paddingTop: `${isMobile ? Math.min(50, paddingTop ?? 60) : (paddingTop ?? 120)}px`, paddingBottom: `${isMobile ? Math.min(50, paddingBottom ?? 60) : (paddingBottom ?? 120)}px`, background: bgType === 'color' ? (bgColor || '#ffffff') : 'transparent', overflow: 'hidden' };
 
     return (
       <section key={section.id} style={wrapperStyle}>
@@ -246,27 +251,27 @@ const Home = () => {
         <div style={{ position: 'absolute', inset: 0, background: bgType === 'color' ? 'transparent' : `rgba(255,255,255,${1 - (bgOpacity ?? 1)})`, zIndex: 0 }}></div>
         <div className="container" style={{ position: 'relative', zIndex: 1 }}>
           {(style === 'classic' || !style) && (
-            <div style={{ display: !hasMedia ? 'block' : (isMobile ? 'block' : 'flex'), textAlign: !hasMedia || isMobile ? 'center' : 'left', flexDirection: layout === 'right' ? 'row-reverse' : 'row', alignItems: 'center', gap: isMobile ? '40px' : '80px' }}>
-              <div style={{ flex: 1, marginBottom: isMobile && hasMedia ? '40px' : 0 }}><h2 style={getTextStyle(typography, 'title')}>{section.title}</h2><p style={{ ...getTextStyle(typography, 'content'), marginBottom: '32px' }}>{section.content}</p><CustomButton section={section} /></div>
+            <div style={{ display: !hasMedia ? 'block' : (isMobile ? 'block' : 'flex'), textAlign: !hasMedia || isMobile ? 'center' : 'left', flexDirection: layout === 'right' ? 'row-reverse' : 'row', alignItems: 'center', gap: isMobile ? '32px' : '80px' }}>
+              <div style={{ flex: 1, marginBottom: isMobile && hasMedia ? '32px' : 0 }}><h2 style={getTextStyle(typography, 'title')}>{section.title}</h2><p style={{ ...getTextStyle(typography, 'content'), marginBottom: '24px' }}>{section.content}</p><CustomButton section={section} /></div>
               {hasMedia && <div style={{ flex: 1 }}><MediaGallery images={images} singleImage={image} /></div>}
             </div>
           )}
           {style === 'feature-cards' && (
-             <div style={{ display: isMobile ? 'block' : 'grid', gridTemplateColumns: hasMedia ? '1fr 1fr' : '1fr', gap: isMobile ? '40px' : '80px' }}>
-                <div style={{ marginBottom: isMobile ? '40px' : 0 }}><h2 style={getTextStyle(typography, 'title')}>{section.title}</h2><p style={{ ...getTextStyle(typography, 'content'), marginBottom: '32px' }}>{section.content}</p><CustomButton section={section} /><div style={{marginTop:'40px'}}><MediaGallery images={images} singleImage={image} /></div></div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>{(items || []).map((item, i) => (<div key={i} className="admin-card" style={{ display: 'flex', gap: '20px', padding: isMobile ? '24px' : '40px', borderRadius: '24px', background: '#fff' }}><div style={{ fontSize: '18px', fontWeight: '900', color: 'var(--primary)', opacity: 0.3 }}>{item.number || `0${i+1}`}</div><div><h4 style={{ fontSize: '20px', fontWeight: '800', marginBottom: '8px' }}>{item.title}</h4><p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>{item.content}</p></div></div>))}</div>
+             <div style={{ display: isMobile ? 'block' : 'grid', gridTemplateColumns: hasMedia ? '1fr 1fr' : '1fr', gap: isMobile ? '32px' : '80px' }}>
+                <div style={{ marginBottom: isMobile ? '32px' : 0 }}><h2 style={getTextStyle(typography, 'title')}>{section.title}</h2><p style={{ ...getTextStyle(typography, 'content'), marginBottom: '24px' }}>{section.content}</p><CustomButton section={section} /><div style={{marginTop:'32px'}}><MediaGallery images={images} singleImage={image} /></div></div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>{(items || []).map((item, i) => (<div key={i} className="admin-card" style={{ display: 'flex', gap: '16px', padding: isMobile ? '20px' : '40px', borderRadius: '20px', background: '#fff' }}><div style={{ fontSize: '16px', fontWeight: '900', color: 'var(--primary)', opacity: 0.3 }}>{item.number || `0${i+1}`}</div><div><h4 style={{ fontSize: '16px', fontWeight: '800', marginBottom: '6px' }}>{item.title}</h4><p style={{ color: 'var(--text-muted)', fontSize: '13px' }}>{item.content}</p></div></div>))}</div>
              </div>
           )}
           {style === 'process' && (
             <div style={{ textAlign: 'center' }}>
                <h2 style={{ ...getTextStyle(typography, 'title'), textAlign: 'center' }}>{section.title}</h2>
-               <p style={{ ...getTextStyle(typography, 'content'), textAlign: 'center', margin: '0 auto 40px', maxWidth: '800px' }}>{section.content}</p>
-               <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : `repeat(${(items || []).length || 1}, 1fr)`, gap: '32px' }}>
+               <p style={{ ...getTextStyle(typography, 'content'), textAlign: 'center', margin: '0 auto 32px', maxWidth: '800px' }}>{section.content}</p>
+               <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : `repeat(${(items || []).length || 1}, 1fr)`, gap: '24px' }}>
                   {(items || []).map((item, i) => (
-                    <div key={i}><div style={{ width: '50px', height: '50px', background: 'var(--primary)', color: '#fff', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: '18px', fontWeight: '800' }}>{item.number || i + 1}</div><h4 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '12px' }}>{item.title}</h4><p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>{item.content}</p></div>
+                    <div key={i}><div style={{ width: '40px', height: '40px', background: 'var(--primary)', color: '#fff', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', fontSize: '16px', fontWeight: '800' }}>{item.number || i + 1}</div><h4 style={{ fontSize: '16px', fontWeight: '800', marginBottom: '8px' }}>{item.title}</h4><p style={{ color: 'var(--text-muted)', fontSize: '13px' }}>{item.content}</p></div>
                   ))}
                </div>
-               <div style={{ marginTop: '48px' }}><CustomButton section={section} /></div>
+               <div style={{ marginTop: '40px' }}><CustomButton section={section} /></div>
             </div>
           )}
         </div>
@@ -280,41 +285,41 @@ const Home = () => {
     const isMobile = window.innerWidth < 768;
 
     return (
-      <section style={{ padding: isMobile ? '80px 0' : '120px 0', background: rb.bgColor || 'var(--bg-sub)' }}>
-         <div className="container">
-            <div style={{ textAlign: 'center', marginBottom: isMobile ? '40px' : '80px' }}>
-               <h2 style={{ fontSize: isMobile ? '32px' : '48px', fontWeight: '800', color: rb.titleColor || 'var(--text-main)' }}>
+      <section style={{ padding: isMobile ? '60px 0' : '120px 0', background: rb.bgColor || 'var(--bg-sub)' }}>
+         <div className="container" style={{ padding: isMobile ? '0 20px' : 'inherit' }}>
+            <div style={{ textAlign: 'center', marginBottom: isMobile ? '32px' : '80px' }}>
+               <h2 style={{ fontSize: isMobile ? '28px' : '48px', fontWeight: '800', color: rb.titleColor || 'var(--text-main)' }}>
                   {rb.title || "여행 후기"}
                </h2>
             </div>
             
             {(rb.layout === 'grid' || isMobile) ? (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
                  {config.reviews.map((rev, i) => (
-                   <div key={i} className="admin-card" style={{ padding: '24px', background: '#fff', borderRadius: '24px' }}>
-                      <div style={{ display: 'flex', gap: '4px', color: '#fbbf24', marginBottom: '12px' }}>
-                         {[...Array(5)].map((_, j) => <Star key={j} size={14} fill={j < (rev.rating || 5) ? "#fbbf24" : "none"} />)}
+                   <div key={i} className="admin-card" style={{ padding: '20px', background: '#fff', borderRadius: '20px' }}>
+                      <div style={{ display: 'flex', gap: '4px', color: '#fbbf24', marginBottom: '10px' }}>
+                         {[...Array(5)].map((_, j) => <Star key={j} size={12} fill={j < (rev.rating || 5) ? "#fbbf24" : "none"} />)}
                       </div>
-                      <p style={{ fontSize: '15px', lineHeight: '1.6', color: 'var(--text-main)', marginBottom: '20px', fontWeight: '500' }}>"{rev.content}"</p>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                         <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'var(--primary)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '12px' }}>{rev.author?.[0]}</div>
-                         <div><div style={{ fontWeight: '800', fontSize: '13px' }}>{rev.author}</div><div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{rev.productTitle}</div></div>
+                      <p style={{ fontSize: '14px', lineHeight: '1.5', color: 'var(--text-main)', marginBottom: '16px', fontWeight: '500' }}>"{rev.content}"</p>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                         <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: 'var(--primary)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '11px' }}>{rev.author?.[0]}</div>
+                         <div><div style={{ fontWeight: '800', fontSize: '12px' }}>{rev.author}</div><div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>{rev.productTitle}</div></div>
                       </div>
                    </div>
                  ))}
               </div>
             ) : (
-              <div style={{ position: 'relative', overflow: 'hidden', padding: '20px 0' }}>
-                 <div style={{ display: 'flex', gap: '24px', overflowX: 'auto', paddingBottom: '20px', scrollSnapType: 'x mandatory' }}>
+              <div style={{ position: 'relative', overflow: 'hidden', padding: '16px 0' }}>
+                 <div style={{ display: 'flex', gap: '20px', overflowX: 'auto', paddingBottom: '16px', scrollSnapType: 'x mandatory' }}>
                     {config.reviews.map((rev, i) => (
-                      <div key={i} style={{ minWidth: '350px', background: '#fff', padding: '40px', borderRadius: '32px', scrollSnapAlign: 'start', boxShadow: '0 10px 30px rgba(0,0,0,0.05)' }}>
-                         <div style={{ display: 'flex', gap: '4px', color: '#fbbf24', marginBottom: '20px' }}>
-                            {[...Array(5)].map((_, j) => <Star key={j} size={18} fill={j < (rev.rating || 5) ? "#fbbf24" : "none"} />)}
+                      <div key={i} style={{ minWidth: '320px', background: '#fff', padding: '32px', borderRadius: '24px', scrollSnapAlign: 'start', boxShadow: '0 10px 30px rgba(0,0,0,0.05)' }}>
+                         <div style={{ display: 'flex', gap: '4px', color: '#fbbf24', marginBottom: '16px' }}>
+                            {[...Array(5)].map((_, j) => <Star key={j} size={16} fill={j < (rev.rating || 5) ? "#fbbf24" : "none"} />)}
                          </div>
-                         <p style={{ fontSize: '18px', lineHeight: '1.8', color: 'var(--text-main)', marginBottom: '32px', fontStyle: 'italic' }}>"{rev.content}"</p>
-                         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                            <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'var(--primary)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800' }}>{rev.author?.[0]}</div>
-                            <div><div style={{ fontWeight: '800' }}>{rev.author}</div><div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>{rev.productTitle}</div></div>
+                         <p style={{ fontSize: '16px', lineHeight: '1.6', color: 'var(--text-main)', marginBottom: '24px', fontStyle: 'italic' }}>"{rev.content}"</p>
+                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--primary)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800' }}>{rev.author?.[0]}</div>
+                            <div><div style={{ fontWeight: '800' }}>{rev.author}</div><div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{rev.productTitle}</div></div>
                          </div>
                       </div>
                     ))}
@@ -333,21 +338,22 @@ const Home = () => {
       {renderHero()}
       {sections.map(section => renderSection(section))}
       {renderReviews()}
-      <section id="products" style={{ padding: isMobile ? '80px 0' : '120px 0', background: config.productListBranding?.bgColor || 'var(--bg-main)' }}>
+      <section id="products" style={{ padding: isMobile ? '60px 0' : '120px 0', background: config.productListBranding?.bgColor || 'var(--bg-main)' }}>
         <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: isMobile ? '40px' : '80px' }}>
-             <h2 style={{ fontSize: isMobile ? '32px' : '48px', fontWeight: '800', color: config.productListBranding?.titleColor || 'var(--text-main)' }}>
+          <div style={{ textAlign: 'center', marginBottom: isMobile ? '32px' : '80px' }}>
+             <h2 style={{ fontSize: isMobile ? '28px' : '48px', fontWeight: '800', color: config.productListBranding?.titleColor || 'var(--text-main)' }}>
                 {config.productListBranding?.title || "추천 패키지"}
              </h2>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
             {products.map(product => {
               const typo = product.typography || {};
               const getStyle = (t) => {
                 const base = typo[t]?.fontSize || (t === 'title' ? 22 : 15);
-                const min = Math.max(14, base * 0.85);
+                // Mobile base reduced to 55-60% of original
+                const min = Math.max(12, Math.floor(base * 0.6));
                 return {
-                  fontSize: `clamp(${min}px, 4vw, ${base}px)`,
+                  fontSize: `clamp(${min}px, 3.8vw, ${base}px)`,
                   color: typo[t]?.color,
                   fontWeight: t === 'title' || t === 'price' ? '800' : '400'
                 };
@@ -356,15 +362,15 @@ const Home = () => {
               return (
                 <Link key={product.id} to={`/product/${product.id}`} style={{ textDecoration: 'none' }}>
                   <div className="product-card-modern">
-                    <div style={{ height: isMobile ? '200px' : '240px', overflow: 'hidden' }}>
+                    <div style={{ height: isMobile ? '180px' : '240px', overflow: 'hidden' }}>
                       <SafeMedia src={product.thumbnails[0]} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     </div>
-                    <div style={{ padding: isMobile ? '20px' : '30px' }}>
-                      <h3 style={{ ...getStyle('title'), marginBottom: '8px' }}>{product.title}</h3>
-                      <p style={{ ...getStyle('description'), marginBottom: '16px' }}>{product.description}</p>
-                      <div style={{ borderTop: '1px solid var(--border-light)', paddingTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ padding: isMobile ? '16px' : '30px' }}>
+                      <h3 style={{ ...getStyle('title'), marginBottom: '6px' }}>{product.title}</h3>
+                      <p style={{ ...getStyle('description'), marginBottom: '12px' }}>{product.description}</p>
+                      <div style={{ borderTop: '1px solid var(--border-light)', paddingTop: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                          <span style={getStyle('price')}>{product.price?.toLocaleString()}원</span>
-                         <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-muted)' }}>자세히 보기 &gt;</span>
+                         <span style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text-muted)' }}>자세히 보기 &gt;</span>
                       </div>
                     </div>
                   </div>
