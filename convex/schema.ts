@@ -149,6 +149,7 @@ export default defineSchema({
     paddingBottom: v.optional(v.number()), // px
     order: v.optional(v.number()),
     menuName: v.optional(v.string()), // For dynamic navigation
+    type: v.optional(v.string()), // "custom", "products", "reviews"
   }),
   products: defineTable({
     title: v.string(),
