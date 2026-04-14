@@ -10,7 +10,6 @@ const getTextStyle = (typo, type) => {
   const t = typo[type];
   
   // Responsive font size calculation using clamp
-  // Mobile size (min) reduced from 75% to 55-60% for a "smaller" feel on mobile
   const desktopSize = t.fontSize || (type === 'title' ? 42 : 18);
   const mobileSize = Math.max(12, Math.floor(desktopSize * 0.55));
   
@@ -25,9 +24,114 @@ const getTextStyle = (typo, type) => {
   };
 };
 
+const WavyText = ({ text, style }) => {
+  if (!text) return null;
+  const letters = Array.from(text);
+  const container = {
+    hidden: { opacity: 0 },
+    visible: (i = 1) => ({
+      opacity: 1,
+      transition: { staggerChildren: 0.05, delayChildren: 0.04 * i },
+    }),
+  };
+  const child = {
+    visible: {
+      opacity: 1,
+      y: [0, -5, 0],
+      transition: {
+        type: "spring",
+        damping: 12,
+        stiffness: 200,
+        repeat: Infinity,
+        repeatType: "reverse",
+        duration: 1.2
+      },
+    },
+    hidden: {
+      opacity: 0,
+    },
+  };
+
+  return (
+    <motion.div
+      style={{ display: "flex", flexWrap: "wrap", ...style }}
+      variants={container}
+      initial="hidden"
+      animate="visible"
+    >
+      {letters.map((letter, index) => (
+        <motion.span variants={child} key={index}>
+          {letter === " " ? "\u00A0" : letter}
+        </motion.span>
+      ))}
+    </motion.div>
+  );
+};
+
 const HeroText = ({ hero }) => {
   const { typography, aboveTitle, title, subtitle, belowTitle, buttons } = hero;
   
+  const renderTextEffect = (text, type) => {
+    const typo = typography?.[type] || {};
+    const textStyle = getTextStyle(typography, type);
+    const effect = typo.style || 'none';
+
+    if (effect === 'box') {
+      return (
+        <motion.span 
+          initial={{ opacity: 0, scale: 0.9 }} 
+          animate={{ opacity: 1, scale: 1 }}
+          style={{ 
+            ...textStyle, 
+            display: 'inline-block',
+            padding: '8px 20px', 
+            background: `${typo.color}15`, // Semi-transparent version of the color
+            border: `1px solid ${typo.color}30`,
+            borderRadius: '100px',
+            marginBottom: '16px',
+            fontWeight: '800'
+          }}
+        >
+          {text}
+        </motion.span>
+      );
+    }
+
+    if (effect === 'wavy' && type === 'above') {
+      return <WavyText text={text} style={{ ...textStyle, marginBottom: '16px', fontWeight: '800' }} />;
+    }
+
+    if (effect === 'italic' && type === 'below') {
+      return (
+        <motion.span 
+          initial={{ opacity: 0 }} 
+          animate={{ opacity: 1 }}
+          style={{ ...textStyle, fontStyle: 'italic', marginTop: '24px', opacity: 0.9 }}
+        >
+          {text}
+        </motion.span>
+      );
+    }
+
+    // Default rendering
+    return (
+      <motion.span 
+        initial={{ opacity: 0, y: type === 'above' ? -10 : 10 }} 
+        animate={{ opacity: 1, y: 0 }} 
+        transition={{ delay: type === 'above' ? 0 : 0.6 }}
+        style={{ 
+          ...textStyle, 
+          marginBottom: type === 'above' ? '16px' : 0, 
+          marginTop: type === 'below' ? '24px' : 0,
+          fontWeight: type === 'above' ? '800' : '400',
+          opacity: type === 'below' ? 0.9 : 1
+        }}
+      >
+        {text}
+      </motion.span>
+    );
+  };
+
   const renderButton = (btn) => {
     if (!btn.show) return null;
     const styles = btn.style || {};
@@ -64,30 +168,17 @@ const HeroText = ({ hero }) => {
   };
 
   return (
-    <div style={{ position: 'relative', zIndex: 10 }}>
-       {aboveTitle && (
-         <motion.span 
-           initial={{opacity:0, y:-10}} 
-           animate={{opacity:1, y:0}} 
-           style={{ ...getTextStyle(typography, 'above'), marginBottom: '16px', fontWeight: '800', letterSpacing: '0.1em', textTransform: 'uppercase' }}
-         >
-           {aboveTitle}
-         </motion.span>
-       )}
+    <div style={{ position: 'relative', zIndex: 10, textAlign: hero.textPosition === 'center' ? 'center' : (hero.textPosition === 'right' ? 'right' : 'left') }}>
+       {aboveTitle && renderTextEffect(aboveTitle, 'above')}
        <motion.h1 initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} transition={{delay:0.2}} style={{ ...getTextStyle(typography, 'title'), fontWeight: '900', marginBottom: '32px' }}>
           {title?.split('\n').map((l,i) => <React.Fragment key={i}>{l}<br/></React.Fragment>)}
        </motion.h1>
-       {subtitle && <motion.p initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.4}} style={{ ...getTextStyle(typography, 'subtitle'), marginBottom: '32px' }}>{subtitle}</motion.p>}
-       {belowTitle && (
-         <motion.span 
-           initial={{opacity:0, y:10}} 
-           animate={{opacity:1, y:0}} 
-           transition={{delay:0.6}} 
-           style={{ ...getTextStyle(typography, 'below'), marginTop: '24px', opacity: 0.9 }}
-         >
-           {belowTitle}
-         </motion.span>
+       {subtitle && (
+         <motion.p initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.4}} style={{ ...getTextStyle(typography, 'subtitle'), marginBottom: '32px' }}>
+           {subtitle?.split('\n').map((l,i) => <React.Fragment key={i}>{l}<br/></React.Fragment>)}
+         </motion.p>
        )}
+       {belowTitle && renderTextEffect(belowTitle, 'below')}
        
        <div style={{ 
          display: 'flex', 
@@ -96,7 +187,9 @@ const HeroText = ({ hero }) => {
          flexWrap: 'wrap',
          justifyContent: hero.textPosition === 'center' ? 'center' : (hero.textPosition === 'right' ? 'flex-end' : 'flex-start') 
        }}>
-          {(buttons && buttons.length > 0) ? (
+          {/* Only show buttons if the array exists. If empty, show nothing. 
+              If undefined (legacy), show defaults. */}
+          {buttons ? (
             buttons.map(btn => renderButton(btn))
           ) : (
             <>
@@ -350,7 +443,6 @@ const Home = () => {
               const typo = product.typography || {};
               const getStyle = (t) => {
                 const base = typo[t]?.fontSize || (t === 'title' ? 22 : 15);
-                // Mobile base reduced to 55-60% of original
                 const min = Math.max(12, Math.floor(base * 0.6));
                 return {
                   fontSize: `clamp(${min}px, 3.8vw, ${base}px)`,

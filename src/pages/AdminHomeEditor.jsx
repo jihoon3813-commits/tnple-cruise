@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useConfig } from '../context/ConfigContext';
-import { Plus, Trash2, Save, Monitor, Layers, Image as ImageIcon, Palette, Type, Link as LinkIcon, Upload, Loader2, Play, ChevronUp, ChevronDown, Check, X, Settings2, Grid, List, Activity, MoveVertical, MousePointerClick, Sun, Moon, Coffee, Cloud, Target, Droplets, Package, Layout } from 'lucide-react';
+import { Plus, Trash2, Save, Monitor, Layers, Image as ImageIcon, Palette, Type, Link as LinkIcon, Upload, Loader2, Play, ChevronUp, ChevronDown, Check, X, Settings2, Grid, List, Activity, MoveVertical, MousePointerClick, Sun, Moon, Coffee, Cloud, Target, Droplets, Package, Layout, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const AdminHomeEditor = () => {
@@ -114,7 +114,8 @@ const AdminHomeEditor = () => {
   };
 
   const handleUpdateItem = async (sectionId, itemIdx, field, value) => {
-    const section = config.sections.find(s => s.id === sectionId);
+    const section = config.sections.find(s => section.id === sectionId);
+    if (!section) return;
     const items = [...(section.items || [])];
     items[itemIdx] = { ...items[itemIdx], [field]: value };
     await handleSectionUpdate(sectionId, 'items', items);
@@ -197,44 +198,54 @@ const AdminHomeEditor = () => {
     );
   };
 
-  const MultiMediaInput = ({ label, values = [], onChange }) => {
-    const [loading, setLoading] = useState(false);
-    const fileRef = useRef();
-    const onFileChange = async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      setLoading(true);
-      const storageId = await uploadFile(file);
-      onChange([...(values || []), `storage:${storageId}`]);
-      setLoading(false);
-    };
-    return (
-      <div className="form-group" style={{ gridColumn: 'span 2', marginBottom: '16px' }}>
-        <label style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-muted)', marginBottom: '12px', display: 'block' }}>{label}</label>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '12px' }}>
-          {values?.map((src, idx) => (
-            <div key={idx} style={{ position: 'relative', height: '80px', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border-light)' }}>
-              <img src={src.startsWith('storage:') ? 'https://via.placeholder.com/100?text=File' : src} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              <button onClick={() => onChange(values.filter((_, i) => i !== idx))} style={{ position: 'absolute', top: '2px', right: '2px', background: 'rgba(239, 68, 68, 0.8)', color: '#fff', border: 'none', borderRadius: '50%', width: '18px', height: '18px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X size={10} /></button>
-            </div>
-          ))}
-          <button className="luxury-btn outline" style={{ height: '80px', borderRadius: '12px', borderStyle: 'dashed', flexDirection: 'column' }} onClick={() => fileRef.current.click()} disabled={loading}>
-            {loading ? <Loader2 className="animate-spin" /> : <Plus size={20} />}
-          </button>
-          <input type="file" ref={fileRef} hidden onChange={onFileChange} />
-        </div>
-      </div>
-    );
-  };
-
-  const TypographyTool = ({ data, target, onUpdate }) => {
+  const TypographyTool = ({ data, target, onUpdate, showStyle = false }) => {
     const typo = data.typography?.[target] || {};
     const update = (field, val) => onUpdate(target, field, val);
+    
+    // Custom styles for Above/Below
+    const aboveStyles = [
+      { id: 'none', label: '기본 (None)' },
+      { id: 'box', label: '둥근 박스 (Box)' },
+      { id: 'wavy', label: '움직이는 텍스트 (Wavy)' },
+    ];
+    
+    const belowStyles = [
+      { id: 'none', label: '기본 (None)' },
+      { id: 'box', label: '둥근 박스 (Box)' },
+      { id: 'italic', label: '기울이기 (Italic)' },
+    ];
+
+    const currentStyles = target === 'above' ? aboveStyles : belowStyles;
+
     return (
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', background: 'var(--bg-sub)', padding: '20px', borderRadius: '16px' }}>
-        <div className="form-group"><label style={{ fontSize: '11px', fontWeight: 700 }}>색상</label><input type="color" className="form-control" style={{ height: '38px', padding: 4 }} value={typo.color || '#0F172A'} onChange={e => update('color', e.target.value)} /></div>
-        <div className="form-group"><label style={{ fontSize: '11px', fontWeight: 700 }}>크기</label><input type="number" className="form-control" value={typo.fontSize || 16} onChange={e => update('fontSize', parseInt(e.target.value))} /></div>
-        <div className="form-group"><label style={{ fontSize: '11px', fontWeight: 700 }}>정렬</label><select className="form-control" value={typo.textAlign || 'left'} onChange={e => update('textAlign', e.target.value)}><option value="left">Left</option><option value="center">Center</option><option value="right">Right</option></select></div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', background: 'var(--bg-sub)', padding: '20px', borderRadius: '16px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+          <div className="form-group"><label style={{ fontSize: '11px', fontWeight: 700 }}>색상</label><input type="color" className="form-control" style={{ height: '38px', padding: 4 }} value={typo.color || '#0F172A'} onChange={e => update('color', e.target.value)} /></div>
+          <div className="form-group"><label style={{ fontSize: '11px', fontWeight: 700 }}>크기</label><input type="number" className="form-control" value={typo.fontSize || 16} onChange={e => update('fontSize', parseInt(e.target.value))} /></div>
+          <div className="form-group"><label style={{ fontSize: '11px', fontWeight: 700 }}>정렬</label><select className="form-control" value={typo.textAlign || 'left'} onChange={e => update('textAlign', e.target.value)}><option value="left">Left</option><option value="center">Center</option><option value="right">Right</option></select></div>
+        </div>
+        {showStyle && (
+          <div className="form-group">
+            <label style={{ fontSize: '11px', fontWeight: 700, marginBottom: '8px', display: 'block' }}>텍스트 스타일 효과</label>
+            <div style={{ display: 'flex', gap: '8px' }}>
+               {currentStyles.map(s => (
+                 <button 
+                   key={s.id} 
+                   onClick={() => update('style', s.id)}
+                   style={{ 
+                     flex: 1, padding: '8px', fontSize: '11px', borderRadius: '8px', 
+                     border: typo.style === s.id ? '2px solid var(--primary)' : '1px solid var(--border-light)',
+                     background: typo.style === s.id ? '#fff' : 'transparent',
+                     fontWeight: typo.style === s.id ? '800' : '400',
+                     cursor: 'pointer'
+                   }}
+                 >
+                   {s.label}
+                 </button>
+               ))}
+            </div>
+          </div>
+        )}
       </div>
     );
   };
@@ -310,7 +321,7 @@ const AdminHomeEditor = () => {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                        <div className="form-group"><label>상단 강조 문구</label><input className="form-control" value={heroForm?.aboveTitle || ""} onChange={e => setHeroForm({...heroForm, aboveTitle: e.target.value})} /></div>
                        <div className="form-group"><label>메인 타이틀</label><textarea className="form-control" value={heroForm?.title} onChange={e => setHeroForm({...heroForm, title: e.target.value})} rows={3} /></div>
-                       <div className="form-group"><label>서브 타이틀</label><input className="form-control" value={heroForm?.subtitle} onChange={e => setHeroForm({...heroForm, subtitle: e.target.value})} /></div>
+                       <div className="form-group"><label>서브 타이틀</label><textarea className="form-control" value={heroForm?.subtitle} onChange={e => setHeroForm({...heroForm, subtitle: e.target.value})} rows={2} /></div>
                        <div className="form-group"><label>하단 상세 문구</label><input className="form-control" value={heroForm?.belowTitle || ""} onChange={e => setHeroForm({...heroForm, belowTitle: e.target.value})} /></div>
                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                           <div className="form-group"><label>가로 정렬</label><select className="form-control" value={heroForm?.textPosition} onChange={e => setHeroForm({...heroForm, textPosition: e.target.value})}><option value="left">Left</option><option value="center">Center</option><option value="right">Right</option></select></div>
@@ -336,10 +347,10 @@ const AdminHomeEditor = () => {
 
                  {heroTab === 'typography' && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-                       <div><label style={{ fontWeight: 800, marginBottom: '12px', display: 'block' }}>상단 강조 문구 폰트 (Above)</label><TypographyTool data={heroForm} target="above" onUpdate={handleHeroTypoUpdate} /></div>
+                       <div><label style={{ fontWeight: 800, marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}><Sparkles size={16} color="var(--primary)" /> 상단 강조 문구 스타일 (Above)</label><TypographyTool data={heroForm} target="above" onUpdate={handleHeroTypoUpdate} showStyle={true} /></div>
                        <div><label style={{ fontWeight: 800, marginBottom: '12px', display: 'block' }}>메인 타이틀 폰트 (Title)</label><TypographyTool data={heroForm} target="title" onUpdate={handleHeroTypoUpdate} /></div>
                        <div><label style={{ fontWeight: 800, marginBottom: '12px', display: 'block' }}>서브 타이틀 폰트 (Subtitle)</label><TypographyTool data={heroForm} target="subtitle" onUpdate={handleHeroTypoUpdate} /></div>
-                       <div><label style={{ fontWeight: 800, marginBottom: '12px', display: 'block' }}>하단 상세 문구 폰트 (Below)</label><TypographyTool data={heroForm} target="below" onUpdate={handleHeroTypoUpdate} /></div>
+                       <div><label style={{ fontWeight: 800, marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}><Sparkles size={16} color="var(--primary)" /> 하단 상세 문구 스타일 (Below)</label><TypographyTool data={heroForm} target="below" onUpdate={handleHeroTypoUpdate} showStyle={true} /></div>
                     </div>
                  )}
 
@@ -354,17 +365,55 @@ const AdminHomeEditor = () => {
                             setHeroForm({ ...heroForm, buttons: [...btns, newBtn] });
                           }}><Plus size={14} /> 버튼 추가</button>
                        </div>
+                       
+                       {/* Button Preview (Admin Real-time) */}
+                       <div style={{ background: '#fff', padding: '32px', borderRadius: '24px', border: '1px dashed var(--border-light)', textAlign: 'center' }}>
+                          <label style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '20px', display: 'block' }}>실시간 버튼 디자인 미리보기</label>
+                          <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                             {(heroForm.buttons && heroForm.buttons.length > 0) ? (
+                               heroForm.buttons.map(btn => (
+                                 <div 
+                                   key={btn.id}
+                                   style={{ 
+                                     padding: btn.style?.size === 'large' ? '16px 40px' : (btn.style?.size === 'small' ? '8px 20px' : '12px 32px'),
+                                     background: btn.style?.bgColor || 'var(--primary)',
+                                     color: btn.style?.textColor || '#fff',
+                                     border: `2px solid ${btn.style?.borderColor || btn.style?.bgColor || 'var(--primary)'}`,
+                                     borderRadius: '100px',
+                                     fontWeight: '800',
+                                     fontSize: btn.style?.size === 'large' ? '16px' : (btn.style?.size === 'small' ? '12px' : '14px'),
+                                     boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                                   }}
+                                 >
+                                    {btn.text}
+                                 </div>
+                               ))
+                             ) : (
+                               <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>버튼이 없습니다. (홈페이지에서도 숨겨집니다)</p>
+                             )}
+                          </div>
+                       </div>
+
                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                          {(heroForm.buttons || []).map((btn, idx) => (
                            <div key={btn.id} style={{ background: '#fff', padding: '24px', borderRadius: '20px', border: '1px solid var(--border-light)' }}>
                               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
-                                 <span style={{ fontWeight: 800, fontSize: '13px' }}>버튼 #{idx+1}</span>
+                                 <span style={{ fontWeight: 800, fontSize: '13px' }}>버튼 #{idx+1} 편집</span>
                                  <button style={{ color: '#ef4444', border: 'none', background: 'none' }} onClick={() => setHeroForm({...heroForm, buttons: heroForm.buttons.filter((_,i) => i !== idx)})}><Trash2 size={16}/></button>
                               </div>
-                              <div className="form-group"><label style={{fontSize:'11px'}}>문구</label><input className="form-control" value={btn.text} onChange={e => { const b=[...heroForm.buttons]; b[idx]={...b[idx], text:e.target.value}; setHeroForm({...heroForm, buttons:b})}} /></div>
-                              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '12px' }}>
+                              <div className="form-group" style={{ marginBottom: '12px' }}><label style={{fontSize:'11px'}}>버튼 문구</label><input className="form-control" value={btn.text} onChange={e => { const b=[...heroForm.buttons]; b[idx]={...b[idx], text:e.target.value}; setHeroForm({...heroForm, buttons:b})}} /></div>
+                              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                                  <div className="form-group"><label style={{fontSize:'11px'}}>배경색</label><input type="color" className="form-control" value={btn.style?.bgColor} onChange={e => { const b=[...heroForm.buttons]; b[idx]={...b[idx], style:{...b[idx].style, bgColor:e.target.value}}; setHeroForm({...heroForm, buttons:b})}} /></div>
                                  <div className="form-group"><label style={{fontSize:'11px'}}>글자색</label><input type="color" className="form-control" value={btn.style?.textColor} onChange={e => { const b=[...heroForm.buttons]; b[idx]={...b[idx], style:{...b[idx].style, textColor:e.target.value}}; setHeroForm({...heroForm, buttons:b})}} /></div>
+                                 <div className="form-group" style={{ gridColumn: 'span 2' }}><label style={{fontSize:'11px'}}>테두리색</label><input type="color" className="form-control" value={btn.style?.borderColor || btn.style?.bgColor} onChange={e => { const b=[...heroForm.buttons]; b[idx]={...b[idx], style:{...b[idx].style, borderColor:e.target.value}}; setHeroForm({...heroForm, buttons:b})}} /></div>
+                                 <div className="form-group" style={{ gridColumn: 'span 2' }}>
+                                    <label style={{fontSize:'11px'}}>크기</label>
+                                    <select className="form-control" value={btn.style?.size || 'medium'} onChange={e => { const b=[...heroForm.buttons]; b[idx]={...b[idx], style:{...b[idx].style, size:e.target.value}}; setHeroForm({...heroForm, buttons:b})}}>
+                                       <option value="small">Small</option>
+                                       <option value="medium">Medium</option>
+                                       <option value="large">Large</option>
+                                    </select>
+                                 </div>
                               </div>
                            </div>
                          ))}
