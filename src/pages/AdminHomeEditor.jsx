@@ -336,8 +336,10 @@ const AdminHomeEditor = () => {
 
                  {heroTab === 'typography' && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-                       <div><label style={{ fontWeight: 800, marginBottom: '12px', display: 'block' }}>메인 타이틀 폰트</label><TypographyTool data={heroForm} target="title" onUpdate={handleHeroTypoUpdate} /></div>
-                       <div><label style={{ fontWeight: 800, marginBottom: '12px', display: 'block' }}>서브 타이틀 폰트</label><TypographyTool data={heroForm} target="subtitle" onUpdate={handleHeroTypoUpdate} /></div>
+                       <div><label style={{ fontWeight: 800, marginBottom: '12px', display: 'block' }}>상단 강조 문구 폰트 (Above)</label><TypographyTool data={heroForm} target="above" onUpdate={handleHeroTypoUpdate} /></div>
+                       <div><label style={{ fontWeight: 800, marginBottom: '12px', display: 'block' }}>메인 타이틀 폰트 (Title)</label><TypographyTool data={heroForm} target="title" onUpdate={handleHeroTypoUpdate} /></div>
+                       <div><label style={{ fontWeight: 800, marginBottom: '12px', display: 'block' }}>서브 타이틀 폰트 (Subtitle)</label><TypographyTool data={heroForm} target="subtitle" onUpdate={handleHeroTypoUpdate} /></div>
+                       <div><label style={{ fontWeight: 800, marginBottom: '12px', display: 'block' }}>하단 상세 문구 폰트 (Below)</label><TypographyTool data={heroForm} target="below" onUpdate={handleHeroTypoUpdate} /></div>
                     </div>
                  )}
 
@@ -434,7 +436,7 @@ const AdminHomeEditor = () => {
                                <div className="form-group" style={{ gridColumn: 'span 2' }}>
                                   <label>배경 투명도/밝기 ({section.bgOpacity})</label>
                                   <input type="range" min="0" max="1" step="0.1" className="form-control" value={section.bgOpacity} onChange={e => handleSectionUpdate(section.id, 'bgOpacity', parseFloat(e.target.value))} />
-                               </div>
+                                </div>
                             </div>
                           )}
 
@@ -471,14 +473,14 @@ const AdminHomeEditor = () => {
                     <div className="form-group">
                        <label>타이틀 글씨 색상 (하얀 배경이면 어두운 색 권장)</label>
                        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginTop: '8px' }}>
-                          <input type="color" className="form-control" style={{ width: '60px', height: '42px', padding: '4px' }} value={productBrandingForm?.titleColor || "#000000"} onChange={e => setProductBrandingForm({...productBrandingForm, titleColor: e.target.value})} />
+                          <input type="color" className="form-control" style={{ width: '60px', height: '42px', padding: '4px' }} value={productBrandingForm?.titleColor?.startsWith('#') ? productBrandingForm.titleColor : "#000000"} onChange={e => setProductBrandingForm({...productBrandingForm, titleColor: e.target.value})} />
                           <input className="form-control" value={productBrandingForm?.titleColor || "#000000"} onChange={e => setProductBrandingForm({...productBrandingForm, titleColor: e.target.value})} />
                        </div>
                     </div>
                     <div className="form-group">
                        <label>섹션 전체 배경색</label>
                        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginTop: '8px' }}>
-                          <input type="color" className="form-control" style={{ width: '60px', height: '42px', padding: '4px' }} value={productBrandingForm?.bgColor || "#ffffff"} onChange={e => setProductBrandingForm({...productBrandingForm, bgColor: e.target.value})} />
+                          <input type="color" className="form-control" style={{ width: '60px', height: '42px', padding: '4px' }} value={productBrandingForm?.bgColor?.startsWith('#') ? productBrandingForm.bgColor : "#ffffff"} onChange={e => setProductBrandingForm({...productBrandingForm, bgColor: e.target.value})} />
                           <input className="form-control" value={productBrandingForm?.bgColor || "#ffffff"} onChange={e => setProductBrandingForm({...productBrandingForm, bgColor: e.target.value})} />
                        </div>
                     </div>
