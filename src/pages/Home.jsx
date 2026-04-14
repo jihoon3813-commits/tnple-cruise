@@ -109,7 +109,13 @@ const Home = () => {
   useEffect(() => { document.body.className = `theme-${theme || 'white'}`; }, [theme]);
 
   const sortedSections = useMemo(() => {
-    return [...(sections || [])].sort((a, b) => (a.order || 0) - (b.order || 0));
+    return [...(sections || [])].sort((a, b) => {
+      const orderA = a.order ?? 0;
+      const orderB = b.order ?? 0;
+      if (orderA !== orderB) return orderA - orderB;
+      // Fallback for same order: use original array index or _id
+      return (a._id || "").localeCompare(b._id || "");
+    });
   }, [sections]);
 
   const isMobile = window.innerWidth < 768;

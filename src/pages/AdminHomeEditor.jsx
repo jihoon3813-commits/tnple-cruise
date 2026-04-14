@@ -192,35 +192,37 @@ const AdminHomeEditor = () => {
 
   useEffect(() => {
     if (config.hero) setHeroForm(config.hero);
-  }, [config]);
+  }, [config.hero]);
 
-  const sortedSections = useMemo(() => {
-    return [...config.sections].sort((a, b) => (a.order || 0) - (b.order || 0));
-  }, [config.sections]);
+  // Use config.sections directly as it is already sorted in the context
+  const sections = config.sections || [];
 
   const handleHeroSave = async () => {
     await updateHero(heroForm);
-    alert('저장되었습니다.');
+    alert('어드민 히어로 설정이 저장되었습니다.');
   };
 
-  const handeSectionMove = async (id, direction) => {
-    const idx = sortedSections.findIndex(s => s.id === id);
-    if (direction === 'up' && idx > 0) {
-      const current = sortedSections[idx];
-      const prev = sortedSections[idx - 1];
-      await updateSection(current.id, { ...current, order: idx - 1 });
-      await updateSection(prev.id, { ...prev, order: idx });
-    } else if (direction === 'down' && idx < sortedSections.length - 1) {
-      const current = sortedSections[idx];
-      const next = sortedSections[idx + 1];
-      await updateSection(current.id, { ...current, order: idx + 1 });
-      await updateSection(next.id, { ...next, order: idx });
-    }
+  const handleSectionMove = async (id, direction) => {
+    const idx = sections.findIndex(s => s.id === id);
+    if (idx === -1) return;
+
+    let targetIdx = direction === 'up' ? idx - 1 : idx + 1;
+    if (targetIdx < 0 || targetIdx >= sections.length) return;
+
+    const current = sections[idx];
+    const target = sections[targetIdx];
+
+    console.log(`Moving section ${id} from ${idx} to ${targetIdx}`);
+
+    // Update both sections with new explicit order
+    // We send the whole section object to ensure no data loss during patch
+    await updateSection(current.id, { ...current, order: targetIdx });
+    await updateSection(target.id, { ...target, order: idx });
   };
 
   const handleCreateSection = async (type = "custom") => {
     const defaultData = {
-      order: config.sections.length,
+      order: sections.length,
       type: type,
       title: type === "products" ? "추천 패키지" : (type === "reviews" ? "여행 후기" : "새로운 섹션"),
       content: type === "custom" ? "섹션 설명을 입력하세요." : "",
@@ -289,7 +291,7 @@ const AdminHomeEditor = () => {
                     <button className="luxury-btn outline" onClick={() => handleCreateSection("reviews")}><MessageSquare size={14} /> 여행 후기</button>
                   </div>
                </div>
-               {sortedSections.map((section, idx) => (
+               {sections.map((section, idx) => (
                  <div key={section.id} className="admin-card" style={{ padding: '0', overflow: 'hidden' }}>
                     <div onClick={() => setActiveSectionId(activeSectionId === section.id ? null : section.id)} style={{ padding: '16px 24px', background: 'var(--bg-sub)', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -301,9 +303,9 @@ const AdminHomeEditor = () => {
                           <span style={{ fontSize: '10px', color: 'var(--text-muted)', background: '#fff', padding: '2px 6px', borderRadius: '4px' }}>{section.type || "custom"}</span>
                        </div>
                        <div style={{ display: 'flex', gap: '12px' }}>
-                          <button onClick={e => { e.stopPropagation(); handeSectionMove(section.id, 'up'); }} style={{ border: 'none', background: 'none' }}><ChevronUp size={16} /></button>
-                          <button onClick={e => { e.stopPropagation(); handeSectionMove(section.id, 'down'); }} style={{ border: 'none', background: 'none' }}><ChevronDown size={16} /></button>
-                          <button onClick={e => { e.stopPropagation(); if(confirm('삭제하시겠습니까?')) deleteSection(section.id); }} style={{ color: '#ef4444', border: 'none', background: 'none' }}><Trash2 size={16} /></button>
+                          <button onClick={e => { e.stopPropagation(); handleSectionMove(section.id, 'up'); }} style={{ border: 'none', background: 'none', cursor: 'pointer' }}><ChevronUp size={16} /></button>
+                          <button onClick={e => { e.stopPropagation(); handleSectionMove(section.id, 'down'); }} style={{ border: 'none', background: 'none', cursor: 'pointer' }}><ChevronDown size={16} /></button>
+                          <button onClick={e => { e.stopPropagation(); if(confirm('삭제하시겠습니까?')) deleteSection(section.id); }} style={{ color: '#ef4444', border: 'none', background: 'none', cursor: 'pointer' }}><Trash2 size={16} /></button>
                        </div>
                     </div>
 
