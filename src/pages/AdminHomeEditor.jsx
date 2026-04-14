@@ -3,12 +3,118 @@ import { useConfig } from '../context/ConfigContext';
 import { Plus, Trash2, Save, Monitor, Layers, Image as ImageIcon, Palette, Type, Link as LinkIcon, Upload, Loader2, Play, ChevronUp, ChevronDown, Check, X, Settings2, Grid, List, Activity, MoveVertical, MousePointerClick, Sun, Moon, Coffee, Cloud, Target, Droplets, Package, Layout, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+// --- Sub-components moved outside to prevent remounting on every state update ---
+
+const MediaInput = ({ label, value, onChange, uploadFile }) => {
+  const [loading, setLoading] = useState(false);
+  const fileRef = useRef();
+  const onFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setLoading(true);
+    const storageId = await uploadFile(file);
+    onChange(`storage:${storageId}`);
+    setLoading(false);
+  };
+  return (
+    <div className="form-group" style={{ marginBottom: '16px' }}>
+      <label style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-muted)' }}>{label}</label>
+      <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+        <input className="form-control" value={value || ""} onChange={e => onChange(e.target.value)} placeholder="URL 또는 업로드" />
+        <button className="luxury-btn outline" style={{ padding: '0 12px' }} onClick={() => fileRef.current.click()} disabled={loading}>
+          {loading ? <Loader2 className="animate-spin" size={16} /> : <Upload size={16} />}
+        </button>
+        <input type="file" ref={fileRef} hidden onChange={onFileChange} />
+      </div>
+    </div>
+  );
+};
+
+const TypographyTool = ({ data, target, onUpdate, showStyle = false }) => {
+  const typo = data.typography?.[target] || {};
+  const update = (field, val) => onUpdate(target, field, val);
+  
+  const aboveStyles = [
+    { id: 'none', label: '기본 (None)' },
+    { id: 'box', label: '둥근 박스 (Box)' },
+    { id: 'wavy', label: '움직이는 텍스트 (Wavy)' },
+  ];
+  
+  const belowStyles = [
+    { id: 'none', label: '기본 (None)' },
+    { id: 'box', label: '둥근 박스 (Box)' },
+    { id: 'italic', label: '기울이기 (Italic)' },
+  ];
+
+  const currentStyles = target === 'above' ? aboveStyles : belowStyles;
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', background: 'var(--bg-sub)', padding: '20px', borderRadius: '16px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+        <div className="form-group">
+          <label style={{ fontSize: '11px', fontWeight: 700 }}>색상</label>
+          {/* stopPropagation prevents parent listeners (like accordion toggles) from firing */}
+          <input 
+            type="color" 
+            className="form-control" 
+            style={{ height: '38px', padding: 4, cursor: 'pointer' }} 
+            value={typo.color || '#0F172A'} 
+            onChange={e => update('color', e.target.value)}
+            onClick={e => e.stopPropagation()}
+          />
+        </div>
+        <div className="form-group"><label style={{ fontSize: '11px', fontWeight: 700 }}>크기</label><input type="number" className="form-control" value={typo.fontSize || 16} onChange={e => update('fontSize', parseInt(e.target.value))} onClick={e => e.stopPropagation()} /></div>
+        <div className="form-group"><label style={{ fontSize: '11px', fontWeight: 700 }}>정렬</label><select className="form-control" value={typo.textAlign || 'left'} onChange={e => update('textAlign', e.target.value)} onClick={e => e.stopPropagation()}><option value="left">Left</option><option value="center">Center</option><option value="right">Right</option></select></div>
+      </div>
+      {showStyle && (
+        <div className="form-group">
+          <label style={{ fontSize: '11px', fontWeight: 700, marginBottom: '8px', display: 'block' }}>텍스트 스타일 효과</label>
+          <div style={{ display: 'flex', gap: '8px' }}>
+             {currentStyles.map(s => (
+               <button 
+                 key={s.id} 
+                 onClick={() => update('style', s.id)}
+                 style={{ 
+                   flex: 1, padding: '8px', fontSize: '11px', borderRadius: '8px', 
+                   border: typo.style === s.id ? '2px solid var(--primary)' : '1px solid var(--border-light)',
+                   background: typo.style === s.id ? '#fff' : 'transparent',
+                   fontWeight: typo.style === s.id ? '800' : '400',
+                   cursor: 'pointer'
+                 }}
+               >
+                 {s.label}
+               </button>
+             ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const CATEGORIES = [
+  { id: 'theme', name: '전체 디자인 테마', icon: <Palette size={20} /> },
+  { id: 'hero', name: '히어로 섹션 편집', icon: <Layout size={20} /> },
+  { id: 'sections', name: '홍보 섹션 상세 관리', icon: <Layers size={20} /> },
+  { id: 'productList', name: '상품 리스트 브랜딩', icon: <Package size={20} /> },
+  { id: 'reviews', name: '여행후기 섹션 브랜딩', icon: <Activity size={20} /> },
+];
+
+const THEMES = [
+  { id: 'white', label: 'Pure White', icon: <Sun size={14}/>, color: '#2563EB' },
+  { id: 'midnight', label: 'Midnight', icon: <Moon size={14}/>, color: '#D4AF37' },
+  { id: 'cream', label: 'Creamy Sand', icon: <Coffee size={14}/>, color: '#8B4513' },
+  { id: 'grey', label: 'Cool Grey', icon: <Cloud size={14}/>, color: '#0D9488' },
+  { id: 'lavender', label: 'Lavender', icon: <Target size={14}/>, color: '#7C3AED' },
+  { id: 'ocean', label: 'Ocean Breeze', icon: <Droplets size={14}/>, color: '#0284C7' }
+];
+
 const AdminHomeEditor = () => {
   const { config, updateHero, updateTheme, updateSection, addSection, deleteSection, uploadFile, updateProductBranding, updateReviewBranding } = useConfig();
   const [heroForm, setHeroForm] = useState(config.hero);
   const [productBrandingForm, setProductBrandingForm] = useState(config.productListBranding);
   const [reviewBrandingForm, setReviewBrandingForm] = useState(config.reviewSectionBranding);
-  const [activeCategory, setActiveCategory] = useState('theme'); // 'theme', 'hero', 'sections', 'productList', 'reviews'
+  const [activeCategory, setActiveCategory] = useState('theme'); 
   const [activeSectionId, setActiveSectionId] = useState(null);
   const [heroTab, setHeroTab] = useState('style');
   const [editTab, setEditTab] = useState('style'); 
@@ -20,37 +126,31 @@ const AdminHomeEditor = () => {
   }, [config]);
 
   const handleHeroSave = async () => {
-    console.log("Saving hero...", heroForm);
     try {
       const { productListBranding, reviewSectionBranding, ...cleanHero } = heroForm;
       await updateHero(cleanHero);
       alert('홈페이지 히어로 설정이 저장되었습니다.');
     } catch (e) {
-      console.error("Hero save failed:", e);
       alert('저장 실패: ' + e.message);
     }
   };
 
   const handleProductBrandingSave = async () => {
-    console.log("Saving product branding...", productBrandingForm);
     try {
       if (!productBrandingForm) throw new Error("브랜딩 데이터가 없습니다.");
       await updateProductBranding(productBrandingForm);
       alert('상품 리스트 브랜딩 설정이 저장되었습니다.');
     } catch (e) {
-      console.error("Product branding save failed:", e);
       alert('저장 실패: ' + e.message);
     }
   };
 
   const handleReviewBrandingSave = async () => {
-    console.log("Saving review branding...", reviewBrandingForm);
     try {
       if (!reviewBrandingForm) throw new Error("리뷰 브랜딩 데이터가 없습니다.");
       await updateReviewBranding(reviewBrandingForm);
       alert('여행후기 섹션 브랜딩 설정이 저장되었습니다.');
     } catch (e) {
-      console.error("Review branding save failed:", e);
       alert('저장 실패: ' + e.message);
     }
   };
@@ -59,29 +159,12 @@ const AdminHomeEditor = () => {
     await updateTheme(theme);
   };
 
-  const categories = [
-    { id: 'theme', name: '전체 디자인 테마', icon: <Palette size={20} /> },
-    { id: 'hero', name: '히어로 섹션 편집', icon: <Layout size={20} /> },
-    { id: 'sections', name: '홍보 섹션 상세 관리', icon: <Layers size={20} /> },
-    { id: 'productList', name: '상품 리스트 브랜딩', icon: <Package size={20} /> },
-    { id: 'reviews', name: '여행후기 섹션 브랜딩', icon: <Activity size={20} /> },
-  ];
-
   const handleHeroTypoUpdate = (target, field, value) => {
     const typo = heroForm.typography || {};
     const targetTypo = typo[target] || {};
     const updatedTypo = { ...typo, [target]: { ...targetTypo, [field]: value } };
     setHeroForm({ ...heroForm, typography: updatedTypo });
   };
-
-  const themes = [
-    { id: 'white', label: 'Pure White', icon: <Sun size={14}/>, color: '#2563EB' },
-    { id: 'midnight', label: 'Midnight', icon: <Moon size={14}/>, color: '#D4AF37' },
-    { id: 'cream', label: 'Creamy Sand', icon: <Coffee size={14}/>, color: '#8B4513' },
-    { id: 'grey', label: 'Cool Grey', icon: <Cloud size={14}/>, color: '#0D9488' },
-    { id: 'lavender', label: 'Lavender', icon: <Target size={14}/>, color: '#7C3AED' },
-    { id: 'ocean', label: 'Ocean Breeze', icon: <Droplets size={14}/>, color: '#0284C7' }
-  ];
 
   const handleSectionUpdate = async (id, field, value) => {
     const section = config.sections.find(s => s.id === id);
@@ -96,35 +179,6 @@ const AdminHomeEditor = () => {
     const targetTypo = typo[target] || {};
     const updatedTypo = { ...typo, [target]: { ...targetTypo, [field]: value } };
     await updateSection(id, { ...section, typography: updatedTypo });
-  };
-
-  const handleButtonUpdate = async (id, field, value) => {
-    const section = config.sections.find(s => s.id === id);
-    if (!section) return;
-    const btnStyle = section.buttonStyles || {};
-    const updatedBtn = { ...btnStyle, [field]: value };
-    await handleSectionUpdate(id, 'buttonStyles', updatedBtn);
-  };
-
-  const handleAddItem = async (id) => {
-    const section = config.sections.find(s => s.id === id);
-    const items = section.items || [];
-    const newItems = [...items, { title: "새로운 항목", content: "내용을 입력하세요.", number: `0${items.length + 1}` }];
-    await handleSectionUpdate(id, 'items', newItems);
-  };
-
-  const handleUpdateItem = async (sectionId, itemIdx, field, value) => {
-    const section = config.sections.find(s => section.id === sectionId);
-    if (!section) return;
-    const items = [...(section.items || [])];
-    items[itemIdx] = { ...items[itemIdx], [field]: value };
-    await handleSectionUpdate(sectionId, 'items', items);
-  };
-
-  const handleRemoveItem = async (sectionId, itemIdx) => {
-    const section = config.sections.find(s => s.id === sectionId);
-    const items = (section.items || []).filter((_, i) => i !== itemIdx);
-    await handleSectionUpdate(sectionId, 'items', items);
   };
 
   const handleMoveSection = async (id, direction) => {
@@ -173,88 +227,10 @@ const AdminHomeEditor = () => {
     });
   };
 
-  const MediaInput = ({ label, value, onChange }) => {
-    const [loading, setLoading] = useState(false);
-    const fileRef = useRef();
-    const onFileChange = async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      setLoading(true);
-      const storageId = await uploadFile(file);
-      onChange(`storage:${storageId}`);
-      setLoading(false);
-    };
-    return (
-      <div className="form-group" style={{ marginBottom: '16px' }}>
-        <label style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-muted)' }}>{label}</label>
-        <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
-          <input className="form-control" value={value || ""} onChange={e => onChange(e.target.value)} placeholder="URL 또는 업로드" />
-          <button className="luxury-btn outline" style={{ padding: '0 12px' }} onClick={() => fileRef.current.click()} disabled={loading}>
-            {loading ? <Loader2 className="animate-spin" size={16} /> : <Upload size={16} />}
-          </button>
-          <input type="file" ref={fileRef} hidden onChange={onFileChange} />
-        </div>
-      </div>
-    );
-  };
-
-  const TypographyTool = ({ data, target, onUpdate, showStyle = false }) => {
-    const typo = data.typography?.[target] || {};
-    const update = (field, val) => onUpdate(target, field, val);
-    
-    // Custom styles for Above/Below
-    const aboveStyles = [
-      { id: 'none', label: '기본 (None)' },
-      { id: 'box', label: '둥근 박스 (Box)' },
-      { id: 'wavy', label: '움직이는 텍스트 (Wavy)' },
-    ];
-    
-    const belowStyles = [
-      { id: 'none', label: '기본 (None)' },
-      { id: 'box', label: '둥근 박스 (Box)' },
-      { id: 'italic', label: '기울이기 (Italic)' },
-    ];
-
-    const currentStyles = target === 'above' ? aboveStyles : belowStyles;
-
-    return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', background: 'var(--bg-sub)', padding: '20px', borderRadius: '16px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
-          <div className="form-group"><label style={{ fontSize: '11px', fontWeight: 700 }}>색상</label><input type="color" className="form-control" style={{ height: '38px', padding: 4 }} value={typo.color || '#0F172A'} onChange={e => update('color', e.target.value)} /></div>
-          <div className="form-group"><label style={{ fontSize: '11px', fontWeight: 700 }}>크기</label><input type="number" className="form-control" value={typo.fontSize || 16} onChange={e => update('fontSize', parseInt(e.target.value))} /></div>
-          <div className="form-group"><label style={{ fontSize: '11px', fontWeight: 700 }}>정렬</label><select className="form-control" value={typo.textAlign || 'left'} onChange={e => update('textAlign', e.target.value)}><option value="left">Left</option><option value="center">Center</option><option value="right">Right</option></select></div>
-        </div>
-        {showStyle && (
-          <div className="form-group">
-            <label style={{ fontSize: '11px', fontWeight: 700, marginBottom: '8px', display: 'block' }}>텍스트 스타일 효과</label>
-            <div style={{ display: 'flex', gap: '8px' }}>
-               {currentStyles.map(s => (
-                 <button 
-                   key={s.id} 
-                   onClick={() => update('style', s.id)}
-                   style={{ 
-                     flex: 1, padding: '8px', fontSize: '11px', borderRadius: '8px', 
-                     border: typo.style === s.id ? '2px solid var(--primary)' : '1px solid var(--border-light)',
-                     background: typo.style === s.id ? '#fff' : 'transparent',
-                     fontWeight: typo.style === s.id ? '800' : '400',
-                     cursor: 'pointer'
-                   }}
-                 >
-                   {s.label}
-                 </button>
-               ))}
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  };
-
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-      {/* Category Navigation */}
       <div style={{ display: 'flex', gap: '8px', background: '#fff', padding: '8px', borderRadius: '16px', boxShadow: 'var(--shadow-sm)', overflowX: 'auto' }}>
-        {categories.map(cat => (
+        {CATEGORIES.map(cat => (
           <button 
             key={cat.id} 
             onClick={() => setActiveCategory(cat.id)}
@@ -281,7 +257,7 @@ const AdminHomeEditor = () => {
                  <h2 style={{ fontSize: '20px', fontWeight: '800' }}>홈페이지 전체 디자인 테마</h2>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>
-                 {themes.map(t => (
+                 {THEMES.map(t => (
                    <button key={t.id} onClick={() => handleThemeChange(t.id)} style={{ padding: '24px', borderRadius: '20px', border: config.theme === t.id ? '2px solid var(--primary)' : '1px solid var(--border-light)', background: config.theme === t.id ? 'var(--bg-sub)' : '#fff', cursor: 'pointer', textAlign: 'center', transition: '0.3s' }}>
                       <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: t.color, margin: '0 auto 16px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>{t.icon}</div>
                       <span style={{ fontWeight: '800', fontSize: '15px', display: 'block' }}>{t.label}</span>
@@ -336,7 +312,7 @@ const AdminHomeEditor = () => {
 
                  {heroTab === 'visual' && (
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-                       <MediaInput label="배경 미디어" value={heroForm?.bgUrl} onChange={v => setHeroForm({...heroForm, bgUrl: v})} />
+                       <MediaInput label="배경 미디어" value={heroForm?.bgUrl} onChange={v => setHeroForm({...heroForm, bgUrl: v})} uploadFile={uploadFile} />
                        <div className="form-group"><label>배경 타입</label><select className="form-control" value={heroForm?.bgType} onChange={e => setHeroForm({...heroForm, bgType: e.target.value})}><option value="image">Image</option><option value="video">Video</option></select></div>
                        <div className="form-group" style={{ gridColumn: 'span 2' }}>
                           <label>배경 밝기 ({heroForm?.bgOpacity ?? 1}) (0:어둡게, 1:보통, 2:밝게)</label>
@@ -366,7 +342,6 @@ const AdminHomeEditor = () => {
                           }}><Plus size={14} /> 버튼 추가</button>
                        </div>
                        
-                       {/* Button Preview (Admin Real-time) */}
                        <div style={{ background: '#fff', padding: '32px', borderRadius: '24px', border: '1px dashed var(--border-light)', textAlign: 'center' }}>
                           <label style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '20px', display: 'block' }}>실시간 버튼 디자인 미리보기</label>
                           <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -403,12 +378,12 @@ const AdminHomeEditor = () => {
                               </div>
                               <div className="form-group" style={{ marginBottom: '12px' }}><label style={{fontSize:'11px'}}>버튼 문구</label><input className="form-control" value={btn.text} onChange={e => { const b=[...heroForm.buttons]; b[idx]={...b[idx], text:e.target.value}; setHeroForm({...heroForm, buttons:b})}} /></div>
                               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                                 <div className="form-group"><label style={{fontSize:'11px'}}>배경색</label><input type="color" className="form-control" value={btn.style?.bgColor} onChange={e => { const b=[...heroForm.buttons]; b[idx]={...b[idx], style:{...b[idx].style, bgColor:e.target.value}}; setHeroForm({...heroForm, buttons:b})}} /></div>
-                                 <div className="form-group"><label style={{fontSize:'11px'}}>글자색</label><input type="color" className="form-control" value={btn.style?.textColor} onChange={e => { const b=[...heroForm.buttons]; b[idx]={...b[idx], style:{...b[idx].style, textColor:e.target.value}}; setHeroForm({...heroForm, buttons:b})}} /></div>
-                                 <div className="form-group" style={{ gridColumn: 'span 2' }}><label style={{fontSize:'11px'}}>테두리색</label><input type="color" className="form-control" value={btn.style?.borderColor || btn.style?.bgColor} onChange={e => { const b=[...heroForm.buttons]; b[idx]={...b[idx], style:{...b[idx].style, borderColor:e.target.value}}; setHeroForm({...heroForm, buttons:b})}} /></div>
+                                 <div className="form-group"><label style={{fontSize:'11px'}}>배경색</label><input type="color" className="form-control" value={btn.style?.bgColor} onChange={e => { const b=[...heroForm.buttons]; b[idx]={...b[idx], style:{...b[idx].style, bgColor:e.target.value}}; setHeroForm({...heroForm, buttons:b})}} onClick={e => e.stopPropagation()} /></div>
+                                 <div className="form-group"><label style={{fontSize:'11px'}}>글자색</label><input type="color" className="form-control" value={btn.style?.textColor} onChange={e => { const b=[...heroForm.buttons]; b[idx]={...b[idx], style:{...b[idx].style, textColor:e.target.value}}; setHeroForm({...heroForm, buttons:b})}} onClick={e => e.stopPropagation()} /></div>
+                                 <div className="form-group" style={{ gridColumn: 'span 2' }}><label style={{fontSize:'11px'}}>테두리색</label><input type="color" className="form-control" value={btn.style?.borderColor || btn.style?.bgColor} onChange={e => { const b=[...heroForm.buttons]; b[idx]={...b[idx], style:{...b[idx].style, borderColor:e.target.value}}; setHeroForm({...heroForm, buttons:b})}} onClick={e => e.stopPropagation()} /></div>
                                  <div className="form-group" style={{ gridColumn: 'span 2' }}>
                                     <label style={{fontSize:'11px'}}>크기</label>
-                                    <select className="form-control" value={btn.style?.size || 'medium'} onChange={e => { const b=[...heroForm.buttons]; b[idx]={...b[idx], style:{...b[idx].style, size:e.target.value}}; setHeroForm({...heroForm, buttons:b})}}>
+                                    <select className="form-control" value={btn.style?.size || 'medium'} onChange={e => { const b=[...heroForm.buttons]; b[idx]={...b[idx], style:{...b[idx].style, size:e.target.value}}; setHeroForm({...heroForm, buttons:b})}} onClick={e => e.stopPropagation()}>
                                        <option value="small">Small</option>
                                        <option value="medium">Medium</option>
                                        <option value="large">Large</option>
@@ -477,14 +452,14 @@ const AdminHomeEditor = () => {
 
                           {editTab === 'visual' && (
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-                               <MediaInput label="메인 이미지" value={section.image} onChange={v => handleSectionUpdate(section.id, 'image', v)} />
+                               <MediaInput label="메인 이미지" value={section.image} onChange={v => handleSectionUpdate(section.id, 'image', v)} uploadFile={uploadFile} />
                                <div className="form-group"><label>배경 타입</label><select className="form-control" value={section.bgType} onChange={e => handleSectionUpdate(section.id, 'bgType', e.target.value)}><option value="color">단색</option><option value="image">이미지</option><option value="video">동영상</option></select></div>
                                {section.bgType === 'color' ? (
-                                  <div className="form-group"><label>배경 색상</label><input type="color" className="form-control" value={section.bgColor} onChange={e => handleSectionUpdate(section.id, 'bgColor', e.target.value)} /></div>
-                               ) : (<MediaInput label="배경 URL" value={section.bgUrl} onChange={v => handleSectionUpdate(section.id, 'bgUrl', v)} />)}
+                                  <div className="form-group"><label>배경 색상</label><input type="color" className="form-control" value={section.bgColor} onChange={e => handleSectionUpdate(section.id, 'bgColor', e.target.value)} onClick={e => e.stopPropagation()} /></div>
+                               ) : (<MediaInput label="배경 URL" value={section.bgUrl} onChange={v => handleSectionUpdate(section.id, 'bgUrl', v)} uploadFile={uploadFile} />)}
                                <div className="form-group" style={{ gridColumn: 'span 2' }}>
                                   <label>배경 투명도/밝기 ({section.bgOpacity})</label>
-                                  <input type="range" min="0" max="1" step="0.1" className="form-control" value={section.bgOpacity} onChange={e => handleSectionUpdate(section.id, 'bgOpacity', parseFloat(e.target.value))} />
+                                  <input type="range" min="0" max="1" step="0.1" className="form-control" value={section.bgOpacity} onChange={e => handleSectionUpdate(section.id, 'bgOpacity', parseFloat(e.target.value))} onClick={e => e.stopPropagation()} />
                                 </div>
                             </div>
                           )}
@@ -520,27 +495,19 @@ const AdminHomeEditor = () => {
                  
                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
                     <div className="form-group">
-                       <label>타이틀 글씨 색상 (하얀 배경이면 어두운 색 권장)</label>
+                       <label>타이틀 글씨 색상</label>
                        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginTop: '8px' }}>
-                          <input type="color" className="form-control" style={{ width: '60px', height: '42px', padding: '4px' }} value={productBrandingForm?.titleColor?.startsWith('#') ? productBrandingForm.titleColor : "#000000"} onChange={e => setProductBrandingForm({...productBrandingForm, titleColor: e.target.value})} />
-                          <input className="form-control" value={productBrandingForm?.titleColor || "#000000"} onChange={e => setProductBrandingForm({...productBrandingForm, titleColor: e.target.value})} />
+                          <input type="color" className="form-control" style={{ width: '60px', height: '42px', padding: '4px' }} value={productBrandingForm?.titleColor?.startsWith('#') ? productBrandingForm.titleColor : "#000000"} onChange={e => setProductBrandingForm({...productBrandingForm, titleColor: e.target.value})} onClick={e => e.stopPropagation()} />
+                          <input className="form-control" value={productBrandingForm?.titleColor || "#000000"} onChange={e => setProductBrandingForm({...productBrandingForm, titleColor: e.target.value})} onClick={e => e.stopPropagation()} />
                        </div>
                     </div>
                     <div className="form-group">
                        <label>섹션 전체 배경색</label>
                        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginTop: '8px' }}>
-                          <input type="color" className="form-control" style={{ width: '60px', height: '42px', padding: '4px' }} value={productBrandingForm?.bgColor?.startsWith('#') ? productBrandingForm.bgColor : "#ffffff"} onChange={e => setProductBrandingForm({...productBrandingForm, bgColor: e.target.value})} />
-                          <input className="form-control" value={productBrandingForm?.bgColor || "#ffffff"} onChange={e => setProductBrandingForm({...productBrandingForm, bgColor: e.target.value})} />
+                          <input type="color" className="form-control" style={{ width: '60px', height: '42px', padding: '4px' }} value={productBrandingForm?.bgColor?.startsWith('#') ? productBrandingForm.bgColor : "#ffffff"} onChange={e => setProductBrandingForm({...productBrandingForm, bgColor: e.target.value})} onClick={e => e.stopPropagation()} />
+                          <input className="form-control" value={productBrandingForm?.bgColor || "#ffffff"} onChange={e => setProductBrandingForm({...productBrandingForm, bgColor: e.target.value})} onClick={e => e.stopPropagation()} />
                        </div>
                     </div>
-                 </div>
-
-                 <div style={{ padding: '24px', background: 'var(--bg-sub)', borderRadius: '20px', border: '1px solid var(--border-light)', display: 'flex', gap: '16px' }}>
-                    <Activity size={20} color="var(--primary)" />
-                    <p style={{ fontSize: '13px', color: 'var(--text-muted)', lineHeight: '1.6' }}>
-                       <strong>디자인 팁:</strong> 다크 테마(Midnight 등)를 사용 중인데 추천 패키지 글씨가 안 보인다면, 
-                       여기서 <strong>타이틀 글씨 색상</strong>을 수동으로 검정색(#000000) 또는 테마에 맞는 색상으로 지정해 주세요.
-                    </p>
                  </div>
               </div>
             </section>
@@ -575,11 +542,11 @@ const AdminHomeEditor = () => {
                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
                         <div className="form-group">
                            <label>타이틀 글씨 색상</label>
-                           <input type="color" className="form-control" style={{ height: 42, padding: 4 }} value={reviewBrandingForm?.titleColor?.startsWith('#') ? reviewBrandingForm.titleColor : "#000000"} onChange={e => setReviewBrandingForm({...reviewBrandingForm, titleColor: e.target.value})} />
+                           <input type="color" className="form-control" style={{ height: 42, padding: 4 }} value={reviewBrandingForm?.titleColor?.startsWith('#') ? reviewBrandingForm.titleColor : "#000000"} onChange={e => setReviewBrandingForm({...reviewBrandingForm, titleColor: e.target.value})} onClick={e => e.stopPropagation()} />
                         </div>
                         <div className="form-group">
                            <label>섹션 전체 배경색</label>
-                           <input type="color" className="form-control" style={{ height: 42, padding: 4 }} value={reviewBrandingForm?.bgColor?.startsWith('#') ? reviewBrandingForm.bgColor : "#f8fafc"} onChange={e => setReviewBrandingForm({...reviewBrandingForm, bgColor: e.target.value})} />
+                           <input type="color" className="form-control" style={{ height: 42, padding: 4 }} value={reviewBrandingForm?.bgColor?.startsWith('#') ? reviewBrandingForm.bgColor : "#f8fafc"} onChange={e => setReviewBrandingForm({...reviewBrandingForm, bgColor: e.target.value})} onClick={e => e.stopPropagation()} />
                         </div>
                      </div>
 
