@@ -631,6 +631,39 @@ const AdminHomeEditor = () => {
                                 <div><label style={{ fontWeight: 800 }}>본문 폰트</label><TypographyTool data={section} target="content" onUpdate={(t,f,v) => handleTypographyUpdate(section, t,f,v)} /></div>
                              </div>
                           )}
+
+                          {editTab === 'button' && (
+                             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                                <div className="form-group">
+                                   <label>버튼 표시 여부</label>
+                                   <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                                      <button className={`luxury-btn ${section.showButton ? '' : 'outline'}`} onClick={() => handleSectionUpdate(section.id, { ...section, showButton: true })} style={{ flex: 1 }}>표시 (ON)</button>
+                                      <button className={`luxury-btn ${!section.showButton ? '' : 'outline'}`} onClick={() => handleSectionUpdate(section.id, { ...section, showButton: false })} style={{ flex: 1 }}>숨김 (OFF)</button>
+                                   </div>
+                                </div>
+                                
+                                {section.showButton && (
+                                   <>
+                                      <div className="form-group"><label>버튼 문구</label><DebouncedInput className="form-control" value={section.buttonText || ""} onChange={val => handleSectionUpdate(section.id, { ...section, buttonText: val })} /></div>
+                                      <div className="form-group"><label>버튼 연결 링크</label><DebouncedInput className="form-control" value={section.buttonLink || ""} onChange={val => handleSectionUpdate(section.id, { ...section, buttonLink: val })} /></div>
+                                      
+                                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', background: 'var(--bg-sub)', padding: '20px', borderRadius: '16px' }}>
+                                         <div className="form-group"><label style={{ fontSize: '11px', fontWeight: 700 }}>배경색</label><input type="color" className="form-control" value={section.buttonStyles?.bgColor || "#2563EB"} onChange={e => handleSectionUpdate(section.id, { ...section, buttonStyles: { ...section.buttonStyles, bgColor: e.target.value } })} /></div>
+                                         <div className="form-group"><label style={{ fontSize: '11px', fontWeight: 700 }}>글자색</label><input type="color" className="form-control" value={section.buttonStyles?.textColor || "#ffffff"} onChange={e => handleSectionUpdate(section.id, { ...section, buttonStyles: { ...section.buttonStyles, textColor: e.target.value } })} /></div>
+                                         <div className="form-group"><label style={{ fontSize: '11px', fontWeight: 700 }}>테두리색</label><input type="color" className="form-control" value={section.buttonStyles?.borderColor || section.buttonStyles?.bgColor || "#2563EB"} onChange={e => handleSectionUpdate(section.id, { ...section, buttonStyles: { ...section.buttonStyles, borderColor: e.target.value } })} /></div>
+                                         <div className="form-group">
+                                            <label style={{ fontSize: '11px', fontWeight: 700 }}>크기</label>
+                                            <select className="form-control" value={section.buttonStyles?.size || 'medium'} onChange={e => handleSectionUpdate(section.id, { ...section, buttonStyles: { ...section.buttonStyles, size: e.target.value } })}>
+                                               <option value="small">Small</option>
+                                               <option value="medium">Medium</option>
+                                               <option value="large">Large</option>
+                                            </select>
+                                         </div>
+                                      </div>
+                                   </>
+                                )}
+                             </div>
+                          )}
                        </div>
                     )}
                  </div>
