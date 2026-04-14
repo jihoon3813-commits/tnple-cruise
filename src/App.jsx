@@ -16,59 +16,69 @@ function App() {
   const { config, loading } = useConfig();
 
   React.useEffect(() => {
+    if (loading || !config) return;
+
     // 1. Favicon Update
-    if (config.faviconUrl) {
-      const link = document.querySelector("link[rel~='icon']") || document.createElement('link');
-      link.type = 'image/x-icon';
-      link.rel = 'icon';
-      link.href = config.faviconUrl;
-      document.getElementsByTagName('head')[0].appendChild(link);
-    }
+    try {
+      if (config.faviconUrl) {
+        const link = document.querySelector("link[rel~='icon']") || document.createElement('link');
+        link.type = 'image/x-icon';
+        link.rel = 'icon';
+        link.href = config.faviconUrl;
+        document.getElementsByTagName('head')[0].appendChild(link);
+      }
 
-    // 2. Meta Description
-    if (config.metaDescription) {
-      const meta = document.querySelector('meta[name="description"]') || document.createElement('meta');
-      meta.name = "description";
-      meta.content = config.metaDescription;
-      document.getElementsByTagName('head')[0].appendChild(meta);
-      
-      // OG Description
-      const ogMeta = document.querySelector('meta[property="og:description"]') || document.createElement('meta');
-      ogMeta.setAttribute('property', 'og:description');
-      ogMeta.content = config.metaDescription;
-      document.getElementsByTagName('head')[0].appendChild(ogMeta);
-    }
+      // 2. Meta Description
+      if (config.metaDescription) {
+        let meta = document.querySelector('meta[name="description"]');
+        if (!meta) {
+          meta = document.createElement('meta');
+          meta.name = "description";
+          document.getElementsByTagName('head')[0].appendChild(meta);
+        }
+        meta.content = config.metaDescription;
+        
+        // OG Description
+        let ogMeta = document.querySelector('meta[property="og:description"]');
+        if (!ogMeta) {
+          ogMeta = document.createElement('meta');
+          ogMeta.setAttribute('property', 'og:description');
+          document.getElementsByTagName('head')[0].appendChild(ogMeta);
+        }
+        ogMeta.content = config.metaDescription;
+      }
 
-    // 3. OG Image
-    if (config.ogImageUrl) {
-      const ogImg = document.querySelector('meta[property="og:image"]') || document.createElement('meta');
-      ogImg.setAttribute('property', 'og:image');
-      ogImg.content = config.ogImageUrl;
-      document.getElementsByTagName('head')[0].appendChild(ogImg);
+      // 3. OG Image
+      if (config.ogImageUrl) {
+        let ogImg = document.querySelector('meta[property="og:image"]');
+        if (!ogImg) {
+          ogImg = document.createElement('meta');
+          ogImg.setAttribute('property', 'og:image');
+          document.getElementsByTagName('head')[0].appendChild(ogImg);
+        }
+        ogImg.content = config.ogImageUrl;
+      }
+    } catch (err) {
+      console.error("SEO update error:", err);
     }
-  }, [config.faviconUrl, config.metaDescription, config.ogImageUrl]);
+  }, [config?.faviconUrl, config?.metaDescription, config?.ogImageUrl, loading]);
 
   return (
     <>
-      <AnimatePresence>
-        {loading && (
-          <motion.div 
-            initial={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
-            style={{ 
-              position: 'fixed', 
-              inset: 0, 
-              zIndex: 9999, 
-              background: '#fff', 
-              display: 'flex', 
-              flexDirection: 'column',
-              alignItems: 'center', 
-              justifyContent: 'center',
-              gap: '24px'
-            }}
-          >
-            <motion.div 
+      <ScrollToTop />
+      {loading ? (
+        <div style={{ 
+          position: 'fixed', 
+          inset: 0, 
+          zIndex: 9999, 
+          background: '#fff', 
+          display: 'flex', 
+          flexDirection: 'column',
+          alignItems: 'center', 
+          justifyContent: 'center',
+          gap: '24px'
+        }}>
+           <motion.div 
               animate={{ y: [0, -10, 0] }}
               transition={{ repeat: Infinity, duration: 2 }}
               style={{ color: 'var(--primary)' }}
@@ -79,21 +89,19 @@ function App() {
                <Loader2 className="animate-spin" size={16} />
                OLIGO CRUISE
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <ScrollToTop />
-      <Navbar />
-      <div style={{ opacity: loading ? 0 : 1, transition: 'opacity 0.3s' }}>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/admin/*" element={<Admin />} />
-          <Route path="/product/:id" element={<ProductDetail />} />
-          <Route path="/reviews" element={<Reviews />} />
-        </Routes>
-      </div>
-      <Footer />
+        </div>
+      ) : (
+        <>
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/admin/*" element={<Admin />} />
+            <Route path="/product/:id" element={<ProductDetail />} />
+            <Route path="/reviews" element={<Reviews />} />
+          </Routes>
+          <Footer />
+        </>
+      )}
     </>
   );
 }
