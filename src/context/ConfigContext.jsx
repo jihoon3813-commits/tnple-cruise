@@ -67,7 +67,7 @@ export const ConfigProvider = ({ children }) => {
     const { 
       style, title, subtitle, aboveTitle, belowTitle, 
       bgType, bgUrl, bgOpacity, paddingX,
-      textPosition, verticalAlign, typography 
+      textPosition, verticalAlign, typography, buttons 
     } = data;
     await updateHeroMutation({ 
       style: style || "classic", 
@@ -81,7 +81,8 @@ export const ConfigProvider = ({ children }) => {
       paddingX: paddingX ?? 80,
       textPosition, 
       verticalAlign: verticalAlign || "middle",
-      typography: typography || {}
+      typography: typography || {},
+      buttons: buttons || []
     });
   };
 

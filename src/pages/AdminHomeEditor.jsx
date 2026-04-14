@@ -224,7 +224,7 @@ const AdminHomeEditor = () => {
         </div>
 
         <div style={{ display: 'flex', gap: '8px', marginBottom: '32px' }}>
-           {['style', 'content', 'visual', 'typography'].map(t => (
+           {['style', 'content', 'visual', 'typography', 'buttons'].map(t => (
              <button key={t} onClick={() => setHeroTab(t)} className={`luxury-btn ${heroTab === t ? '' : 'outline'}`} style={{ padding: '8px 16px', borderRadius: '8px', fontSize: '12px' }}>{t.toUpperCase()}</button>
            ))}
         </div>
@@ -266,6 +266,59 @@ const AdminHomeEditor = () => {
            <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
               <div><label style={{ fontWeight: 800, marginBottom: '12px', display: 'block' }}>메인 타이틀 폰트</label><TypographyTool data={heroForm} target="title" onUpdate={handleHeroTypoUpdate} /></div>
               <div><label style={{ fontWeight: 800, marginBottom: '12px', display: 'block' }}>서브 타이틀 폰트</label><TypographyTool data={heroForm} target="subtitle" onUpdate={handleHeroTypoUpdate} /></div>
+           </div>
+        )}
+
+        {heroTab === 'buttons' && (
+           <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                 <label style={{ fontWeight: 800 }}>히어로 버튼 구성 (최대 2개)</label>
+                 <button className="luxury-btn outline" onClick={() => {
+                   const btns = heroForm.buttons || [];
+                   if (btns.length >= 2) return;
+                   const newBtn = { id: Date.now().toString(), text: "지금 시작하기", link: "/", show: true, style: { size: "medium", bgColor: "#2563EB", textColor: "#ffffff", borderColor: "#2563EB" } };
+                   setHeroForm({ ...heroForm, buttons: [...btns, newBtn] });
+                 }}><Plus size={14} /> 버튼 추가</button>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+                 {(heroForm.buttons || []).map((btn, idx) => (
+                   <div key={btn.id} style={{ background: 'var(--bg-sub)', padding: '24px', borderRadius: '20px', border: '1px solid var(--border-light)' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
+                         <span style={{ fontWeight: 800, fontSize: '14px' }}>버튼 #{idx + 1}</span>
+                         <div style={{ display: 'flex', gap: '8px' }}>
+                            <button className={`luxury-btn ${btn.show ? '' : 'outline'}`} style={{ padding: '4px 12px', fontSize: '10px' }} onClick={() => {
+                               const btns = [...heroForm.buttons];
+                               btns[idx] = { ...btns[idx], show: !btns[idx].show };
+                               setHeroForm({ ...heroForm, buttons: btns });
+                            }}>{btn.show ? '활성' : '비활성'}</button>
+                            <button style={{ color: '#ef4444', border: 'none', background: 'none' }} onClick={() => setHeroForm({ ...heroForm, buttons: heroForm.buttons.filter((_, i) => i !== idx) })}><Trash2 size={16} /></button>
+                         </div>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                         <div className="form-group"><label style={{ fontSize: '11px' }}>버튼 문구</label><input className="form-control" value={btn.text} onChange={e => {
+                            const btns = [...heroForm.buttons]; btns[idx] = { ...btns[idx], text: e.target.value }; setHeroForm({ ...heroForm, buttons: btns });
+                         }} /></div>
+                         <div className="form-group"><label style={{ fontSize: '11px' }}>링크 URL</label><input className="form-control" value={btn.link} onChange={e => {
+                            const btns = [...heroForm.buttons]; btns[idx] = { ...btns[idx], link: e.target.value }; setHeroForm({ ...heroForm, buttons: btns });
+                         }} /></div>
+                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+                            <div className="form-group"><label style={{ fontSize: '11px' }}>배경색</label><input type="color" className="form-control" style={{ height: 38, padding: 4 }} value={btn.style?.bgColor || "#2563EB"} onChange={e => {
+                               const btns = [...heroForm.buttons]; btns[idx] = { ...btns[idx], style: { ...btns[idx].style, bgColor: e.target.value } }; setHeroForm({ ...heroForm, buttons: btns });
+                            }} /></div>
+                            <div className="form-group"><label style={{ fontSize: '11px' }}>테두리색</label><input type="color" className="form-control" style={{ height: 38, padding: 4 }} value={btn.style?.borderColor || "#2563EB"} onChange={e => {
+                               const btns = [...heroForm.buttons]; btns[idx] = { ...btns[idx], style: { ...btns[idx].style, borderColor: e.target.value } }; setHeroForm({ ...heroForm, buttons: btns });
+                            }} /></div>
+                            <div className="form-group"><label style={{ fontSize: '11px' }}>글자색</label><input type="color" className="form-control" style={{ height: 38, padding: 4 }} value={btn.style?.textColor || "#ffffff"} onChange={e => {
+                               const btns = [...heroForm.buttons]; btns[idx] = { ...btns[idx], style: { ...btns[idx].style, textColor: e.target.value } }; setHeroForm({ ...heroForm, buttons: btns });
+                            }} /></div>
+                            <div className="form-group"><label style={{ fontSize: '11px' }}>크기</label><select className="form-control" value={btn.style?.size || "medium"} onChange={e => {
+                               const btns = [...heroForm.buttons]; btns[idx] = { ...btns[idx], style: { ...btns[idx].style, size: e.target.value } }; setHeroForm({ ...heroForm, buttons: btns });
+                            }}><option value="small">Small</option><option value="medium">Medium</option><option value="large">Large</option></select></div>
+                         </div>
+                      </div>
+                   </div>
+                 ))}
+              </div>
            </div>
         )}
       </section>

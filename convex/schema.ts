@@ -22,6 +22,18 @@ export default defineSchema({
         subtitle: v.optional(v.any()),
         below: v.optional(v.any()),
       })),
+      buttons: v.optional(v.array(v.object({
+        id: v.string(),
+        text: v.string(),
+        link: v.string(),
+        show: v.boolean(),
+        style: v.optional(v.object({
+          bgColor: v.optional(v.string()),
+          textColor: v.optional(v.string()),
+          borderColor: v.optional(v.string()),
+          size: v.optional(v.string()), // "small", "medium", "large"
+        }))
+      }))),
     }),
   }),
   sections: defineTable({

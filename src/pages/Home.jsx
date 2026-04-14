@@ -20,7 +20,42 @@ const getTextStyle = (typo, type) => {
 };
 
 const HeroText = ({ hero }) => {
-  const { typography, aboveTitle, title, subtitle, belowTitle } = hero;
+  const { typography, aboveTitle, title, subtitle, belowTitle, buttons } = hero;
+  
+  const renderButton = (btn) => {
+    if (!btn.show) return null;
+    const styles = btn.style || {};
+    const sizeMap = { 
+      small: { padding: '8px 20px', fontSize: '13px' }, 
+      medium: { padding: '12px 32px', fontSize: '15px' }, 
+      large: { padding: '16px 48px', fontSize: '18px' } 
+    };
+    const currentSize = sizeMap[styles.size] || sizeMap.medium;
+
+    return (
+      <Link 
+        key={btn.id}
+        to={btn.link || "/"} 
+        style={{ 
+          ...currentSize, 
+          backgroundColor: styles.bgColor || 'var(--primary)', 
+          color: styles.textColor || '#ffffff', 
+          border: `2px solid ${styles.borderColor || styles.bgColor || 'var(--primary)'}`, 
+          borderRadius: '100px', 
+          fontWeight: '700', 
+          display: 'inline-flex', 
+          alignItems: 'center', 
+          gap: '8px', 
+          textDecoration: 'none', 
+          transition: '0.3s', 
+          boxShadow: '0 4px 14px rgba(0,0,0,0.1)' 
+        }}
+      >
+        {btn.text} {btn.id === (buttons?.[0]?.id) && <ArrowRight size={18} />}
+      </Link>
+    );
+  };
+
   return (
     <div style={{ position: 'relative', zIndex: 10 }}>
        {aboveTitle && <motion.span initial={{opacity:0, y:-10}} animate={{opacity:1, y:0}} style={{ ...getTextStyle(typography, 'above'), marginBottom: '16px' }}>{aboveTitle}</motion.span>}
@@ -31,8 +66,14 @@ const HeroText = ({ hero }) => {
        {belowTitle && <motion.span initial={{opacity:0, y:10}} animate={{opacity:1, y:0}} transition={{delay:0.6}} style={{ ...getTextStyle(typography, 'below'), fontSize: '16px', opacity: 0.8 }}>{belowTitle}</motion.span>}
        
        <div style={{ display: 'flex', gap: '20px', marginTop: '48px', justifyContent: hero.textPosition === 'center' ? 'center' : (hero.textPosition === 'right' ? 'flex-end' : 'flex-start') }}>
-          <button className="luxury-btn">지금 시작하기 <ArrowRight size={18} /></button>
-          <button className="luxury-btn outline">패키지 보기</button>
+          {(buttons && buttons.length > 0) ? (
+            buttons.map(btn => renderButton(btn))
+          ) : (
+            <>
+              <button className="luxury-btn">지금 시작하기 <ArrowRight size={18} /></button>
+              <button className="luxury-btn outline">패키지 보기</button>
+            </>
+          )}
        </div>
     </div>
   );

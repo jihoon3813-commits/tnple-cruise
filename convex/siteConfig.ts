@@ -22,6 +22,7 @@ export const updateHero = mutation({
     textPosition: v.string(),
     verticalAlign: v.optional(v.string()),
     typography: v.optional(v.any()),
+    buttons: v.optional(v.array(v.any())),
   },
   handler: async (ctx, args) => {
     const existing = await ctx.db.query("siteConfig").first();
