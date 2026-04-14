@@ -247,7 +247,7 @@ const Home = () => {
                                )}
                             </div>
                             <div style={{ padding: '24px' }}>
-                               {item.aboveTitle && <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--text-muted)', marginBottom: '8px' }}>{item.aboveTitle}</div>}
+                               {item.aboveTitle && <div style={{ ...getItemTextStyle(item, 'above', 12), marginBottom: '8px' }}>{item.aboveTitle}</div>}
                                {item.aboveTitle2 && <div style={{ ...getItemTextStyle(item, 'above', 11), marginBottom: '4px', opacity: 0.8 }}>{item.aboveTitle2}</div>}
                                <h4 style={{ ...getItemTextStyle(item, 'title', 20), marginBottom: '16px' }}>{item.title}</h4>
                                <p style={{ ...getItemTextStyle(item, 'content', 14), lineHeight: '1.6', marginBottom: '20px' }}>{item.content}</p>
@@ -370,35 +370,56 @@ const Home = () => {
          <div className="container" style={{ padding: isMobile ? '0 20px' : 'inherit' }}>
             <div style={{ textAlign: 'center', marginBottom: isMobile ? '32px' : '80px' }}><h2 style={{ fontSize: isMobile ? '28px' : '48px', fontWeight: '800', color: rb.titleColor || 'var(--text-main)' }}>{rb.title || "여행 후기"}</h2></div>
             {(rb.layout === 'grid' || isMobile) ? (
-               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '20px' }}>
+               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '32px' }}>
                   {config.reviews.map((rev, i) => (
-                    <div key={i} className="admin-card" style={{ padding: '24px', background: '#fff', borderRadius: '24px', display: 'flex', flexDirection: 'column' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '16px' }}>
-                           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                              <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--primary), #60a5fa)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '15px', boxShadow: '0 4px 10px var(--primary)40' }}>{(rev.author || rev.user)?.[0]}</div>
-                              <div>
-                                 <div style={{ fontWeight: '800', fontSize: '15px' }}>{rev.author || rev.user}</div>
-                                 <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{rev.productTitle || "프리미엄 회원"}</div>
-                              </div>
-                           </div>
-                           <div style={{ display: 'flex', gap: '2px', color: '#fbbf24' }}>
-                              {[...Array(5)].map((_, j) => <Star key={j} size={14} fill={j < (rev.rating || 5) ? "#fbbf24" : "none"} />)}
-                           </div>
-                        </div>
-                        <p style={{ fontSize: '15px', lineHeight: '1.7', color: 'var(--text-main)', marginBottom: '20px', fontWeight: '500', fontStyle: 'italic', flex: 1 }}>"{rev.content}"</p>
+                    <div key={i} className="admin-card" style={{ padding: '0', background: '#fff', borderRadius: '32px', display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 20px 40px rgba(0,0,0,0.06)', border: '1px solid var(--border-light)' }}>
                         {rev.images && rev.images.length > 0 && (
-                           <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(3, rev.images.length)}, 1fr)`, gap: '8px', marginBottom: '16px' }}>
-                              {rev.images.slice(0, 3).map((img, idx) => (
-                                 <div key={idx} style={{ aspectRatio: '1', borderRadius: '12px', overflow: 'hidden' }}>
-                                    <SafeMedia src={img} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                 </div>
-                              ))}
+                           <div style={{ 
+                             display: 'grid', 
+                             gridTemplateColumns: rev.images.length === 1 ? '1fr' : '2fr 1fr', 
+                             gridTemplateRows: rev.images.length > 2 ? 'repeat(2, 160px)' : '320px',
+                             gap: '4px',
+                             background: 'var(--bg-sub)' 
+                           }}>
+                              <div style={{ gridRow: rev.images.length > 2 ? 'span 2' : 'auto', height: '100%' }}>
+                                 <SafeMedia src={rev.images[0]} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                              </div>
+                              {rev.images.length > 1 && (
+                                <div style={{ display: 'grid', gridTemplateRows: rev.images.length > 2 ? '1fr 1fr' : '1fr', gap: '4px' }}>
+                                   <SafeMedia src={rev.images[1]} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                   {rev.images.length > 2 && (
+                                      <div style={{ position: 'relative' }}>
+                                         <SafeMedia src={rev.images[2]} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                         {rev.images.length > 3 && (
+                                            <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', fontWeight: '800' }}>
+                                               +{rev.images.length - 2}
+                                            </div>
+                                         )}
+                                      </div>
+                                   )}
+                                </div>
+                              )}
                            </div>
                         )}
+                        <div style={{ padding: '32px' }}>
+                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '24px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                                 <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--primary), #60a5fa)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '16px', boxShadow: '0 4px 12px var(--primary)30' }}>{(rev.author || rev.user)?.[0]}</div>
+                                 <div style={{ textAlign: 'left' }}>
+                                    <div style={{ fontWeight: '800', fontSize: '16px', color: '#0F172A' }}>{rev.author || rev.user}</div>
+                                    <div style={{ fontSize: '12px', color: '#64748B', marginTop: '2px' }}>{rev.productTitle || "프리미엄 회원"}</div>
+                                 </div>
+                              </div>
+                              <div style={{ display: 'flex', gap: '2px', color: '#fbbf24' }}>
+                                 {[...Array(5)].map((_, j) => <Star key={j} size={14} fill={j < (rev.rating || 5) ? "#fbbf24" : "none"} />)}
+                              </div>
+                           </div>
+                           <p style={{ fontSize: '16px', lineHeight: '1.8', color: '#334155', fontWeight: '500', fontStyle: 'italic', margin: 0, textAlign: 'left' }}>"{rev.content}"</p>
+                        </div>
                     </div>
                   ))}
                </div>
-            ) : (<div style={{ position: 'relative', overflow: 'hidden', padding: '16px 0' }}><div style={{ display: 'flex', gap: '20px', overflowX: 'auto', paddingBottom: '16px', scrollSnapType: 'x mandatory' }}>{config.reviews.map((rev, i) => (<div key={i} style={{ minWidth: '340px', background: '#fff', padding: '32px', borderRadius: '24px', scrollSnapAlign: 'start', boxShadow: '0 10px 30px rgba(0,0,0,0.05)' }}><div style={{ display: 'flex', gap: '4px', color: '#fbbf24', marginBottom: '16px' }}>{[...Array(5)].map((_, j) => <Star key={j} size={16} fill={j < (rev.rating || 5) ? "#fbbf24" : "none"} />)}</div><p style={{ fontSize: '16px', lineHeight: '1.6', color: 'var(--text-main)', marginBottom: '24px', fontStyle: 'italic' }}>"{rev.content}"</p><div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}><div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'var(--primary)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800' }}>{(rev.author || rev.user)?.[0]}</div><div><div style={{ fontWeight: '800' }}>{rev.author || rev.user}</div><div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{rev.productTitle}</div></div></div></div>))}</div></div>)}
+            ) : (<div style={{ position: 'relative', overflow: 'hidden', padding: '16px 0' }}><div style={{ display: 'flex', gap: '24px', overflowX: 'auto', paddingBottom: '32px', scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch' }}>{config.reviews.map((rev, i) => (<div key={i} style={{ minWidth: isMobile ? '320px' : '450px', background: '#fff', borderRadius: '32px', overflow: 'hidden', scrollSnapAlign: 'start', boxShadow: '0 20px 40px rgba(0,0,0,0.06)', border: '1px solid var(--border-light)' }}>{rev.images?.[0] && <div style={{ height: '240px' }}><SafeMedia src={rev.images[0]} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>}<div style={{ padding: '32px' }}><div style={{ display: 'flex', gap: '4px', color: '#fbbf24', marginBottom: '16px' }}>{[...Array(5)].map((_, j) => <Star key={j} size={16} fill={j < (rev.rating || 5) ? "#fbbf24" : "none"} />)}</div><p style={{ fontSize: '16px', lineHeight: '1.7', color: '#334155', marginBottom: '24px', fontStyle: 'italic', textAlign: 'left' }}>"{rev.content}"</p><div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}><div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--primary), #60a5fa)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800' }}>{(rev.author || rev.user)?.[0]}</div><div style={{textAlign:'left'}}><div style={{ fontWeight: '800', color: '#0F172A' }}>{rev.author || rev.user}</div><div style={{ fontSize: '12px', color: '#64748B' }}>{rev.productTitle}</div></div></div></div></div>))}</div></div>)}
          </div>
       </section>
     );
@@ -410,7 +431,6 @@ const Home = () => {
     <div className="home-clean">
       {renderHero()}
       {sections.map(section => renderSection(section))}
-      {renderReviews()}
       <section id="products" style={{ padding: isMobile ? '60px 0' : '100px 0', background: config.productListBranding?.bgColor || 'var(--bg-main)' }}>
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: isMobile ? '32px' : '64px' }}>
@@ -461,6 +481,8 @@ const Home = () => {
           </div>
         </div>
       </section>
+      {renderReviews()}
+
     </div>
   );
 };
