@@ -12,6 +12,8 @@ import { useConfig } from './context/ConfigContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, Ship } from 'lucide-react';
 
+import LoadingScreen from './components/LoadingScreen';
+
 function App() {
   const { config, loading } = useConfig();
 
@@ -36,26 +38,29 @@ function App() {
     } catch (e) { console.error(e); }
   }, [config, loading]);
 
-  if (loading) {
-    return (
-      <div style={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center', fontSize: '20px', fontWeight: 'bold' }}>
-        서버 데이터를 불러오는 중입니다...
-      </div>
-    );
-  }
-
   return (
-    <>
-      <ScrollToTop />
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/admin/*" element={<Admin />} />
-        <Route path="/product/:id" element={<ProductDetail />} />
-        <Route path="/reviews" element={<Reviews />} />
-      </Routes>
-      <Footer />
-    </>
+    <AnimatePresence mode="wait">
+      {loading ? (
+        <LoadingScreen key="loading" />
+      ) : (
+        <motion.div 
+          key="content"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <ScrollToTop />
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/admin/*" element={<Admin />} />
+            <Route path="/product/:id" element={<ProductDetail />} />
+            <Route path="/reviews" element={<Reviews />} />
+          </Routes>
+          <Footer />
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 

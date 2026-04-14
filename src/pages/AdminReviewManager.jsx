@@ -12,7 +12,7 @@ const MultiMediaInput = ({ label, values = [], onChange, uploadFile }) => {
     if (!file) return;
     setLoading(true);
     const storageId = await uploadFile(file);
-    const url = `https://rich-fox-61.convex.cloud/api/storage/${storageId}`;
+    const url = `${import.meta.env.VITE_CONVEX_URL}/api/storage/${storageId}`;
     onChange([...values, url]);
     setLoading(false);
   };
