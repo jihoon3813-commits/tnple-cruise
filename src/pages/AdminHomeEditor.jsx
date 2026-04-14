@@ -22,7 +22,8 @@ const AdminHomeEditor = () => {
   const handleHeroSave = async () => {
     console.log("Saving hero...", heroForm);
     try {
-      await updateHero(heroForm);
+      const { productListBranding, reviewSectionBranding, ...cleanHero } = heroForm;
+      await updateHero(cleanHero);
       alert('홈페이지 히어로 설정이 저장되었습니다.');
     } catch (e) {
       console.error("Hero save failed:", e);
@@ -523,11 +524,11 @@ const AdminHomeEditor = () => {
                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
                         <div className="form-group">
                            <label>타이틀 글씨 색상</label>
-                           <input type="color" className="form-control" style={{ height: 42, padding: 4 }} value={reviewBrandingForm?.titleColor || "#000000"} onChange={e => setReviewBrandingForm({...reviewBrandingForm, titleColor: e.target.value})} />
+                           <input type="color" className="form-control" style={{ height: 42, padding: 4 }} value={reviewBrandingForm?.titleColor?.startsWith('#') ? reviewBrandingForm.titleColor : "#000000"} onChange={e => setReviewBrandingForm({...reviewBrandingForm, titleColor: e.target.value})} />
                         </div>
                         <div className="form-group">
                            <label>섹션 전체 배경색</label>
-                           <input type="color" className="form-control" style={{ height: 42, padding: 4 }} value={reviewBrandingForm?.bgColor || "#f8fafc"} onChange={e => setReviewBrandingForm({...reviewBrandingForm, bgColor: e.target.value})} />
+                           <input type="color" className="form-control" style={{ height: 42, padding: 4 }} value={reviewBrandingForm?.bgColor?.startsWith('#') ? reviewBrandingForm.bgColor : "#f8fafc"} onChange={e => setReviewBrandingForm({...reviewBrandingForm, bgColor: e.target.value})} />
                         </div>
                      </div>
 

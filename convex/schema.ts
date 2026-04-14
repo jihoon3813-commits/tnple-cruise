@@ -1,6 +1,7 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
+// SCHEMA UPDATE: 2026-04-14 10:10 (Forcing push)
 export default defineSchema({
   siteConfig: defineTable({
     theme: v.optional(v.string()), // "white", "midnight", "cream", "grey", "lavender", "ocean"
@@ -34,6 +35,9 @@ export default defineSchema({
           size: v.optional(v.string()), // "small", "medium", "large"
         }))
       }))),
+      // Keep these temporarily to avoid breaking existing data validation
+      productListBranding: v.optional(v.any()),
+      reviewSectionBranding: v.optional(v.any()),
     }),
     productListBranding: v.optional(v.object({
       title: v.optional(v.string()),
@@ -116,3 +120,4 @@ export default defineSchema({
     images: v.optional(v.array(v.string())),
   }),
 });
+ Broadway
