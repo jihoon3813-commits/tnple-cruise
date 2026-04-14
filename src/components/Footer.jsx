@@ -1,8 +1,10 @@
 import { useConfig } from '../context/ConfigContext';
 import SafeMedia from './SafeMedia';
+import { Ship, Instagram, Facebook, Twitter } from 'lucide-react';
 
 const Footer = () => {
-  const { config } = useConfig();
+  const context = useConfig();
+  const config = context?.config || {};
   const hasLogo = !!config.logo;
 
   return (

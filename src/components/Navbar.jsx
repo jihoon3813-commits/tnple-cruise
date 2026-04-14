@@ -10,7 +10,8 @@ const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { config } = useConfig();
+  const context = useConfig();
+  const config = context?.config || {};
   const isAdmin = location.pathname.startsWith('/admin');
 
   useEffect(() => {
@@ -50,8 +51,8 @@ const Navbar = () => {
 
   // Build dynamic menu items
   const menuItems = [
-    ...config.sections
-      .filter(s => s.menuName)
+      ...(config?.sections || [])
+      .filter(s => s?.menuName)
       .map(s => ({ name: s.menuName, id: `section-${s.id}`, type: 'scroll' })),
     { name: '상품', id: 'products', type: 'scroll' },
     { name: '여행후기', id: 'home-reviews', type: 'scroll' },

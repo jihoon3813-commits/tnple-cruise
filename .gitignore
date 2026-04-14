@@ -9,7 +9,7 @@ dist-ssr
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-package-lock.json
+# package-lock.json removed from ignore
 .env
 .env.local
 .env.development.local
