@@ -961,6 +961,23 @@ const AdminHomeEditor = () => {
                         <label>섹션 메인 타이틀</label>
                         <DebouncedInput className="form-control" value={reviewBrandingForm?.title || "여행 후기"} onChange={val => setReviewBrandingForm({...reviewBrandingForm, title: val})} />
                      </div>
+
+                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}>
+                        <SubTitleEditor 
+                           label="타이틀 상단 보조 문구" 
+                           text={reviewBrandingForm?.subTitleTop} 
+                           style={reviewBrandingForm?.subTitleTopStyle}
+                           onTextChange={val => setReviewBrandingForm({...reviewBrandingForm, subTitleTop: val})}
+                           onStyleChange={(field, val) => setReviewBrandingForm({...reviewBrandingForm, subTitleTopStyle: {...(reviewBrandingForm.subTitleTopStyle || {}), [field]: val}})}
+                        />
+                        <SubTitleEditor 
+                           label="타이틀 하단 보조 문구" 
+                           text={reviewBrandingForm?.subTitleBottom} 
+                           style={reviewBrandingForm?.subTitleBottomStyle}
+                           onTextChange={val => setReviewBrandingForm({...reviewBrandingForm, subTitleBottom: val})}
+                           onStyleChange={(field, val) => setReviewBrandingForm({...reviewBrandingForm, subTitleBottomStyle: {...(reviewBrandingForm.subTitleBottomStyle || {}), [field]: val}})}
+                        />
+                     </div>
                      
                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
                         <div className="form-group">
