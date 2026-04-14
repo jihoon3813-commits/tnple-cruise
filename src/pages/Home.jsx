@@ -48,7 +48,12 @@ const WavyText = ({ text, style }) => {
 };
 
 const HeroText = ({ hero }) => {
-  const { typography, aboveTitle, title, subtitle, belowTitle, buttons } = hero;
+  const { typography, aboveTitle, title, subtitle, belowTitle, buttons, bgUrl } = hero;
+  
+  // YouTube detection to hide UI elements if requested
+  const isYouTube = bgUrl?.includes('youtube.com') || bgUrl?.includes('youtu.be');
+  if (isYouTube) return null;
+
   const renderTextEffect = (text, type) => {
     const typo = typography?.[type] || {};
     const textStyle = getTextStyle(typography, type);

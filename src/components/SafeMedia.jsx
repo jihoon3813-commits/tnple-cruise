@@ -48,11 +48,20 @@ const SafeMedia = ({ src, className, style, type = 'image', alt = "" }) => {
   }
 
   const isVideo = type === 'video' || (finalSrc && (finalSrc.endsWith('.mp4') || finalSrc.endsWith('.webm') || finalSrc.endsWith('.mov')));
+  
+  // YouTube detection
+  const isYouTube = finalSrc?.includes('youtube.com') || finalSrc?.includes('youtu.be');
+  const getYouTubeId = (url) => {
+    if (!url) return null;
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+  };
 
   return (
     <div ref={ref} style={{ ...style, position: 'relative', overflow: 'hidden' }} className={className}>
       <AnimatePresence>
-        {!loaded && (
+        {!loaded && !isYouTube && (
            <motion.div 
              initial={{ opacity: 1 }}
              exit={{ opacity: 0 }}
@@ -61,14 +70,30 @@ const SafeMedia = ({ src, className, style, type = 'image', alt = "" }) => {
         )}
       </AnimatePresence>
 
-      {isVideo ? (
+      {isYouTube ? (
+        <iframe
+          src={`https://www.youtube.com/embed/${getYouTubeId(finalSrc)}?autoplay=1&mute=1&controls=0&loop=1&playlist=${getYouTubeId(finalSrc)}&modestbranding=1&rel=0&iv_load_policy=3&showinfo=0&disablekb=1`}
+          style={{ 
+            width: '300%', // Over-scale to hide black bars/branding
+            height: '100%', 
+            position: 'absolute', 
+            top: '50%', 
+            left: '50%', 
+            transform: 'translate(-50%, -50%)',
+            pointerEvents: 'none' 
+          }}
+          frameBorder="0"
+          allow="autoplay; encrypted-media"
+          onLoad={() => setLoaded(true)}
+        />
+      ) : isVideo ? (
         <video 
           src={finalSrc} 
           autoPlay 
           loop 
           muted 
           playsInline 
-          preload="metadata" // Only load header data initially to save bandwidth
+          preload="metadata" 
           onLoadedData={() => setLoaded(true)}
           style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} 
         />
