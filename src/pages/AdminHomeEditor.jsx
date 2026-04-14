@@ -402,10 +402,37 @@ const AdminHomeEditor = () => {
 
                   {editTab === 'visual' && (
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-                       <MediaInput label="메인 이미지" value={section.image} onChange={v => handleSectionUpdate(section.id, 'image', v)} />
-                       <MultiMediaInput label="멀티 이미지/갤러리" values={section.images} onChange={v => handleSectionUpdate(section.id, 'images', v)} />
-                       <div className="form-group"><label>배경 타입</label><select className="form-control" value={section.bgType} onChange={e => handleSectionUpdate(section.id, 'bgType', e.target.value)}><option value="color">Color</option><option value="image">Image</option></select></div>
-                       <div className="form-group"><label>배경 투명도</label><input type="range" min="0" max="1" step="0.1" className="form-control" value={section.bgOpacity ?? 1} onChange={e => handleSectionUpdate(section.id, 'bgOpacity', parseFloat(e.target.value))} /></div>
+                       <MediaInput label="메인 이미지 (본문 옆)" value={section.image} onChange={v => handleSectionUpdate(section.id, 'image', v)} />
+                       <MultiMediaInput label="멀티 이미지/갤러리 (슬라이드/그리드)" values={section.images} onChange={v => handleSectionUpdate(section.id, 'images', v)} />
+                       
+                       <div style={{ gridColumn: 'span 2', height: '1px', background: 'var(--border-light)', margin: '16px 0' }}></div>
+                       
+                       <div className="form-group">
+                          <label>배경 타입</label>
+                          <select className="form-control" value={section.bgType || 'color'} onChange={e => handleSectionUpdate(section.id, 'bgType', e.target.value)}>
+                             <option value="color">단색 (Solid Color)</option>
+                             <option value="image">이미지 (Image)</option>
+                             <option value="video">동영상 (Video)</option>
+                          </select>
+                       </div>
+                       
+                       {section.bgType === 'color' ? (
+                         <div className="form-group">
+                            <label>배경 색상</label>
+                            <input type="color" className="form-control" style={{ height: 42, padding: 4 }} value={section.bgColor || '#ffffff'} onChange={e => handleSectionUpdate(section.id, 'bgColor', e.target.value)} />
+                         </div>
+                       ) : (
+                         <MediaInput 
+                           label={section.bgType === 'video' ? "배경 동영상 URL/파일" : "배경 이미지 URL/파일"} 
+                           value={section.bgUrl} 
+                           onChange={v => handleSectionUpdate(section.id, 'bgUrl', v)} 
+                         />
+                       )}
+
+                       <div className="form-group" style={{ gridColumn: 'span 2' }}>
+                          <label>배경 투명도 / 이미지 밝기 ({section.bgOpacity ?? 1})</label>
+                          <input type="range" min="0" max="1" step="0.1" className="form-control" value={section.bgOpacity ?? 1} onChange={e => handleSectionUpdate(section.id, 'bgOpacity', parseFloat(e.target.value))} />
+                       </div>
                     </div>
                   )}
 
