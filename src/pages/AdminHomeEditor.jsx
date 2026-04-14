@@ -258,7 +258,7 @@ const AdminHomeEditor = () => {
            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
               <MediaInput label="배경 URL / 파일" value={heroForm?.bgUrl} onChange={v => setHeroForm({...heroForm, bgUrl: v})} />
               <div className="form-group"><label>배경 타입</label><select className="form-control" value={heroForm?.bgType} onChange={e => setHeroForm({...heroForm, bgType: e.target.value})}><option value="image">Image</option><option value="video">Video</option></select></div>
-              <div className="form-group" style={{ gridColumn: 'span 2' }}><label>배경 투명도 / 밝기 ({heroForm?.bgOpacity ?? 1})</label><input type="range" min="0" max="1" step="0.1" className="form-control" value={heroForm?.bgOpacity ?? 1} onChange={e => setHeroForm({...heroForm, bgOpacity: parseFloat(e.target.value)})} /></div>
+              <div className="form-group" style={{ gridColumn: 'span 2' }}><label>배경 밝기 설정 ({heroForm?.bgOpacity ?? 1}) (0: 어둡게, 1: 보통, 2: 밝게)</label><input type="range" min="0" max="2" step="0.1" className="form-control" value={heroForm?.bgOpacity ?? 1} onChange={e => setHeroForm({...heroForm, bgOpacity: parseFloat(e.target.value)})} /></div>
            </div>
         )}
 

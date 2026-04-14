@@ -119,11 +119,25 @@ const Home = () => {
       padding: `0 ${paddingX ?? 80}px`
     };
 
+    const BgMedia = () => (
+      <SafeMedia 
+        src={bgUrl} 
+        type={bgType} 
+        style={{ 
+          width: '100%', 
+          height: '100%', 
+          objectFit: 'cover', 
+          filter: `brightness(${bgOpacity ?? 1})`,
+          transition: '0.3s'
+        }} 
+      />
+    );
+
     if (style === 'classic') {
        return (
          <section style={wrapperStyle}>
-            <div style={{ position: 'absolute', right: 0, top: 0, width: '50%', height: '100%', zIndex: 0, opacity: bgOpacity ?? 1 }}>
-               <SafeMedia src={bgUrl} type={bgType} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <div style={{ position: 'absolute', right: 0, top: 0, width: '50%', height: '100%', zIndex: 0 }}>
+               <BgMedia />
                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, var(--bg-main) 0%, rgba(255,255,255,0.8) 20%, transparent 100%)' }}></div>
             </div>
             <div style={containerStyle}><div style={{ maxWidth: '650px' }}><HeroText hero={hero} /></div></div>
@@ -135,7 +149,7 @@ const Home = () => {
        return (
          <section style={{ ...wrapperStyle, display: 'grid', gridTemplateColumns: '1fr 1fr', padding: 0 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: `0 ${paddingX ?? 80}px` }}><HeroText hero={hero} /></div>
-            <div style={{ position: 'relative', opacity: bgOpacity ?? 1 }}><SafeMedia src={bgUrl} type={bgType} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>
+            <div style={{ position: 'relative' }}><BgMedia /></div>
          </section>
        );
     }
@@ -143,7 +157,7 @@ const Home = () => {
     if (style === 'card') {
        return (
          <section style={wrapperStyle}>
-            <div style={{ position: 'absolute', inset: 0, zIndex: 0, opacity: bgOpacity ?? 1 }}><SafeMedia src={bgUrl} type={bgType} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>
+            <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}><BgMedia /></div>
             <div style={{ ...containerStyle, display: 'flex', justifyContent: textPosition === 'center' ? 'center' : (textPosition === 'right' ? 'flex-end' : 'flex-start') }}>
                <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} style={{ background: 'var(--glass-white)', backdropFilter: 'blur(20px)', padding: '80px', borderRadius: '40px', maxWidth: '750px', boxShadow: '0 30px 60px rgba(0,0,0,0.1)' }}>
                   <HeroText hero={hero} />
@@ -155,7 +169,7 @@ const Home = () => {
 
     return (
       <section style={wrapperStyle}>
-         <div style={{ position: 'absolute', inset: 0, zIndex: 0, opacity: bgOpacity ?? 1 }}><SafeMedia src={bgUrl} type={bgType} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /><div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.1)' }}></div></div>
+         <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}><BgMedia /></div>
          <div style={{ ...containerStyle, display: 'flex', justifyContent: textPosition === 'center' ? 'center' : (textPosition === 'right' ? 'flex-end' : 'flex-start') }}>
             <div style={{ maxWidth: '900px' }}><HeroText hero={hero} /></div>
          </div>
