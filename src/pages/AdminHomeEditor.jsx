@@ -62,6 +62,23 @@ const MediaInput = ({ label, value, onChange, uploadFile, accept }) => {
       setLoading(false);
     }
   };
+  const renderPreview = () => {
+    if (!value) return null;
+    const isStorageId = value.startsWith('storage:');
+    const finalUrl = isStorageId ? `${import.meta.env.VITE_CONVEX_URL}/api/storage?id=${value.split(':')[1]}` : value;
+    const isVideo = value.includes('video') || value.includes('mp4') || accept?.includes('video');
+    
+    return (
+      <div style={{ marginTop: '12px', width: '100%', maxWidth: '200px', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border-light)', background: '#fff' }}>
+        {isVideo ? (
+          <video src={finalUrl} style={{ width: '100%', display: 'block' }} muted />
+        ) : (
+          <img src={finalUrl} style={{ width: '100%', display: 'block' }} alt="Preview" />
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="form-group" style={{ marginBottom: '16px' }}>
       <label style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-muted)' }}>{label}</label>
@@ -72,6 +89,7 @@ const MediaInput = ({ label, value, onChange, uploadFile, accept }) => {
         </button>
         <input type="file" ref={fileRef} hidden onChange={onFileChange} accept={accept || "image/*,video/*"} />
       </div>
+      {renderPreview()}
       {(accept?.includes('video') || (value && (value.includes('video') || value.includes('mp4')))) && (
         <p style={{ fontSize: '11px', color: 'var(--primary)', marginTop: '4px', fontWeight: '600' }}>
           * 동영상은 MP4/WebM 형식을 권장하며, 용량이 크면 로딩에 시간이 걸릴 수 있습니다.
@@ -105,7 +123,7 @@ const MultiMediaInput = ({ label, values = [], onChange, uploadFile }) => {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '12px', marginTop: '12px' }}>
         {values.map((url, i) => (
           <div key={i} style={{ position: 'relative', aspectRatio: '1', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-light)' }}>
-            <img src={url.startsWith('storage:') ? `${import.meta.env.VITE_CONVEX_URL}/api/storage/${url.split(':')[1]}` : url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <img src={url.startsWith('storage:') ? `${import.meta.env.VITE_CONVEX_URL}/api/storage?id=${url.split(':')[1]}` : url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             <button onClick={() => removeImage(i)} style={{ position: 'absolute', top: '4px', right: '4px', background: 'rgba(255,0,0,0.8)', color: '#fff', border: 'none', borderRadius: '50%', padding: '4px', cursor: 'pointer', display: 'flex' }}><X size={12}/></button>
           </div>
         ))}
