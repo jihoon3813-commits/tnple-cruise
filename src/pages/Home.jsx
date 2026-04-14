@@ -58,12 +58,29 @@ const HeroText = ({ hero }) => {
 
   return (
     <div style={{ position: 'relative', zIndex: 10 }}>
-       {aboveTitle && <motion.span initial={{opacity:0, y:-10}} animate={{opacity:1, y:0}} style={{ ...getTextStyle(typography, 'above'), marginBottom: '16px' }}>{aboveTitle}</motion.span>}
+       {aboveTitle && (
+         <motion.span 
+           initial={{opacity:0, y:-10}} 
+           animate={{opacity:1, y:0}} 
+           style={{ ...getTextStyle(typography, 'above'), marginBottom: '16px', fontWeight: '800', letterSpacing: '0.1em', textTransform: 'uppercase' }}
+         >
+           {aboveTitle}
+         </motion.span>
+       )}
        <motion.h1 initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} transition={{delay:0.2}} style={{ ...getTextStyle(typography, 'title'), fontWeight: '900', marginBottom: '32px' }}>
           {title?.split('\n').map((l,i) => <React.Fragment key={i}>{l}<br/></React.Fragment>)}
        </motion.h1>
        {subtitle && <motion.p initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.4}} style={{ ...getTextStyle(typography, 'subtitle'), marginBottom: '32px' }}>{subtitle}</motion.p>}
-       {belowTitle && <motion.span initial={{opacity:0, y:10}} animate={{opacity:1, y:0}} transition={{delay:0.6}} style={{ ...getTextStyle(typography, 'below'), fontSize: '16px', opacity: 0.8 }}>{belowTitle}</motion.span>}
+       {belowTitle && (
+         <motion.span 
+           initial={{opacity:0, y:10}} 
+           animate={{opacity:1, y:0}} 
+           transition={{delay:0.6}} 
+           style={{ ...getTextStyle(typography, 'below'), marginTop: '24px', opacity: 0.9 }}
+         >
+           {belowTitle}
+         </motion.span>
+       )}
        
        <div style={{ display: 'flex', gap: '20px', marginTop: '48px', justifyContent: hero.textPosition === 'center' ? 'center' : (hero.textPosition === 'right' ? 'flex-end' : 'flex-start') }}>
           {(buttons && buttons.length > 0) ? (
