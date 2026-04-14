@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useConfig } from '../context/ConfigContext';
 import { Star, Trash2, Plus, X, MessageSquare, User, Smile, Upload, Loader2, PlusCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import SafeMedia from '../components/SafeMedia';
 
 const MultiMediaInput = ({ label, values = [], onChange, uploadFile }) => {
   const [loading, setLoading] = useState(false);
@@ -11,10 +12,14 @@ const MultiMediaInput = ({ label, values = [], onChange, uploadFile }) => {
     const file = e.target.files[0];
     if (!file) return;
     setLoading(true);
-    const storageId = await uploadFile(file);
-    const url = `${import.meta.env.VITE_CONVEX_URL}/api/storage/${storageId}`;
-    onChange([...values, url]);
-    setLoading(false);
+    try {
+      const storageId = await uploadFile(file);
+      onChange([...values, `storage:${storageId}`]);
+    } catch (err) {
+      alert("이미지 업로드 중 오류가 발생했습니다.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const removeImage = (idx) => {
@@ -28,8 +33,8 @@ const MultiMediaInput = ({ label, values = [], onChange, uploadFile }) => {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', gap: '8px', marginTop: '8px' }}>
         {values.map((url, i) => (
           <div key={i} style={{ position: 'relative', aspectRatio: '1', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-light)' }}>
-            <img src={url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            <button onClick={() => removeImage(i)} style={{ position: 'absolute', top: '2px', right: '2px', background: 'rgba(255,0,0,0.8)', color: '#fff', border: 'none', borderRadius: '50%', padding: '2px', cursor: 'pointer', display: 'flex' }}><X size={10}/></button>
+            <SafeMedia src={url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <button onClick={() => removeImage(i)} style={{ position: 'absolute', top: '2px', right: '2px', background: 'rgba(255,0,0,0.8)', color: '#fff', border: 'none', borderRadius: '50%', padding: '2px', cursor: 'pointer', display: 'flex', zIndex: 10 }}><X size={10}/></button>
           </div>
         ))}
         <div 
@@ -113,7 +118,7 @@ const AdminReviewManager = () => {
             {review.images && review.images.length > 0 && (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', gap: '8px' }}>
                 {review.images.map((img, idx) => (
-                  <img key={idx} src={img} alt="" style={{ width: '100%', height: '80px', objectFit: 'cover', borderRadius: '8px' }} />
+                  <SafeMedia key={idx} src={img} alt="" style={{ width: '100%', height: '80px', objectFit: 'cover', borderRadius: '8px' }} />
                 ))}
               </div>
             )}
