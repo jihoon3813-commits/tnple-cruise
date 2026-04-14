@@ -450,7 +450,7 @@ const Home = () => {
                         <div className="hide-scrollbar" style={{ display: 'flex', overflowX: 'auto', scrollSnapType: 'x mandatory', height: '100%', alignItems: 'center' }}>
                            {(selectedReview.images && selectedReview.images.length > 0) ? selectedReview.images.map((img, idx) => (
                               <div key={idx} style={{ minWidth: '100%', height: '100%', scrollSnapAlign: 'start', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                 <SafeMedia src={img} style={{ width: '100%', height: '100%', ObjectFit: 'contain' }} />
+                                 <SafeMedia src={img} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                               </div>
                            )) : (
                               <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#333' }}>
