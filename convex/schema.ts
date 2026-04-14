@@ -55,7 +55,11 @@ export default defineSchema({
       theme: v.optional(v.string()), // "light", "dark", "glass"
       titleColor: v.optional(v.string()),
       priceColor: v.optional(v.string()),
-      accentColor: v.optional(v.string()),
+      accentColor: v.optional(v.string()), // Used for icons etc
+      descriptionColor: v.optional(v.string()),
+      badgeColor: v.optional(v.string()),
+      badgeTextColor: v.optional(v.string()),
+      sectionTitleColor: v.optional(v.string()),
       buttonColor: v.optional(v.string()),
       buttonTextColor: v.optional(v.string()),
     })),

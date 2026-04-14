@@ -20,6 +20,16 @@ const AdminProductDetailEditor = () => {
     setTimeout(() => setSaveSuccess(false), 3000);
   };
 
+  const ColorInput = ({ label, value, onChange, placeholder = "#000000" }) => (
+    <div className="form-group">
+      <label style={{ fontSize: '12px', fontWeight: '700', marginBottom: '8px', display: 'block' }}>{label}</label>
+      <div style={{ display: 'flex', gap: '10px' }}>
+        <input type="color" className="form-control" style={{ width: '50px', height: '42px', padding: '4px' }} value={value || placeholder} onChange={e => onChange(e.target.value)} />
+        <input type="text" className="form-control" value={value || ""} onChange={e => onChange(e.target.value)} placeholder={placeholder} />
+      </div>
+    </div>
+  );
+
   return (
     <div className="admin-editor-wrap">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
@@ -69,45 +79,29 @@ const AdminProductDetailEditor = () => {
             <section className="admin-card">
                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px' }}>
                   <Palette size={18} color="var(--primary)" />
-                  <h3 style={{ fontSize: '16px', fontWeight: '800' }}>브랜드 컬러 시스템</h3>
+                  <h3 style={{ fontSize: '16px', fontWeight: '800' }}>제목 및 텍스트 컬러</h3>
                </div>
 
                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-                  <div className="form-group">
-                     <label>메인 상품명 색상</label>
-                     <div style={{ display: 'flex', gap: '10px' }}>
-                        <input type="color" className="form-control" style={{ width: '60px', height: '42px', padding: '4px' }} value={form.titleColor || "#0F172A"} onChange={e => setForm({...form, titleColor: e.target.value})} />
-                        <input type="text" className="form-control" value={form.titleColor || "#0F172A"} onChange={e => setForm({...form, titleColor: e.target.value})} />
-                     </div>
-                  </div>
-                  <div className="form-group">
-                     <label>가격 강조 색상</label>
-                     <div style={{ display: 'flex', gap: '10px' }}>
-                        <input type="color" className="form-control" style={{ width: '60px', height: '42px', padding: '4px' }} value={form.priceColor || "#2563EB"} onChange={e => setForm({...form, priceColor: e.target.value})} />
-                        <input type="text" className="form-control" value={form.priceColor || "#2563EB"} onChange={e => setForm({...form, priceColor: e.target.value})} />
-                     </div>
-                  </div>
-                  <div className="form-group">
-                     <label>포인트 액센트 컬러</label>
-                     <div style={{ display: 'flex', gap: '10px' }}>
-                        <input type="color" className="form-control" style={{ width: '60px', height: '42px', padding: '4px' }} value={form.accentColor || "#2563EB"} onChange={e => setForm({...form, accentColor: e.target.value})} />
-                        <input type="text" className="form-control" value={form.accentColor || "#2563EB"} onChange={e => setForm({...form, accentColor: e.target.value})} />
-                     </div>
-                  </div>
-                  <div className="form-group">
-                     <label>주요 버튼 배경색</label>
-                     <div style={{ display: 'flex', gap: '10px' }}>
-                        <input type="color" className="form-control" style={{ width: '60px', height: '42px', padding: '4px' }} value={form.buttonColor || "#2563EB"} onChange={e => setForm({...form, buttonColor: e.target.value})} />
-                        <input type="text" className="form-control" value={form.buttonColor || "#2563EB"} onChange={e => setForm({...form, buttonColor: e.target.value})} />
-                     </div>
-                  </div>
-                  <div className="form-group">
-                     <label>주요 버튼 글자색</label>
-                     <div style={{ display: 'flex', gap: '10px' }}>
-                        <input type="color" className="form-control" style={{ width: '60px', height: '42px', padding: '4px' }} value={form.buttonTextColor || "#ffffff"} onChange={e => setForm({...form, buttonTextColor: e.target.value})} />
-                        <input type="text" className="form-control" value={form.buttonTextColor || "#ffffff"} onChange={e => setForm({...form, buttonTextColor: e.target.value})} />
-                     </div>
-                  </div>
+                  <ColorInput label="메인 상품명 색상" value={form.titleColor} onChange={val => setForm({...form, titleColor: val})} placeholder="#0F172A" />
+                  <ColorInput label="가격 강조 색상" value={form.priceColor} onChange={val => setForm({...form, priceColor: val})} placeholder="#2563EB" />
+                  <ColorInput label="본문 설명 색상" value={form.descriptionColor} onChange={val => setForm({...form, descriptionColor: val})} placeholder="#64748B" />
+                  <ColorInput label="섹션 제목 색상 (스케줄 등)" value={form.sectionTitleColor} onChange={val => setForm({...form, sectionTitleColor: val})} placeholder="#0F172A" />
+                  <ColorInput label="포인트 액센트 컬러" value={form.accentColor} onChange={val => setForm({...form, accentColor: val})} placeholder="#2563EB" />
+               </div>
+            </section>
+
+            <section className="admin-card">
+               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px' }}>
+                  <Settings size={18} color="var(--primary)" />
+                  <h3 style={{ fontSize: '16px', fontWeight: '800' }}>배지 및 버튼 스타일</h3>
+               </div>
+
+               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+                  <ColorInput label="상단 배지 배경색" value={form.badgeColor} onChange={val => setForm({...form, badgeColor: val})} placeholder="#F1F5F9" />
+                  <ColorInput label="상단 배지 글자색" value={form.badgeTextColor} onChange={val => setForm({...form, badgeTextColor: val})} placeholder="#0F172A" />
+                  <ColorInput label="주요 버튼 배경색" value={form.buttonColor} onChange={val => setForm({...form, buttonColor: val})} placeholder="#2563EB" />
+                  <ColorInput label="주요 버튼 글자색" value={form.buttonTextColor} onChange={val => setForm({...form, buttonTextColor: val})} placeholder="#ffffff" />
                </div>
             </section>
 
@@ -123,24 +117,39 @@ const AdminProductDetailEditor = () => {
                   borderRadius: '32px', 
                   border: '1px solid var(--border-light)',
                   boxShadow: '0 20px 50px rgba(0,0,0,0.1)',
-                  minHeight: '400px',
+                  minHeight: '500px',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: '24px'
+                  gap: '24px',
+                  transition: '0.3s'
                }}>
                   <div style={{ width: '100%', height: '180px', background: '#e2e8f0', borderRadius: '16px' }}></div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                     <div style={{ fontSize: '24px', fontWeight: '900', color: form.titleColor }}>프리미엄 크루즈 상품명</div>
-                     <div style={{ fontSize: '20px', fontWeight: '800', color: form.priceColor }}>₩ 2,500,000</div>
-                     <div style={{ width: '60%', height: '10px', background: '#f1f5f9', borderRadius: '10px' }}></div>
-                     <div style={{ width: '80%', height: '10px', background: '#f1f5f9', borderRadius: '10px' }}></div>
+                     <div style={{ fontSize: '24px', fontWeight: '900', color: form.titleColor || "#0F172A" }}>프리미엄 크루즈 상품명</div>
+                     <div style={{ display: 'flex', gap: '8px' }}>
+                        <div style={{ padding: '6px 12px', borderRadius: '20px', background: form.badgeColor || '#f1f5f9', color: form.badgeTextColor || '#0F172A', fontSize: '11px', fontWeight: '700' }}>14일 여정</div>
+                        <div style={{ padding: '6px 12px', borderRadius: '20px', background: form.badgeColor || '#f1f5f9', color: form.badgeTextColor || '#0F172A', fontSize: '11px', fontWeight: '700' }}>럭셔리 크루즈</div>
+                     </div>
+                     <div style={{ fontSize: '20px', fontWeight: '800', color: form.priceColor || "#2563EB" }}>₩ 2,500,000</div>
+                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        <div style={{ width: '100%', height: '8px', background: form.descriptionColor || '#f1f5f9', opacity: 0.3, borderRadius: '4px' }}></div>
+                        <div style={{ width: '80%', height: '8px', background: form.descriptionColor || '#f1f5f9', opacity: 0.3, borderRadius: '4px' }}></div>
+                     </div>
                   </div>
+
+                  <div style={{ borderTop: '1px solid #eee', paddingTop: '16px' }}>
+                     <div style={{ fontSize: '14px', fontWeight: '800', color: form.sectionTitleColor || '#000', marginBottom: '10px' }}>데일리 스케줄 루틴</div>
+                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                         <div style={{ width: '20px', height: '20px', border: `2px solid ${form.accentColor || '#3b82f6'}`, borderRadius: '50%' }}></div>
+                         <div style={{ width: '60px', height: '6px', background: '#eee', borderRadius: '4px' }}></div>
+                     </div>
+                  </div>
+
                   <div style={{ marginTop: 'auto', display: 'flex', gap: '10px' }}>
-                     <div style={{ flex: 1, padding: '14px', borderRadius: '100px', background: form.buttonColor, color: form.buttonTextColor, fontWeight: '800', textAlign: 'center', fontSize: '14px' }}>예약하기</div>
-                     <div style={{ flex: 1, padding: '14px', borderRadius: '100px', border: `1px solid ${form.accentColor}`, color: form.accentColor, fontWeight: '800', textAlign: 'center', fontSize: '14px' }}>장바구니</div>
+                     <div style={{ flex: 1, padding: '14px', borderRadius: '100px', background: form.buttonColor || '#2563EB', color: form.buttonTextColor || '#ffffff', fontWeight: '800', textAlign: 'center', fontSize: '14px' }}>예약하기</div>
+                     <div style={{ flex: 1, padding: '14px', borderRadius: '100px', border: `1px solid ${form.accentColor || '#2563EB'}`, color: form.accentColor || '#2563EB', fontWeight: '800', textAlign: 'center', fontSize: '14px' }}>장바구니</div>
                   </div>
                </div>
-               <p style={{ marginTop: '20px', fontSize: '12px', color: 'var(--text-muted)', textAlign: 'center' }}>가상의 예시 화면이며, 실제 페이지에 실시간 반영됩니다.</p>
             </div>
          </div>
       </div>

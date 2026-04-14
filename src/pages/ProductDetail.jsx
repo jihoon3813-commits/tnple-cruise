@@ -14,18 +14,26 @@ const ProductDetail = () => {
   if (!product) return <div className="container" style={{ paddingTop: '160px' }}>상품을 찾을 수 없습니다.</div>;
 
   const typo = product.typography || {};
-  const getStyle = (t, baseSize, scale = 1) => ({
-    fontSize: typo[t]?.fontSize ? `${typo[t].fontSize * scale}px` : baseSize,
-    color: t === 'title' ? (branding.titleColor || typo[t]?.color) : (t === 'price' ? (branding.priceColor || typo[t]?.color) : typo[t]?.color),
-    fontWeight: t === 'title' || t === 'price' ? '900' : '400'
-  });
+  const getStyle = (t, baseSize, scale = 1) => {
+    let color = typo[t]?.color;
+    if (t === 'title' && branding.titleColor) color = branding.titleColor;
+    if (t === 'price' && branding.priceColor) color = branding.priceColor;
+    if (t === 'description' && branding.descriptionColor) color = branding.descriptionColor;
+
+    return {
+      fontSize: typo[t]?.fontSize ? `${typo[t].fontSize * scale}px` : baseSize,
+      color: color,
+      fontWeight: t === 'title' || t === 'price' ? '900' : '400'
+    };
+  };
 
   const isDark = branding.theme === 'dark';
   const isGlass = branding.theme === 'glass';
   
-  const pageBg = isDark ? '#0F172A' : (isGlass ? '#F1F5F9' : 'var(--bg-main)');
+  // Clean White fix: use pure #ffffff for light theme
+  const pageBg = isDark ? '#0F172A' : (isGlass ? '#F1F5F9' : '#ffffff');
   const textColor = isDark ? '#F8FAFC' : 'var(--text-main)';
-  const mutedColor = isDark ? '#94A3B8' : 'var(--text-muted)';
+  const mutedColor = isDark ? '#94A3B8' : (branding.descriptionColor || 'var(--text-muted)');
   const cardBg = isDark ? 'rgba(255,255,255,0.05)' : (isGlass ? 'rgba(255,255,255,0.7)' : '#ffffff');
   const cardBorder = isDark ? 'rgba(255,255,255,0.1)' : 'var(--border-light)';
 
@@ -100,18 +108,40 @@ const ProductDetail = () => {
             {branding.layout !== 'split' && <h1 style={{ ...getStyle('title', '64px', 1.2), lineHeight: '1.1', marginBottom: '24px' }}>{product.title}</h1>}
             
             <div style={{ display: 'flex', gap: '16px', marginBottom: '48px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: cardBg, border: `1px solid ${cardBorder}`, padding: '10px 20px', borderRadius: '100px', fontSize: '14px', fontWeight: '700' }}>
-                 <Clock size={16} color={branding.accentColor || "var(--primary)"} /> 14일 여정
+              <div style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '8px', 
+                  background: branding.badgeColor || cardBg, 
+                  color: branding.badgeTextColor || textColor,
+                  border: branding.badgeColor ? 'none' : `1px solid ${cardBorder}`, 
+                  padding: '10px 24px', 
+                  borderRadius: '100px', 
+                  fontSize: '14px', 
+                  fontWeight: '700' 
+              }}>
+                 <Clock size={16} color={branding.badgeColor ? branding.badgeTextColor : (branding.accentColor || "var(--primary)")} /> 14일 여정
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: cardBg, border: `1px solid ${cardBorder}`, padding: '10px 20px', borderRadius: '100px', fontSize: '14px', fontWeight: '700' }}>
-                 <Ship size={16} color={branding.accentColor || "var(--primary)"} /> 럭셔리 크루즈
+              <div style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '8px', 
+                  background: branding.badgeColor || cardBg, 
+                  color: branding.badgeTextColor || textColor,
+                  border: branding.badgeColor ? 'none' : `1px solid ${cardBorder}`, 
+                  padding: '10px 24px', 
+                  borderRadius: '100px', 
+                  fontSize: '14px', 
+                  fontWeight: '700' 
+              }}>
+                 <Ship size={16} color={branding.badgeColor ? branding.badgeTextColor : (branding.accentColor || "var(--primary)")} /> 럭셔리 크루즈
               </div>
             </div>
 
             {branding.layout !== 'split' && <p style={{ ...getStyle('description', '22px', 1.1), lineHeight: '1.8', marginBottom: '80px', color: mutedColor }}>{product.description}</p>}
 
             <div style={{ borderTop: `1px solid ${cardBorder}`, paddingTop: '80px' }}>
-              <h2 style={{ fontSize: '32px', fontWeight: '900', marginBottom: '48px' }}>상세 여행 데일리 루틴</h2>
+              <h2 style={{ fontSize: '32px', fontWeight: '900', marginBottom: '48px', color: branding.sectionTitleColor || textColor }}>상세 여행 데일리 루틴</h2>
               {renderSchedule()}
             </div>
           </div>
