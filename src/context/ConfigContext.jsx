@@ -158,7 +158,7 @@ export const ConfigProvider = ({ children }) => {
   };
 
   const updateSection = async (id, data) => {
-    const { title, content, image, images, layout, style, items, typography, showButton, buttonText, buttonLink, buttonStyles, cardStyles, bgColor, bgType, bgUrl, bgOpacity, paddingTop, paddingBottom, order, aboveTitle, menuName } = data;
+    const { title, content, image, images, layout, style, items, typography, showButton, buttonText, buttonLink, buttonStyles, cardStyles, bgColor, bgType, bgUrl, bgOpacity, paddingTop, paddingBottom, order, aboveTitle, menuName, type } = data;
     await updateSectionMutation({ 
       id, title, content, image, images, layout, style, 
       items: (items || []).map(item => ({
@@ -170,7 +170,7 @@ export const ConfigProvider = ({ children }) => {
       showButton: Boolean(showButton), 
       buttonText, buttonLink, buttonStyles, cardStyles,
       aboveTitle,
-      bgColor, bgType, bgUrl, bgOpacity, paddingTop, paddingBottom, order, menuName
+      bgColor, bgType, bgUrl, bgOpacity, paddingTop, paddingBottom, order, menuName, type
     });
   };
 
