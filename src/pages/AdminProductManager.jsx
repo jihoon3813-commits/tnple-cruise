@@ -222,13 +222,17 @@ const AdminProductManager = () => {
                       </select>
                   </div>
                   {currentProduct.paymentType === 'split' && (
-                    <>
-                      <PriceInput label="착수금" value={currentProduct.downPayment || 0} onChange={val => setCurrentProduct({...currentProduct, downPayment: val})} />
+                    <div style={{ gridColumn: 'span 2', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', background: 'var(--bg-sub)', padding: '24px', borderRadius: '20px' }}>
+                      <PriceInput label="예약금 (착수금)" value={currentProduct.downPayment || 0} onChange={val => setCurrentProduct({...currentProduct, downPayment: val})} />
                       <div>
-                          <label className="admin-label">할부 개월수</label>
+                          <label className="admin-label">할부 개월수 (숫자만)</label>
                           <input type="number" className="form-control" value={currentProduct.installments || 1} onChange={e => setCurrentProduct({...currentProduct, installments: parseInt(e.target.value)})} />
                       </div>
-                    </>
+                      <div style={{ gridColumn: 'span 2' }}>
+                          <label className="admin-label">잔금 납입 방식 설명 (예: 잔금은 여행 후 납입)</label>
+                          <textarea className="form-control" value={currentProduct.balancePaymentText || ""} onChange={e => setCurrentProduct({...currentProduct, balancePaymentText: e.target.value})} rows={2} placeholder="예: 잔금은 여행 후 12개월 분할 납부" />
+                      </div>
+                    </div>
                   )}
                 </div>
               )}

@@ -172,12 +172,28 @@ const Home = () => {
                                     {product.originalPrice && product.originalPrice > product.price && (
                                       <span style={{ fontSize: '13px', color: 'var(--text-muted)', textDecoration: 'line-through' }}>{product.originalPrice.toLocaleString()}원</span>
                                     )}
-                                    <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '700' }}>Starting From</span>
+                                    <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '700' }}>{product.paymentType === 'split' ? '총 패키지 정가' : 'Starting From'}</span>
                                  </div>
-                                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
-                                    <span style={{ fontSize: '24px', fontWeight: '900', color: 'var(--primary)', letterSpacing: '-1px' }}>{product.price?.toLocaleString()}<small style={{fontSize:'14px', fontWeight:'700', marginLeft:'2px'}}>원</small></span>
-                                    {product.originalPrice && product.originalPrice > product.price && (
-                                      <span style={{ fontSize: '14px', fontWeight: '900', color: '#ef4444' }}>{Math.round((1 - product.price / product.originalPrice) * 100)}% ↓</span>
+                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                    {product.paymentType === 'split' ? (
+                                      <>
+                                        <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+                                           <span style={{ fontSize: '14px', fontWeight: '700', color: 'var(--text-muted)' }}>예약금</span>
+                                           <span style={{ fontSize: '24px', fontWeight: '900', color: 'var(--primary)', letterSpacing: '-1px' }}>{product.downPayment?.toLocaleString()}<small style={{fontSize:'14px', fontWeight:'700', marginLeft:'2px'}}>원</small></span>
+                                        </div>
+                                        {product.balancePaymentText && (
+                                          <div style={{ fontSize: '13px', fontWeight: '800', color: 'var(--primary)', background: 'var(--bg-sub)', padding: '4px 12px', borderRadius: '6px' }}>
+                                            {product.balancePaymentText}
+                                          </div>
+                                        )}
+                                      </>
+                                    ) : (
+                                      <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+                                         <span style={{ fontSize: '24px', fontWeight: '900', color: 'var(--primary)', letterSpacing: '-1px' }}>{product.price?.toLocaleString()}<small style={{fontSize:'14px', fontWeight:'700', marginLeft:'2px'}}>원</small></span>
+                                         {product.originalPrice && product.originalPrice > product.price && (
+                                           <span style={{ fontSize: '14px', fontWeight: '900', color: '#ef4444' }}>{Math.round((1 - product.price / product.originalPrice) * 100)}% ↓</span>
+                                         )}
+                                      </div>
                                     )}
                                  </div>
                               </div>
