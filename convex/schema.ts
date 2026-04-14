@@ -1,7 +1,6 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
-// SCHEMA UPDATE: 2026-04-14 10:10 (Forcing push)
 export default defineSchema({
   siteConfig: defineTable({
     theme: v.optional(v.string()), // "white", "midnight", "cream", "grey", "lavender", "ocean"
@@ -35,22 +34,20 @@ export default defineSchema({
           size: v.optional(v.string()), // "small", "medium", "large"
         }))
       }))),
-      // Keep these temporarily to avoid breaking existing data validation
-      productListBranding: v.optional(v.any()),
-      reviewSectionBranding: v.optional(v.any()),
+      // Back to nested structure to match current blocked schema on server
+      productListBranding: v.optional(v.object({
+        title: v.optional(v.string()),
+        titleColor: v.optional(v.string()),
+        bgColor: v.optional(v.string()),
+      })),
+      reviewSectionBranding: v.optional(v.object({
+        show: v.optional(v.boolean()),
+        title: v.optional(v.string()),
+        titleColor: v.optional(v.string()),
+        bgColor: v.optional(v.string()),
+        layout: v.optional(v.string()), // "slider", "grid"
+      })),
     }),
-    productListBranding: v.optional(v.object({
-      title: v.optional(v.string()),
-      titleColor: v.optional(v.string()),
-      bgColor: v.optional(v.string()),
-    })),
-    reviewSectionBranding: v.optional(v.object({
-      show: v.optional(v.boolean()),
-      title: v.optional(v.string()),
-      titleColor: v.optional(v.string()),
-      bgColor: v.optional(v.string()),
-      layout: v.optional(v.string()), // "slider", "grid"
-    })),
   }),
   sections: defineTable({
     title: v.string(),
@@ -120,4 +117,3 @@ export default defineSchema({
     images: v.optional(v.array(v.string())),
   }),
 });
- Broadway
