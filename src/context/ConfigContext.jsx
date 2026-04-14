@@ -191,14 +191,14 @@ export const ConfigProvider = ({ children }) => {
 
   const updateProductBranding = async (data) => {
     if (!data) return;
-    const { title, titleColor, bgColor } = data;
-    await updateProductBrandingMutation({ title, titleColor, bgColor });
+    const { title, titleColor, bgColor, subTitleTop, subTitleTopStyle, subTitleBottom, subTitleBottomStyle } = data;
+    await updateProductBrandingMutation({ title, titleColor, bgColor, subTitleTop, subTitleTopStyle, subTitleBottom, subTitleBottomStyle });
   };
 
   const updateReviewBranding = async (data) => {
     if (!data) return;
-    const { show, title, titleColor, bgColor, layout } = data;
-    await updateReviewBrandingMutation({ show, title, titleColor, bgColor, layout });
+    const { show, title, titleColor, bgColor, layout, subTitleTop, subTitleTopStyle, subTitleBottom, subTitleBottomStyle } = data;
+    await updateReviewBrandingMutation({ show, title, titleColor, bgColor, layout, subTitleTop, subTitleTopStyle, subTitleBottom, subTitleBottomStyle });
   };
 
   const updateProductDetailBranding = async (data) => {

@@ -51,6 +51,10 @@ export const updateProductBranding = mutation({
     title: v.optional(v.string()),
     titleColor: v.optional(v.string()),
     bgColor: v.optional(v.string()),
+    subTitleTop: v.optional(v.string()),
+    subTitleTopStyle: v.optional(v.any()),
+    subTitleBottom: v.optional(v.string()),
+    subTitleBottomStyle: v.optional(v.any()),
   },
   handler: async (ctx, args) => {
     const existing = await ctx.db.query("siteConfig").first();
@@ -69,6 +73,10 @@ export const updateReviewBranding = mutation({
     titleColor: v.optional(v.string()),
     bgColor: v.optional(v.string()),
     layout: v.optional(v.string()),
+    subTitleTop: v.optional(v.string()),
+    subTitleTopStyle: v.optional(v.any()),
+    subTitleBottom: v.optional(v.string()),
+    subTitleBottomStyle: v.optional(v.any()),
   },
   handler: async (ctx, args) => {
     const existing = await ctx.db.query("siteConfig").first();
