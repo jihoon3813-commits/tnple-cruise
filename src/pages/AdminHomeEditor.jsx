@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useConfig } from '../context/ConfigContext';
-import { Plus, Trash2, Save, Monitor, Layers, Image as ImageIcon, Palette, Type, Link as LinkIcon, Upload, Loader2, Play, ChevronUp, ChevronDown, Check, X, Settings2, Grid, List, Activity, MoveVertical, MousePointerClick, Sun, Moon, Coffee, Cloud, Target, Droplets, Package, Layout, Sparkles, PlusCircle, XCircle, CreditCard, ListChecks, AlignLeft, AlignCenter, AlignRight, ShoppingBag, MessageSquare } from 'lucide-react';
+import { Plus, Trash2, Save, Monitor, Layers, Image as ImageIcon, Palette, Type, Link as LinkIcon, Upload, Loader2, Play, ChevronUp, ChevronDown, Check, X, Settings2, Grid, List, Activity, MoveVertical, MousePointerClick, Sun, Moon, Coffee, Cloud, Target, Droplets, Package, Layout, Sparkles, PlusCircle, XCircle, CreditCard, ListChecks, AlignLeft, AlignCenter, AlignRight, ShoppingBag, MessageSquare, PlusSquare, MinusSquare, ExternalLink } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // --- Improved Input Components with Local State to prevent cursor jumps ---
@@ -15,7 +15,7 @@ const DebouncedInput = ({ value, onChange, className, type = "text", ...props })
     setLocalValue(val);
     if (timerRef.current) clearTimeout(timerRef.current);
     timerRef.current = setTimeout(() => {
-      onChange(type === 'number' ? parseInt(val) : val);
+      onChange(type === 'number' ? parseFloat(val) : val);
     }, 500);
   };
 
@@ -45,10 +45,6 @@ const MediaInput = ({ label, value, onChange, uploadFile, accept }) => {
   const onFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    if (file.size > 50 * 1024 * 1024) {
-      alert("파일 용량이 너무 큽니다. 50MB 이하의 파일을 업로드해 주세요.");
-      return;
-    }
     setLoading(true);
     try {
       const storageId = await uploadFile(file);
@@ -74,11 +70,7 @@ const MediaInput = ({ label, value, onChange, uploadFile, accept }) => {
     return (
       <div style={{ marginTop: '12px', width: '100%', maxWidth: '280px', aspectRatio: '16/9', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border-light)', background: '#000', position: 'relative' }}>
         {isYouTube ? (
-          <iframe
-            src={`https://www.youtube.com/embed/${getYouTubeId(finalUrl)}?controls=1&mute=1&autoplay=0`}
-            style={{ width: '100%', height: '100%', border: 'none' }}
-            allowFullScreen
-          />
+          <iframe src={`https://www.youtube.com/embed/${getYouTubeId(finalUrl)}?controls=1&mute=1&autoplay=0`} style={{ width: '100%', height: '100%', border: 'none' }} allowFullScreen />
         ) : isVideo ? (
           <video src={finalUrl} style={{ width: '100%', height: '100%', display: 'block', objectFit: 'contain' }} controls muted />
         ) : (
@@ -90,7 +82,7 @@ const MediaInput = ({ label, value, onChange, uploadFile, accept }) => {
 
   return (
     <div className="form-group" style={{ marginBottom: '16px' }}>
-      <label style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-muted)' }}>{label}</label>
+      <label className="admin-label">{label}</label>
       <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
         <DebouncedInput className="form-control" value={value || ""} onChange={onChange} placeholder="URL 또는 업로드" />
         <button className="luxury-btn outline" style={{ padding: '0 12px' }} onClick={() => fileRef.current.click()} disabled={loading}>
@@ -120,7 +112,7 @@ const MultiMediaInput = ({ label, values = [], onChange, uploadFile }) => {
   };
   return (
     <div className="form-group" style={{ marginBottom: '16px', gridColumn: 'span 2' }}>
-      <label style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-muted)' }}>{label} ({values.length})</label>
+      <label className="admin-label">{label} ({values.length})</label>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '12px', marginTop: '12px' }}>
         {values.map((url, i) => {
           const isStorageId = url.startsWith('storage:');
@@ -143,20 +135,20 @@ const MultiMediaInput = ({ label, values = [], onChange, uploadFile }) => {
   );
 };
 
-const TypographyTool = ({ data, target, onUpdate, showStyle = false }) => {
-  const typo = data.typography?.[target] || {};
+const TypographyTool = ({ data, target, onUpdate, showStyle = true }) => {
+  const typo = (data.typography || {})[target] || {};
   const update = (field, val) => onUpdate(target, field, val);
   const currentStyles = target === 'above' ? [ { id: 'none', label: '기본' }, { id: 'box', label: '박스' }, { id: 'wavy', label: '워비' } ] : [ { id: 'none', label: '기본' }, { id: 'box', label: '박스' }, { id: 'italic', label: '이탤릭' } ];
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', background: 'var(--bg-sub)', padding: '20px', borderRadius: '16px' }}>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
-        <div className="form-group"><label style={{ fontSize: '11px', fontWeight: 700 }}>색상</label><input type="color" className="form-control" style={{ height: '38px', padding: 4 }} value={typo.color || '#0F172A'} onChange={e => update('color', e.target.value)} /></div>
-        <div className="form-group"><label style={{ fontSize: '11px', fontWeight: 700 }}>크기</label><DebouncedInput type="number" className="form-control" value={typo.fontSize || 16} onChange={val => update('fontSize', val)} /></div>
-        <div className="form-group"><label style={{ fontSize: '11px', fontWeight: 700 }}>정렬</label><select className="form-control" value={typo.textAlign || 'left'} onChange={e => update('textAlign', e.target.value)}><option value="left">Left</option><option value="center">Center</option><option value="right">Right</option></select></div>
+        <div className="form-group"><label className="admin-label-small">색상</label><input type="color" className="form-control" style={{ height: '38px', padding: 4 }} value={typo.color || (target === 'content' ? '#64748B' : '#0F172A')} onChange={e => update('color', e.target.value)} /></div>
+        <div className="form-group"><label className="admin-label-small">크기(px)</label><DebouncedInput type="number" className="form-control" value={typo.fontSize || (target === 'title' ? 42 : 16)} onChange={val => update('fontSize', val)} /></div>
+        <div className="form-group"><label className="admin-label-small">정렬</label><div style={{ display: 'flex', gap: '4px' }}>{['left', 'center', 'right'].map(a => (<button key={a} onClick={() => update('textAlign', a)} style={{ flex: 1, padding: '8px', background: typo.textAlign === a ? 'var(--primary)' : '#fff', color: typo.textAlign === a ? '#fff' : 'var(--text-main)', border: '1px solid var(--border-light)', borderRadius: '6px' }}>{a === 'left' ? <AlignLeft size={14}/> : a === 'center' ? <AlignCenter size={14}/> : <AlignRight size={14}/>}</button>))}</div></div>
       </div>
       {showStyle && (
         <div className="form-group">
-          <label style={{ fontSize: '11px', fontWeight: 700, marginBottom: '8px', display: 'block' }}>텍스트 스타일 효과</label>
+          <label className="admin-label-small" style={{ marginBottom: '8px', display: 'block' }}>텍스트 스타일 효과</label>
           <div style={{ display: 'flex', gap: '8px' }}>
              {currentStyles.map(s => (
                <button key={s.id} onClick={() => update('style', s.id)} style={{ flex: 1, padding: '8px', fontSize: '11px', borderRadius: '8px', border: typo.style === s.id ? '2px solid var(--primary)' : '1px solid var(--border-light)', background: typo.style === s.id ? '#fff' : 'transparent', fontWeight: typo.style === s.id ? '800' : '400', cursor: 'pointer' }}>{s.label}</button>
@@ -184,17 +176,16 @@ const THEMES = [
 ];
 
 const AdminHomeEditor = () => {
-  const { config, updateHero, updateTheme, updateSection, addSection, deleteSection, uploadFile, updateProductBranding, updateReviewBranding } = useConfig();
+  const { config, updateHero, updateTheme, updateSection, addSection, updateSectionOrders, deleteSection, uploadFile } = useConfig();
   const [heroForm, setHeroForm] = useState(config.hero);
-  const [activeCategory, setActiveCategory] = useState('theme'); 
+  const [activeCategory, setActiveCategory] = useState('sections'); 
   const [activeSectionId, setActiveSectionId] = useState(null);
-  const [editTab, setEditTab] = useState('style');
+  const [editTab, setEditTab] = useState('content');
 
   useEffect(() => {
     if (config.hero) setHeroForm(config.hero);
   }, [config.hero]);
 
-  // Use config.sections directly as it is already sorted in the context
   const sections = config.sections || [];
 
   const handleHeroSave = async () => {
@@ -205,19 +196,12 @@ const AdminHomeEditor = () => {
   const handleSectionMove = async (id, direction) => {
     const idx = sections.findIndex(s => s.id === id);
     if (idx === -1) return;
-
     let targetIdx = direction === 'up' ? idx - 1 : idx + 1;
     if (targetIdx < 0 || targetIdx >= sections.length) return;
-
     const newSections = [...sections];
     const item = newSections.splice(idx, 1)[0];
     newSections.splice(targetIdx, 0, item);
-
-    const orders = newSections.map((s, i) => ({
-      id: s.id,
-      order: i
-    }));
-
+    const orders = newSections.map((s, i) => ({ id: s.id, order: i }));
     await updateSectionOrders(orders);
   };
 
@@ -274,10 +258,16 @@ const AdminHomeEditor = () => {
                    <h2 style={{ fontSize: '18px', fontWeight: '800' }}>히어로 메인 비주얼</h2>
                    <button className="luxury-btn" onClick={handleHeroSave}><Save size={16}/> 설정 저장</button>
                 </div>
-                <div style={{ background: 'var(--bg-sub)', padding: '24px', borderRadius: '20px' }}>
-                   <div className="form-group" style={{ marginBottom: '20px' }}><label>메인 타이틀</label><DebouncedInput className="form-control" value={heroForm?.title} onChange={v => setHeroForm({...heroForm, title: v})} /></div>
-                   <div className="form-group" style={{ marginBottom: '20px' }}><label>서브 설명</label><DebouncedTextarea className="form-control" value={heroForm?.subtitle} onChange={v => setHeroForm({...heroForm, subtitle: v})} /></div>
-                   <MediaInput label="배경 미디어" value={heroForm?.bgUrl} onChange={v => setHeroForm({...heroForm, bgUrl: v})} uploadFile={uploadFile} accept={heroForm?.bgType === 'video' ? "video/*" : "image/*,video/*"} />
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px' }}>
+                   <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                      <div className="form-group"><label className="admin-label">히어로 타이틀</label><DebouncedTextarea className="form-control" value={heroForm?.title} onChange={v => setHeroForm({...heroForm, title: v})} rows={3} /></div>
+                      <div className="form-group"><label className="admin-label">서브 타이틀 (선택)</label><DebouncedInput className="form-control" value={heroForm?.aboveTitle} onChange={v => setHeroForm({...heroForm, aboveTitle: v})} /></div>
+                      <div className="form-group"><label className="admin-label">메인 설명</label><DebouncedTextarea className="form-control" value={heroForm?.subtitle} onChange={v => setHeroForm({...heroForm, subtitle: v})} rows={3} /></div>
+                   </div>
+                   <div>
+                      <MediaInput label="배경 미디어 (이미지/동영상)" value={heroForm?.bgUrl} onChange={v => setHeroForm({...heroForm, bgUrl: v})} uploadFile={uploadFile} />
+                      <div className="form-group" style={{ marginTop: '20px' }}><label className="admin-label">배경 투명도 (0~1)</label><DebouncedInput type="number" step="0.1" className="form-control" value={heroForm?.bgOpacity} onChange={v => setHeroForm({...heroForm, bgOpacity: v})} /></div>
+                   </div>
                 </div>
              </section>
           )}
@@ -286,68 +276,126 @@ const AdminHomeEditor = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <h2 style={{ fontSize: '18px', fontWeight: '800' }}>레이아웃 섹션 구성</h2>
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    <button className="luxury-btn outline" onClick={() => handleCreateSection("custom")}><Layers size={14} /> 일반 섹션</button>
-                    <button className="luxury-btn outline" onClick={() => handleCreateSection("products")}><ShoppingBag size={14} /> 상품 리스트</button>
-                    <button className="luxury-btn outline" onClick={() => handleCreateSection("reviews")}><MessageSquare size={14} /> 여행 후기</button>
+                  <div style={{ display: 'flex', gap: '12px' }}>
+                    <button className="luxury-btn outline" onClick={() => handleCreateSection("custom")}><PlusSquare size={16}/> 일반 홍보 섹션</button>
+                    <button className="luxury-btn outline" onClick={() => handleCreateSection("products")}><ShoppingBag size={16}/> 상품 리스트 섹션</button>
+                    <button className="luxury-btn outline" onClick={() => handleCreateSection("reviews")}><MessageSquare size={16}/> 여행 후기 섹션</button>
                   </div>
                </div>
                {sections.map((section, idx) => (
                  <div key={section.id} className="admin-card" style={{ padding: '0', overflow: 'hidden' }}>
-                    <div onClick={() => setActiveSectionId(activeSectionId === section.id ? null : section.id)} style={{ padding: '16px 24px', background: 'var(--bg-sub)', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div onClick={() => { setActiveSectionId(activeSectionId === section.id ? null : section.id); if(activeSectionId !== section.id) setEditTab('content'); }} style={{ padding: '16px 24px', background: activeSectionId === section.id ? 'var(--bg-sub)' : '#fff', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', transition: '0.2s' }}>
                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                          <span style={{ fontWeight: '900', color: 'var(--primary)', opacity: 0.2 }}>{idx + 1}</span>
-                          <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)' }}>
-                            {section.type === 'products' ? <ShoppingBag size={16}/> : (section.type === 'reviews' ? <MessageSquare size={16}/> : <Layers size={16}/>)}
+                          <span style={{ fontWeight: '900', color: 'var(--primary)', opacity: 0.3 }}>{idx + 1}</span>
+                          <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', boxShadow: 'var(--shadow-sm)' }}>
+                            {section.type === 'products' ? <ShoppingBag size={20}/> : (section.type === 'reviews' ? <MessageSquare size={20}/> : <Layers size={20}/>)}
                           </div>
-                          <span style={{ fontSize: '14px', fontWeight: '800' }}>{section.title}</span>
-                          <span style={{ fontSize: '10px', color: 'var(--text-muted)', background: '#fff', padding: '2px 6px', borderRadius: '4px' }}>{section.type || "custom"}</span>
+                          <div style={{ display: 'flex', flexDirection: 'column' }}>
+                             <span style={{ fontSize: '14px', fontWeight: '800' }}>{section.title || "제목 없음"}</span>
+                             <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{section.type || "custom"} | {section.style || "classic"}</span>
+                          </div>
                        </div>
                        <div style={{ display: 'flex', gap: '12px' }}>
-                          <button onClick={e => { e.stopPropagation(); handleSectionMove(section.id, 'up'); }} style={{ border: 'none', background: 'none', cursor: 'pointer' }}><ChevronUp size={16} /></button>
-                          <button onClick={e => { e.stopPropagation(); handleSectionMove(section.id, 'down'); }} style={{ border: 'none', background: 'none', cursor: 'pointer' }}><ChevronDown size={16} /></button>
-                          <button onClick={e => { e.stopPropagation(); if(confirm('삭제하시겠습니까?')) deleteSection(section.id); }} style={{ color: '#ef4444', border: 'none', background: 'none', cursor: 'pointer' }}><Trash2 size={16} /></button>
+                          <button onClick={e => { e.stopPropagation(); handleSectionMove(section.id, 'up'); }} className="icon-btn-pill"><ChevronUp size={18} /></button>
+                          <button onClick={e => { e.stopPropagation(); handleSectionMove(section.id, 'down'); }} className="icon-btn-pill"><ChevronDown size={18} /></button>
+                          <button onClick={e => { e.stopPropagation(); if(confirm('이 섹션을 삭제하시겠습니까?')) deleteSection(section.id); }} className="icon-btn-pill" style={{ color: '#ef4444' }}><Trash2 size={18} /></button>
                        </div>
                     </div>
 
+                    <AnimatePresence>
                     {activeSectionId === section.id && (
-                       <div style={{ padding: '24px' }}>
-                          <div style={{ display: 'flex', gap: '8px', marginBottom: '24px' }}>
-                             {['style', 'content', 'visual', 'typography'].map(t => (
-                               <button key={t} onClick={() => setEditTab(t)} className={`luxury-btn ${editTab === t ? '' : 'outline'}`} style={{ padding: '6px 12px', fontSize: '11px' }}>{t.toUpperCase()}</button>
-                             ))}
-                          </div>
-                          
-                          {editTab === 'content' && (
-                             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                                <div className="form-group"><label>섹션 타이틀</label><DebouncedInput className="form-control" value={section.title} onChange={v => updateSection(section.id, {...section, title: v})} /></div>
-                                {section.type === 'custom' && (
-                                   <div className="form-group"><label>섹션 설명</label><DebouncedTextarea className="form-control" value={section.content} onChange={v => updateSection(section.id, {...section, content: v})} rows={3} /></div>
-                                )}
+                       <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} style={{ overflow: 'hidden' }}>
+                          <div style={{ padding: '24px', borderTop: '1px solid var(--border-light)' }}>
+                             <div style={{ display: 'flex', gap: '8px', marginBottom: '32px', borderBottom: '1px solid var(--border-light)', pb: '16px' }}>
+                                {['content', 'items', 'visual', 'style', 'typography'].map(t => (
+                                   <button key={t} onClick={() => setEditTab(t)} className={`nav-tab-btn ${editTab === t ? 'active' : ''}`}>{t === 'content' ? '내용/버튼' : (t === 'items' ? '상세 아이템' : (t === 'visual' ? '비주얼' : (t === 'style' ? '스타일' : '타이포그라피')))}</button>
+                                ))}
                              </div>
-                          )}
+                             
+                             {editTab === 'content' && (
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px' }}>
+                                   <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                                      <div className="form-group"><label className="admin-label">섹션 타이틀</label><DebouncedInput className="form-control" value={section.title} onChange={v => updateSection(section.id, {...section, title: v})} /></div>
+                                      <div className="form-group"><label className="admin-label">소제목 (상단)</label><DebouncedInput className="form-control" value={section.aboveTitle} onChange={v => updateSection(section.id, {...section, aboveTitle: v})} /></div>
+                                      <div className="form-group"><label className="admin-label">본문 내용</label><DebouncedTextarea className="form-control" value={section.content} onChange={v => updateSection(section.id, {...section, content: v})} rows={4} /></div>
+                                   </div>
+                                   <div style={{ background: 'var(--bg-sub)', padding: '24px', borderRadius: '24px' }}>
+                                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                                         <label className="admin-label">메인 버튼 활성화</label>
+                                         <input type="checkbox" checked={section.showButton ?? true} onChange={e => updateSection(section.id, {...section, showButton: e.target.checked})} />
+                                      </div>
+                                      {(section.showButton ?? true) && (
+                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                            <div className="form-group"><label className="admin-label-small">버튼 이름</label><DebouncedInput className="form-control" value={section.buttonText} onChange={v => updateSection(section.id, {...section, buttonText: v})} /></div>
+                                            <div className="form-group"><label className="admin-label-small">연결 링크</label><DebouncedInput className="form-control" value={section.buttonLink} onChange={v => updateSection(section.id, {...section, buttonLink: v})} /></div>
+                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                                               <div className="form-group"><label className="admin-label-small">배경색</label><input type="color" className="form-control" value={section.buttonStyles?.bgColor || '#2563EB'} onChange={e => updateSection(section.id, {...section, buttonStyles: {...section.buttonStyles, bgColor: e.target.value}})} /></div>
+                                               <div className="form-group"><label className="admin-label-small">글자색</label><input type="color" className="form-control" value={section.buttonStyles?.textColor || '#ffffff'} onChange={e => updateSection(section.id, {...section, buttonStyles: {...section.buttonStyles, textColor: e.target.value}})} /></div>
+                                            </div>
+                                         </div>
+                                      )}
+                                   </div>
+                                </div>
+                             )}
 
-                          {editTab === 'style' && (
-                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                                <div className="form-group"><label>배경 색상</label><input type="color" className="form-control" style={{ height: 40 }} value={section.bgColor || "#ffffff"} onChange={e => updateSection(section.id, {...section, bgColor: e.target.value})} /></div>
-                                {section.type === 'custom' && (
-                                   <div className="form-group"><label>레이아웃</label><select className="form-control" value={section.layout} onChange={e => updateSection(section.id, {...section, layout: e.target.value})}><option value="left">이미지 오른쪽</option><option value="right">이미지 왼쪽</option></select></div>
-                                )}
-                                {section.type === 'reviews' && (
-                                   <div className="form-group"><label>레이아웃 스타일</label><select className="form-control" value={section.style || 'slider'} onChange={e => updateSection(section.id, {...section, style: e.target.value})}><option value="slider">슬라이더</option><option value="grid">그리드</option></select></div>
-                                )}
-                             </div>
-                          )}
+                             {editTab === 'items' && (
+                                <div>
+                                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                                      <h4 style={{ fontSize: '15px', fontWeight: '800' }}>상세 아이템 관리 ({section.items?.length || 0})</h4>
+                                      <button className="luxury-btn outline small" onClick={() => updateSection(section.id, {...section, items: [...(section.items || []), { title: "새 아이템", content: "내용을 입력하세요", number: String((section.items?.length || 0) + 1) }]})}><Plus size={14}/> 아이템 추가</button>
+                                   </div>
+                                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '20px' }}>
+                                      {(section.items || []).map((item, i) => (
+                                         <div key={i} style={{ background: '#fff', border: '1px solid var(--border-light)', padding: '20px', borderRadius: '20px' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', mb: '16px' }}>
+                                               <span style={{ fontSize: '11px', fontWeight: '900', color: 'var(--primary)', background: 'var(--bg-sub)', px: 10, py: 2, borderRadius: 6 }}>ITEM #{i+1}</span>
+                                               <button onClick={() => updateSection(section.id, {...section, items: section.items.filter((_, idx) => idx !== i)})} style={{ color: '#ef4444', border: 'none', background: 'none' }}><Trash2 size={14}/></button>
+                                            </div>
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', mt: '12px' }}>
+                                               <DebouncedInput className="form-control" placeholder="번호/태그 (예: 01)" value={item.number} onChange={v => { const newItems = [...section.items]; newItems[i] = {...item, number: v}; updateSection(section.id, {...section, items: newItems}); }} />
+                                               <DebouncedInput className="form-control" placeholder="아이템 타이틀" value={item.title} onChange={v => { const newItems = [...section.items]; newItems[i] = {...item, title: v}; updateSection(section.id, {...section, items: newItems}); }} />
+                                               <DebouncedTextarea className="form-control" placeholder="아이템 설명" value={item.content} onChange={v => { const newItems = [...section.items]; newItems[i] = {...item, content: v}; updateSection(section.id, {...section, items: newItems}); }} />
+                                               <MediaInput label="아이템 이미지" value={item.image} onChange={v => { const newItems = [...section.items]; newItems[i] = {...item, image: v}; updateSection(section.id, {...section, items: newItems}); }} uploadFile={uploadFile} />
+                                            </div>
+                                         </div>
+                                      ))}
+                                   </div>
+                                </div>
+                             )}
 
-                          {editTab === 'visual' && section.type === 'custom' && (
-                             <MediaInput label="대표 이미지" value={section.image} onChange={v => updateSection(section.id, {...section, image: v})} uploadFile={uploadFile} />
+                             {editTab === 'style' && (
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px' }}>
+                                   <div className="form-group"><label className="admin-label">레이아웃 스타일</label><select className="form-control" value={section.style || 'classic'} onChange={e => updateSection(section.id, {...section, style: e.target.value})}><option value="classic">클래식 (이미지+텍스트)</option><option value="luxury-row">럭셔리 로우 (번호순 아이템)</option><option value="split-card">스플릿 카드 (큰 화면 분할)</option><option value="gallery">갤러리 (그리드 카드)</option><option value="minimal-centered">미니멀 중앙 정렬</option></select></div>
+                                   <div className="form-group"><label className="admin-label">정렬 위치</label><select className="form-control" value={section.layout || 'left'} onChange={e => updateSection(section.id, {...section, layout: e.target.value})}><option value="left">왼쪽 (이미지 우측)</option><option value="right">오른쪽 (이미지 좌측)</option></select></div>
+                                   <div className="form-group"><label className="admin-label">배경 색상</label><input type="color" className="form-control" style={{ height: 40 }} value={section.bgColor || "#ffffff"} onChange={e => updateSection(section.id, {...section, bgColor: e.target.value})} /></div>
+                                   <div className="form-group"><label className="admin-label">상단 간격 (px)</label><DebouncedInput type="number" className="form-control" value={section.paddingTop} onChange={v => updateSection(section.id, {...section, paddingTop: v})} /></div>
+                                   <div className="form-group"><label className="admin-label">하단 간격 (px)</label><DebouncedInput type="number" className="form-control" value={section.paddingBottom} onChange={v => updateSection(section.id, {...section, paddingBottom: v})} /></div>
+                                </div>
+                             )}
+
+                             {editTab === 'visual' && (
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px' }}>
+                                   <div>
+                                      <MediaInput label="배경 이미지/동영상 URL" value={section.bgUrl} onChange={v => updateSection(section.id, {...section, bgUrl: v})} uploadFile={uploadFile} />
+                                      <div className="form-group" style={{ mt: '16px' }}><label className="admin-label">배경 미디어 투명도 (0~1)</label><DebouncedInput type="number" step="0.1" className="form-control" value={section.bgOpacity} onChange={v => updateSection(section.id, {...section, bgOpacity: v})} /></div>
+                                   </div>
+                                   <div>
+                                      <MultiMediaInput label="섹션 내부 이미지 갤러리" values={section.images} onChange={v => updateSection(section.id, {...section, images: v})} uploadFile={uploadFile} />
+                                      <div className="form-group"><label className="admin-label">슬라이드 전환 간격 (초)</label><DebouncedInput type="number" className="form-control" value={section.slideDuration || 3} onChange={v => updateSection(section.id, {...section, slideDuration: v})} /></div>
+                                   </div>
+                                </div>
                           )}
                           
                           {editTab === 'typography' && (
-                             <TypographyTool data={section} target="title" onUpdate={(t,f,v) => updateSection(section.id, {...section, typography: {...section.typography, [t]: {...section.typography?.[t], [f]: v}}})} />
+                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+                                <div><label className="admin-label">타이틀 스타일</label><TypographyTool data={section} target="title" onUpdate={(t,f,v) => updateSection(section.id, {...section, typography: {...section.typography, [t]: {...section.typography?.[t], [f]: v}}})} /></div>
+                                <div><label className="admin-label">본문 스타일</label><TypographyTool data={section} target="content" onUpdate={(t,f,v) => updateSection(section.id, {...section, typography: {...section.typography, [t]: {...section.typography?.[t], [f]: v}}})} /></div>
+                             </div>
                           )}
                        </div>
+                       </motion.div>
                     )}
+                    </AnimatePresence>
                  </div>
                ))}
             </div>

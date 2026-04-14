@@ -137,9 +137,9 @@ export const ConfigProvider = ({ children }) => {
   };
 
   const addSection = async (data) => {
-    const { title, content, aboveTitle, image, images, layout, style, items, typography, showButton, buttonText, buttonLink, buttonStyles, cardStyles, bgColor, bgType, bgUrl, bgOpacity, paddingTop, paddingBottom, menuName, type } = data;
+    const { title, content, aboveTitle, image, images, slideDuration, layout, style, items, typography, showButton, buttonText, buttonLink, buttonStyles, cardStyles, bgColor, bgType, bgUrl, bgOpacity, paddingTop, paddingBottom, menuName, type } = data;
     await addSectionMutation({ 
-      title, content, aboveTitle, image, images, layout, 
+      title, content, aboveTitle, image, images, slideDuration, layout, 
       style: style || "classic", 
       items: (items || []).map(item => ({
         ...item,
@@ -165,9 +165,9 @@ export const ConfigProvider = ({ children }) => {
   };
 
   const updateSection = async (id, data) => {
-    const { title, content, image, images, layout, style, items, typography, showButton, buttonText, buttonLink, buttonStyles, cardStyles, bgColor, bgType, bgUrl, bgOpacity, paddingTop, paddingBottom, order, aboveTitle, menuName, type } = data;
+    const { title, content, image, images, slideDuration, layout, style, items, typography, showButton, buttonText, buttonLink, buttonStyles, cardStyles, bgColor, bgType, bgUrl, bgOpacity, paddingTop, paddingBottom, order, aboveTitle, menuName, type } = data;
     await updateSectionMutation({ 
-      id, title, content, image, images, layout, style, 
+      id, title, content, image, images, slideDuration, layout, style, 
       items: (items || []).map(item => ({
         ...item,
         highlights: item.highlights || [],
