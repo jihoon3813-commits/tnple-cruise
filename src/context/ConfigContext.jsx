@@ -83,14 +83,24 @@ export const ConfigProvider = ({ children }) => {
   }, [heroData, sectionsData, productsData, reviewsData, resolvedLogo, resolvedFavicon, resolvedOgImage]);
 
   const uploadFile = async (file) => {
-    const postUrl = await generateUploadUrl();
-    const result = await fetch(postUrl, {
-      method: "POST",
-      headers: { "Content-Type": file.type },
-      body: file,
-    });
-    const { storageId } = await result.json();
-    return storageId;
+    try {
+      const postUrl = await generateUploadUrl();
+      const result = await fetch(postUrl, {
+        method: "POST",
+        headers: { "Content-Type": file.type },
+        body: file,
+      });
+      
+      if (!result.ok) {
+        throw new Error(`Upload failed with status: ${result.status}`);
+      }
+      
+      const { storageId } = await result.json();
+      return storageId;
+    } catch (error) {
+      console.error("Upload error:", error);
+      throw error;
+    }
   };
 
   const updateHero = async (data) => {

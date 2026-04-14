@@ -45,10 +45,22 @@ const MediaInput = ({ label, value, onChange, uploadFile }) => {
   const onFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
+    
+    // Size check: limit to 50MB for reasonable UX
+    if (file.size > 50 * 1024 * 1024) {
+      alert("파일 용량이 너무 큽니다. 50MB 이하의 파일을 업로드해 주세요.");
+      return;
+    }
+
     setLoading(true);
-    const storageId = await uploadFile(file);
-    onChange(`storage:${storageId}`);
-    setLoading(false);
+    try {
+      const storageId = await uploadFile(file);
+      onChange(`storage:${storageId}`);
+    } catch (err) {
+      alert("업로드 중 오류가 발생했습니다. 네트워크 상태를 확인하시거나 용량을 줄여서 다시 시도해 주세요.");
+    } finally {
+      setLoading(false);
+    }
   };
   return (
     <div className="form-group" style={{ marginBottom: '16px' }}>
@@ -58,8 +70,13 @@ const MediaInput = ({ label, value, onChange, uploadFile }) => {
         <button className="luxury-btn outline" style={{ padding: '0 12px' }} onClick={() => fileRef.current.click()} disabled={loading}>
           {loading ? <Loader2 className="animate-spin" size={16} /> : <Upload size={16} />}
         </button>
-        <input type="file" ref={fileRef} hidden onChange={onFileChange} />
+        <input type="file" ref={fileRef} hidden onChange={onFileChange} accept={props.accept || "image/*,video/*"} />
       </div>
+      {(props.accept?.includes('video') || (value && (value.includes('video') || value.includes('mp4')))) && (
+        <p style={{ fontSize: '11px', color: 'var(--primary)', marginTop: '4px', fontWeight: '600' }}>
+          * 동영상은 MP4/WebM 형식을 권장하며, 용량이 크면 로딩에 시간이 걸릴 수 있습니다.
+        </p>
+      )}
     </div>
   );
 };
@@ -379,7 +396,13 @@ const AdminHomeEditor = () => {
 
                  {heroTab === 'visual' && (
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-                       <MediaInput label="배경 미디어" value={heroForm?.bgUrl} onChange={v => setHeroForm({...heroForm, bgUrl: v})} uploadFile={uploadFile} />
+                       <MediaInput 
+                          label="배경 미디어" 
+                          value={heroForm?.bgUrl} 
+                          onChange={v => setHeroForm({...heroForm, bgUrl: v})} 
+                          uploadFile={uploadFile} 
+                          accept={heroForm?.bgType === 'video' ? "video/*" : "image/*,video/*"}
+                       />
                        <div className="form-group"><label>배경 타입</label><select className="form-control" value={heroForm?.bgType} onChange={e => setHeroForm({...heroForm, bgType: e.target.value})}><option value="image">Image</option><option value="video">Video</option></select></div>
                        <div className="form-group" style={{ gridColumn: 'span 2' }}>
                           <label>배경 밝기 ({heroForm?.bgOpacity ?? 1}) (0:어둡게, 1:보통, 2:밝게)</label>
