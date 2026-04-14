@@ -39,6 +39,7 @@ export const ConfigProvider = ({ children }) => {
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
   const updateProductBrandingMutation = useMutation(api.siteConfig.updateProductBranding);
   const updateReviewBrandingMutation = useMutation(api.siteConfig.updateReviewBranding);
+  const updateProductDetailBrandingMutation = useMutation(api.siteConfig.updateProductDetailBranding);
 
   useEffect(() => {
     if (heroData === null) {
@@ -53,7 +54,8 @@ export const ConfigProvider = ({ children }) => {
     products: productsData?.map(p => ({ ...p, id: p._id })) || [],
     reviews: reviewsData?.map(r => ({ ...r, id: r._id })) || [],
     productListBranding: heroData?.productListBranding || { title: "추천 패키지", titleColor: "var(--text-main)", bgColor: "#ffffff" },
-    reviewSectionBranding: heroData?.reviewSectionBranding || { show: true, title: "여행 후기", titleColor: "var(--text-main)", bgColor: "var(--bg-sub)", layout: "slider" }
+    reviewSectionBranding: heroData?.reviewSectionBranding || { show: true, title: "여행 후기", titleColor: "var(--text-main)", bgColor: "var(--bg-sub)", layout: "slider" },
+    productDetailBranding: heroData?.productDetailBranding || { layout: "luxury", theme: "light", titleColor: "#0F172A", priceColor: "var(--primary)", accentColor: "var(--primary)", buttonColor: "var(--primary)", buttonTextColor: "#ffffff" }
   }), [heroData, sectionsData, productsData, reviewsData]);
 
   const uploadFile = async (file) => {
@@ -164,6 +166,11 @@ export const ConfigProvider = ({ children }) => {
     await updateReviewBrandingMutation({ show, title, titleColor, bgColor, layout });
   };
 
+  const updateProductDetailBranding = async (data) => {
+    if (!data) return;
+    await updateProductDetailBrandingMutation(data);
+  };
+
   const deleteProduct = async (id) => {
     await deleteProductMutation({ id });
   };
@@ -193,7 +200,8 @@ export const ConfigProvider = ({ children }) => {
       addReview,
       deleteReview,
       updateProductBranding,
-      updateReviewBranding
+      updateReviewBranding,
+      updateProductDetailBranding
     }}>
       {children}
     </ConfigContext.Provider>

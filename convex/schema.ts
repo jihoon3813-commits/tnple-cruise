@@ -50,6 +50,15 @@ export default defineSchema({
       bgColor: v.optional(v.string()),
       layout: v.optional(v.string()), // "slider", "grid"
     })),
+    productDetailBranding: v.optional(v.object({
+      layout: v.optional(v.string()), // "luxury", "split", "modern"
+      theme: v.optional(v.string()), // "light", "dark", "glass"
+      titleColor: v.optional(v.string()),
+      priceColor: v.optional(v.string()),
+      accentColor: v.optional(v.string()),
+      buttonColor: v.optional(v.string()),
+      buttonTextColor: v.optional(v.string()),
+    })),
   }),
   sections: defineTable({
     title: v.string(),

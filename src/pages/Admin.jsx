@@ -4,6 +4,7 @@ import { LayoutDashboard, Image, Package, MessageSquare, Home as HomeIcon, LogOu
 import AdminHomeEditor from './AdminHomeEditor';
 import AdminProductManager from './AdminProductManager';
 import AdminReviewManager from './AdminReviewManager';
+import AdminProductDetailEditor from './AdminProductDetailEditor';
 
 const Admin = () => {
   const location = useLocation();
@@ -11,6 +12,7 @@ const Admin = () => {
   const navItems = [
     { path: '/admin', name: '홈페이지 편집', icon: <HomeIcon size={20} /> },
     { path: '/admin/products', name: '상품 리스트', icon: <Package size={20} /> },
+    { path: '/admin/product-detail', name: '상품 상세 브랜딩', icon: <Settings size={20} /> },
     { path: '/admin/reviews', name: '리뷰 관리', icon: <MessageSquare size={20} /> },
   ];
 
@@ -84,6 +86,7 @@ const Admin = () => {
           <Routes>
             <Route path="/" element={<AdminHomeEditor />} />
             <Route path="/products" element={<AdminProductManager />} />
+            <Route path="/product-detail" element={<AdminProductDetailEditor />} />
             <Route path="/reviews" element={<AdminReviewManager />} />
           </Routes>
         </div>

@@ -73,3 +73,21 @@ export const updateReviewBranding = mutation({
     }
   },
 });
+
+export const updateProductDetailBranding = mutation({
+  args: {
+    layout: v.optional(v.string()),
+    theme: v.optional(v.string()),
+    titleColor: v.optional(v.string()),
+    priceColor: v.optional(v.string()),
+    accentColor: v.optional(v.string()),
+    buttonColor: v.optional(v.string()),
+    buttonTextColor: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const existing = await ctx.db.query("siteConfig").first();
+    if (existing) {
+      await ctx.db.patch(existing._id, { productDetailBranding: args });
+    }
+  },
+});
