@@ -599,11 +599,11 @@ const Home = () => {
                                          <span style={{ fontSize: '10px', padding: '2px 6px', background: '#f1f5f9', color: '#64748B', borderRadius: '4px', fontWeight: '800' }}>분할납부</span>
                                       </div>
                                       <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
-                                         <span style={{ fontSize: '13px', fontWeight: '800', color: 'var(--primary)' }}>예약금</span>
-                                         <span style={{ fontSize: '24px', fontWeight: '900', color: 'var(--primary)', letterSpacing: '-1px' }}>{(product.downPayment || 0).toLocaleString()}</span>
-                                         <span style={{ fontSize: '14px', fontWeight: '800', color: 'var(--primary)' }}>원</span>
+                                         <span style={{ fontSize: '13px', fontWeight: '800', color: typo.price?.color || 'var(--primary)' }}>예약금</span>
+                                         <span style={{ ...getStyle('price'), fontSize: '24px', letterSpacing: '-1px', color: typo.price?.color || 'var(--primary)' }}>{(product.downPayment || 0).toLocaleString()}</span>
+                                         <span style={{ fontSize: '14px', fontWeight: '800', color: typo.price?.color || 'var(--primary)' }}>원</span>
                                       </div>
-                                      <p style={{ fontSize: '11px', color: '#3b82f6', fontWeight: '700', margin: '4px 0 0 0' }}>* 잔금은 여행을 다녀오신 후 납부</p>
+                                      <p style={{ fontSize: '11px', color: typo.price?.color || '#3b82f6', fontWeight: '700', margin: '4px 0 0 0' }}>* 잔금은 여행을 다녀오신 후 납부</p>
                                    </div>
                                  ) : (
                                    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '84px', justifyContent: 'center' }}>
@@ -616,8 +616,8 @@ const Home = () => {
                                          )}
                                       </div>
                                       <div style={{ display: 'flex', alignItems: 'baseline', gap: '2px', marginTop: '2px' }}>
-                                         <span style={{ fontSize: '28px', fontWeight: '900', color: '#0F172A', letterSpacing: '-1px' }}>{product.price?.toLocaleString()}</span>
-                                         <span style={{ fontSize: '16px', fontWeight: '800', color: '#0F172A' }}>원</span>
+                                         <span style={{ ...getStyle('price'), fontSize: '28px', letterSpacing: '-1px', color: typo.price?.color || '#0F172A' }}>{product.price?.toLocaleString()}</span>
+                                         <span style={{ fontSize: '16px', fontWeight: '800', color: typo.price?.color || '#0F172A' }}>원</span>
                                       </div>
                                       {product.originalPrice > product.price ? (
                                         <p style={{ fontSize: '11px', color: '#ef4444', fontWeight: '700', margin: '4px 0 0 0' }}>* 총 {(product.originalPrice - product.price).toLocaleString()}원 즉시 할인됨</p>

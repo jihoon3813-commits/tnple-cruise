@@ -168,7 +168,9 @@ h1, h2, h3, h4 { font-family: 'Outfit', sans-serif; font-weight: 700; letter-spa
 
 /* Mobile Best Practices */
 @media (max-width: 1024px) {
-  --container-padding: 40px;
+  :root {
+    --container-padding: 40px;
+  }
 }
 
 @media (max-width: 768px) {

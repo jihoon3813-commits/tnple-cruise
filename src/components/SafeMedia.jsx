@@ -37,14 +37,30 @@ const SafeMedia = ({ src, className, style, type = 'image', alt = "" }) => {
 
   const finalSrc = isStorageId ? resolvedUrl : src;
 
+  // Separate wrapper styles from inner media styles
+  const innerObjectFit = style?.objectFit || 'cover';
+  const innerFilter = style?.filter;
+  const wrapperStyle = {
+    position: 'relative',
+    overflow: 'hidden',
+    width: style?.width || '100%',
+    height: style?.height || '100%',
+    minHeight: 0,
+    borderRadius: style?.borderRadius,
+    boxShadow: style?.boxShadow,
+    maxWidth: style?.maxWidth,
+    maxHeight: style?.maxHeight,
+    display: style?.display || 'block',
+  };
+
   // Placeholder state
   if (!inView) {
-      return <div ref={ref} style={{ ...style, background: '#f1f5f9' }} className={className} />;
+      return <div ref={ref} style={{ ...wrapperStyle, background: '#f1f5f9' }} className={className} />;
   }
 
   // Loading state
   if (isStorageId && !resolvedUrl) {
-    return <div ref={ref} style={{ ...style, background: '#f1f5f9' }} className={className} />;
+    return <div ref={ref} style={{ ...wrapperStyle, background: '#f1f5f9' }} className={className} />;
   }
 
   const isVideo = type === 'video' || (finalSrc && (finalSrc.endsWith('.mp4') || finalSrc.endsWith('.webm') || finalSrc.endsWith('.mov')));
@@ -59,7 +75,7 @@ const SafeMedia = ({ src, className, style, type = 'image', alt = "" }) => {
   };
 
   return (
-    <div ref={ref} style={{ ...style, position: 'relative', overflow: 'hidden' }} className={className}>
+    <div ref={ref} style={wrapperStyle} className={className}>
       <AnimatePresence>
         {!loaded && !isYouTube && (
            <motion.div 
@@ -95,7 +111,7 @@ const SafeMedia = ({ src, className, style, type = 'image', alt = "" }) => {
           playsInline 
           preload="metadata" 
           onLoadedData={() => setLoaded(true)}
-          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} 
+          style={{ width: '100%', height: '100%', objectFit: innerObjectFit, display: 'block', filter: innerFilter }} 
         />
       ) : (
         <motion.img 
@@ -105,7 +121,7 @@ const SafeMedia = ({ src, className, style, type = 'image', alt = "" }) => {
           alt={alt} 
           loading="lazy"
           onLoad={() => setLoaded(true)}
-          style={{ width: '100%', height: '100%', objectFit: (style && style.objectFit) || 'cover', display: 'block' }} 
+          style={{ width: '100%', height: '100%', objectFit: innerObjectFit, display: 'block', filter: innerFilter }} 
         />
       )}
     </div>
