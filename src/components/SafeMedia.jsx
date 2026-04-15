@@ -41,7 +41,7 @@ const SafeMedia = ({ src, className, style, type = 'image', alt = "" }) => {
   const innerObjectFit = style?.objectFit || 'cover';
   const innerFilter = style?.filter;
   const wrapperStyle = {
-    position: 'relative',
+    position: style?.position || 'relative',
     overflow: 'hidden',
     width: style?.width || '100%',
     height: style?.height || '100%',
@@ -51,6 +51,9 @@ const SafeMedia = ({ src, className, style, type = 'image', alt = "" }) => {
     maxWidth: style?.maxWidth,
     maxHeight: style?.maxHeight,
     display: style?.display || 'block',
+    ...(style?.inset !== undefined ? { inset: style.inset } : {}),
+    ...(style?.top !== undefined ? { top: style.top } : {}),
+    ...(style?.left !== undefined ? { left: style.left } : {}),
   };
 
   // Placeholder state

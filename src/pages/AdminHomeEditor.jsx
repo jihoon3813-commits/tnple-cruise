@@ -715,23 +715,38 @@ const AdminHomeEditor = () => {
                                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
                                                    <div className="form-group">
                                                       <label style={{fontSize:'9px'}}>소제목 색상</label>
-                                                      <input type="color" className="form-control" value={item.typography?.above?.color || "#2563EB"} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], typography: { ...ni[i].typography, above: { ...ni[i].typography?.above, color: e.target.value } } }; handleSectionUpdate(section.id, { ...section, items: ni }); }} />
+                                                      <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                                         <div style={{ width: '28px', height: '28px', borderRadius: '8px', border: '2px solid #e2e8f0', background: item.typography?.above?.color || '#2563EB', flexShrink: 0 }} />
+                                                         <input type="color" className="form-control" style={{ height: '36px', padding: '2px', flex: 1 }} value={item.typography?.above?.color || "#2563EB"} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], typography: { ...ni[i].typography, above: { ...ni[i].typography?.above, color: e.target.value } } }; handleSectionUpdate(section.id, { ...section, items: ni }); }} />
+                                                      </div>
                                                    </div>
                                                    <div className="form-group">
                                                       <label style={{fontSize:'9px'}}>타이틀 색상</label>
-                                                      <input type="color" className="form-control" value={item.typography?.title?.color || "#0F172A"} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], typography: { ...ni[i].typography, title: { ...ni[i].typography?.title, color: e.target.value } } }; handleSectionUpdate(section.id, { ...section, items: ni }); }} />
+                                                      <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                                         <div style={{ width: '28px', height: '28px', borderRadius: '8px', border: '2px solid #e2e8f0', background: item.typography?.title?.color || '#0F172A', flexShrink: 0 }} />
+                                                         <input type="color" className="form-control" style={{ height: '36px', padding: '2px', flex: 1 }} value={item.typography?.title?.color || "#0F172A"} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], typography: { ...ni[i].typography, title: { ...ni[i].typography?.title, color: e.target.value } } }; handleSectionUpdate(section.id, { ...section, items: ni }); }} />
+                                                      </div>
                                                    </div>
                                                    <div className="form-group">
                                                       <label style={{fontSize:'9px'}}>본문 색상</label>
-                                                      <input type="color" className="form-control" value={item.typography?.content?.color || "#64748B"} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], typography: { ...ni[i].typography, content: { ...ni[i].typography?.content, color: e.target.value } } }; handleSectionUpdate(section.id, { ...section, items: ni }); }} />
+                                                      <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                                         <div style={{ width: '28px', height: '28px', borderRadius: '8px', border: '2px solid #e2e8f0', background: item.typography?.content?.color || '#64748B', flexShrink: 0 }} />
+                                                         <input type="color" className="form-control" style={{ height: '36px', padding: '2px', flex: 1 }} value={item.typography?.content?.color || "#64748B"} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], typography: { ...ni[i].typography, content: { ...ni[i].typography?.content, color: e.target.value } } }; handleSectionUpdate(section.id, { ...section, items: ni }); }} />
+                                                      </div>
                                                    </div>
                                                    <div className="form-group">
                                                        <label style={{fontSize:'9px'}}>하이라이트 제목 색상</label>
-                                                       <input type="color" className="form-control" value={item.typography?.highlights?.labelColor || "var(--primary)"} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], typography: { ...ni[i].typography, highlights: { ...ni[i].typography?.highlights, labelColor: e.target.value } } }; handleSectionUpdate(section.id, { ...section, items: ni }); }} />
+                                                       <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                                          <div style={{ width: '28px', height: '28px', borderRadius: '8px', border: '2px solid #e2e8f0', background: item.typography?.highlights?.labelColor || '#2563EB', flexShrink: 0 }} />
+                                                          <input type="color" className="form-control" style={{ height: '36px', padding: '2px', flex: 1 }} value={item.typography?.highlights?.labelColor || "#2563EB"} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], typography: { ...ni[i].typography, highlights: { ...ni[i].typography?.highlights, labelColor: e.target.value } } }; handleSectionUpdate(section.id, { ...section, items: ni }); }} />
+                                                       </div>
                                                    </div>
                                                    <div className="form-group" style={{ gridColumn: 'span 2' }}>
                                                        <label style={{fontSize:'9px'}}>리스트 텍스트 색상</label>
-                                                       <input type="color" className="form-control" value={item.typography?.highlights?.color || "var(--text-main)"} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], typography: { ...ni[i].typography, highlights: { ...ni[i].typography?.highlights, color: e.target.value } } }; handleSectionUpdate(section.id, { ...section, items: ni }); }} />
+                                                       <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                                          <div style={{ width: '28px', height: '28px', borderRadius: '8px', border: '2px solid #e2e8f0', background: item.typography?.highlights?.color || '#0F172A', flexShrink: 0 }} />
+                                                          <input type="color" className="form-control" style={{ height: '36px', padding: '2px', flex: 1 }} value={item.typography?.highlights?.color || "#0F172A"} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], typography: { ...ni[i].typography, highlights: { ...ni[i].typography?.highlights, color: e.target.value } } }; handleSectionUpdate(section.id, { ...section, items: ni }); }} />
+                                                       </div>
                                                    </div>
                                                 </div>
                                              </div>

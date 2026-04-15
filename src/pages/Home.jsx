@@ -179,7 +179,7 @@ const Home = () => {
 
     return (
       <section key={section.id} id={`section-${section.id}`} style={wrapperStyle}>
-        {bgType !== 'color' && bgUrl && <div style={{ position: 'absolute', inset: 0, zIndex: 0, opacity: bgOpacity ?? 1 }}><SafeMedia src={bgUrl} type={bgType} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>}
+        {bgType !== 'color' && bgUrl && <div style={{ position: 'absolute', inset: 0, zIndex: 0, opacity: bgOpacity ?? 1, overflow: 'hidden' }}><SafeMedia src={bgUrl} type={bgType} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} /></div>}
         <div style={{ position: 'absolute', inset: 0, background: bgType === 'color' ? 'transparent' : `rgba(255,255,255,${1 - (bgOpacity ?? 1)})`, zIndex: 0 }}></div>
         <div className="container" style={{ position: 'relative', zIndex: 1 }}>
           
@@ -267,7 +267,7 @@ const Home = () => {
                                      </ul>
                                   </div>
                                )}
-                               {item.showButton ? (
+                               {item.showButton && (
                                   <div style={{ marginTop: '24px' }}>
                                     <Link 
                                       to={item.buttonLink || "/"} 
@@ -289,8 +289,6 @@ const Home = () => {
                                       {item.buttonText || "자세히 보기"}
                                     </Link>
                                   </div>
-                                ) : (
-                                  <div style={{ marginTop: '24px' }}><CustomButton section={{ ...section, buttonText: "상세 정보 보기 >", showButton: true }} isSmall={true} /></div>
                                 )}
                             </div>
                          </motion.div>
