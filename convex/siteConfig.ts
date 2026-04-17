@@ -41,7 +41,17 @@ export const updateTheme = mutation({
     if (existing) {
       await ctx.db.patch(existing._id, { theme: args.theme });
     } else {
-      await ctx.db.insert("siteConfig", { theme: args.theme });
+      // Must include required fields like 'hero' when inserting
+      await ctx.db.insert("siteConfig", { 
+        theme: args.theme,
+        hero: {
+          title: "T&PLE KOREA",
+          subtitle: "프리미엄 크루즈 멤버십",
+          bgType: "image",
+          bgUrl: "https://images.unsplash.com/photo-1548574505-5e239809ee19",
+          textPosition: "center"
+        }
+      });
     }
   },
 });
