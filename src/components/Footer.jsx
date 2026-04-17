@@ -20,7 +20,7 @@ const Footer = () => {
           <div style={{ gridColumn: 'span 1' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '24px', fontWeight: '700', marginBottom: '30px' }}>
               {config.logo ? (
-                <SafeMedia src={config.logo} style={{ height: '36px', objectFit: 'contain' }} />
+                <SafeMedia src={config.logo} style={{ height: '100px', objectFit: 'contain' }} />
               ) : (
                 <><Ship className="gold-text" /> <span>TNPLE KOREA</span></>
               )}
