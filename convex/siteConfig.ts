@@ -72,7 +72,16 @@ export const updateProductBranding = mutation({
     if (existing) {
       await ctx.db.patch(existing._id, { productListBranding: args });
     } else {
-      await ctx.db.insert("siteConfig", { productListBranding: args });
+      await ctx.db.insert("siteConfig", { 
+        productListBranding: args,
+        hero: {
+          title: "T&PLE KOREA",
+          subtitle: "프리미엄 크루즈 멤버십",
+          bgType: "image",
+          bgUrl: "https://images.unsplash.com/photo-1548574505-5e239809ee19",
+          textPosition: "center"
+        }
+      });
     }
   },
 });
@@ -95,7 +104,16 @@ export const updateReviewBranding = mutation({
     if (existing) {
       await ctx.db.patch(existing._id, { reviewSectionBranding: args });
     } else {
-      await ctx.db.insert("siteConfig", { reviewSectionBranding: args });
+      await ctx.db.insert("siteConfig", { 
+        reviewSectionBranding: args,
+        hero: {
+          title: "T&PLE KOREA",
+          subtitle: "프리미엄 크루즈 멤버십",
+          bgType: "image",
+          bgUrl: "https://images.unsplash.com/photo-1548574505-5e239809ee19",
+          textPosition: "center"
+        }
+      });
     }
   },
 });
@@ -119,7 +137,16 @@ export const updateProductDetailBranding = mutation({
     if (existing) {
       await ctx.db.patch(existing._id, { productDetailBranding: args });
     } else {
-      await ctx.db.insert("siteConfig", { productDetailBranding: args });
+      await ctx.db.insert("siteConfig", { 
+        productDetailBranding: args,
+        hero: {
+          title: "T&PLE KOREA",
+          subtitle: "프리미엄 크루즈 멤버십",
+          bgType: "image",
+          bgUrl: "https://images.unsplash.com/photo-1548574505-5e239809ee19",
+          textPosition: "center"
+        }
+      });
     }
   },
 });
@@ -131,13 +158,24 @@ export const updatePrivacyPolicy = mutation({
     if (existing) {
       await ctx.db.patch(existing._id, { privacyPolicy: args.content });
     } else {
-      await ctx.db.insert("siteConfig", { privacyPolicy: args.content });
+      await ctx.db.insert("siteConfig", { 
+        privacyPolicy: args.content,
+        hero: {
+          title: "T&PLE KOREA",
+          subtitle: "프리미엄 크루즈 멤버십",
+          bgType: "image",
+          bgUrl: "https://images.unsplash.com/photo-1548574505-5e239809ee19",
+          textPosition: "center"
+        }
+      });
     }
   },
 });
 
 export const updateGlobalSettings = mutation({
   args: {
+    logo: v.optional(v.string()),
+    favicon: v.optional(v.string()),
     ogImage: v.optional(v.string()),
     metaDescription: v.optional(v.string()),
     adminPassword: v.optional(v.string()),
@@ -147,7 +185,16 @@ export const updateGlobalSettings = mutation({
     if (existing) {
       await ctx.db.patch(existing._id, args);
     } else {
-      await ctx.db.insert("siteConfig", args);
+      await ctx.db.insert("siteConfig", { 
+        ...args,
+        hero: {
+          title: "T&PLE KOREA",
+          subtitle: "프리미엄 크루즈 멤버십",
+          bgType: "image",
+          bgUrl: "https://images.unsplash.com/photo-1548574505-5e239809ee19",
+          textPosition: "center"
+        }
+      });
     }
   },
 });
