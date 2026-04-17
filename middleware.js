@@ -1,6 +1,4 @@
-// Vercel Edge Middleware for dynamic OG tags
-import { next } from '@vercel/edge';
-
+// Zero-dependency Vercel Edge Middleware
 export const config = {
   matcher: ['/'],
 };
@@ -9,22 +7,24 @@ export default async function middleware(req) {
   const userAgent = req.headers.get('user-agent') || '';
   const isCrawler = /bot|google|facebook|kakao|naver|twitter|slack/i.test(userAgent);
 
-  // Only run for crawlers on the home page to avoid overhead
+  // Only intercept for SNS crawlers and search robots
   if (isCrawler) {
     try {
-      // 1. Fetch latest site config from our new Convex HTTP API
+      // 1. Fetch site config from Convex HTTP API
       const configRes = await fetch('https://incredible-tapir-714.convex.cloud/getSiteConfig');
-      if (!configRes.ok) return next();
+      if (!configRes.ok) return; // Fallback to default if API is down
       
       const siteConfig = await configRes.json();
 
-      // 2. Fetch the original index.html
-      const originRes = await fetch(new URL('/index.html', req.url));
-      if (!originRes.ok) return next();
+      // 2. Fetch the actual index.html file
+      const originUrl = new URL(req.url);
+      const res = await fetch(new URL('/index.html', originUrl.origin));
+      if (!res.ok) return;
       
-      let html = await originRes.text();
+      let html = await res.text();
 
-      // 3. Robustly replace OG tags and meta tags
+      // 3. Replace Meta/OG tags with dynamic values
+      // We use simple string replacement to avoid parsing overhead
       html = html.replace(
         /<meta property="og:title" content="[^"]*"/, 
         `<meta property="og:title" content="${siteConfig.title}"`
@@ -46,15 +46,17 @@ export default async function middleware(req) {
         `<meta name="description" content="${siteConfig.description}"`
       );
 
-      // Return the modified HTML to the crawler
       return new Response(html, {
-        headers: { 'content-type': 'text/html; charset=UTF-8' },
+        headers: {
+          'Content-Type': 'text/html; charset=UTF-8',
+          'Cache-Control': 'public, s-maxage=3600' // Cache for 1 hour for crawlers
+        },
       });
     } catch (e) {
-      console.error('Middleware target error:', e);
-      return next();
+      console.error('Middleware Error:', e);
+      return; // Error? Fallback to static index.html
     }
   }
 
-  return next();
+  // Not a crawler? Just let it through to the standard static file routing
 }
