@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { LayoutDashboard, Image, Package, MessageSquare, Home as HomeIcon, LogOut, ChevronRight, Settings, Bell, Search, PhoneCall, ShieldCheck } from 'lucide-react';
+import { LayoutDashboard, Image, Package, MessageSquare, Home as HomeIcon, LogOut, ChevronRight, Settings, Bell, Search, PhoneCall, ShieldCheck, Ship } from 'lucide-react';
 import AdminHomeEditor from './AdminHomeEditor';
 import AdminProductManager from './AdminProductManager';
 import AdminReviewManager from './AdminReviewManager';
@@ -59,12 +59,13 @@ const Admin = () => {
             display: 'flex', alignItems: 'center', justifyContent: 'center', 
             margin: '0 auto 32px',
             boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
-            transform: 'rotate(-5deg)'
+            transform: 'rotate(-5deg)',
+            color: '#050c18'
           }}>
-            <ShieldCheck size={40} color="#050c18" strokeWidth={1.5} />
+            <Ship size={40} strokeWidth={1.5} />
           </div>
 
-          <h2 style={{ fontSize: '28px', fontWeight: '900', color: '#fff', marginBottom: '12px', letterSpacing: '0.1em' }}>ADMIN KEY</h2>
+          <h2 style={{ fontSize: '24px', fontWeight: '900', color: '#fff', marginBottom: '12px', letterSpacing: '0.05em' }}>티앤플 코리아 관리자</h2>
           <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '13px', marginBottom: '40px', letterSpacing: '0.05em' }}>접속을 위해 관리자 인증번호를 입력하세요.</p>
           
           <div style={{ position: 'relative', marginBottom: '24px' }}>
@@ -132,13 +133,19 @@ const Admin = () => {
       {/* Sidebar */}
       <aside className="admin-nav" style={{ boxShadow: 'inset -1px 0 0 var(--border-light)' }}>
         <div style={{ padding: '0 10px 40px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-            <div style={{ width: '32px', height: '32px', background: 'var(--primary)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-               <Package size={18} color="#fff" />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '6px' }}>
+            <div style={{ width: '38px', height: '38px', background: 'rgba(37, 99, 235, 0.05)', border: '1px solid rgba(37, 99, 235, 0.1)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)' }}>
+               <Ship size={20} strokeWidth={2.5} />
             </div>
-            <h2 style={{ fontSize: '20px', fontWeight: '800', letterSpacing: '-0.02em', color: 'var(--text-main)' }}>OLIGO</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: '1.2' }}>
+              <span style={{ fontWeight: '900', fontSize: '18px', color: 'var(--text-main)', letterSpacing: '-0.02em' }}>
+                티앤플 코리아
+              </span>
+              <span style={{ fontWeight: '600', fontSize: '9px', letterSpacing: '0.1em', opacity: 0.6, color: 'var(--text-main)' }}>
+                ADMIN CONSOLE
+              </span>
+            </div>
           </div>
-          <p style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '500' }}>Admin Console</p>
         </div>
         
         <nav style={{ flex: 1 }}>
