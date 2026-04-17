@@ -37,6 +37,36 @@ function App() {
         document.getElementsByTagName('head')[0].appendChild(meta);
       }
 
+      // SNS Open Graph Tags
+      if (config) {
+        const ogTags = [
+          { property: 'og:title', content: 'T&PLE KOREA - 프리미엄 크루즈' },
+          { property: 'og:description', content: config.metaDescription },
+          { property: 'og:image', content: config.ogImageUrl },
+          { property: 'og:url', content: window.location.href },
+          { property: 'og:type', content: 'website' }
+        ];
+
+        ogTags.forEach(tag => {
+          let meta = document.querySelector(`meta[property="${tag.property}"]`);
+          if (!meta) {
+            meta = document.createElement('meta');
+            meta.setAttribute('property', tag.property);
+            document.getElementsByTagName('head')[0].appendChild(meta);
+          }
+          meta.content = tag.content;
+        });
+
+        // KakaoTalk/Twitter specific
+        let twitterImg = document.querySelector('meta[name="twitter:image"]');
+        if (!twitterImg) {
+          twitterImg = document.createElement('meta');
+          twitterImg.name = "twitter:image";
+          document.getElementsByTagName('head')[0].appendChild(twitterImg);
+        }
+        twitterImg.content = config.ogImageUrl;
+      }
+
       // Apply theme class to body (Excluding Admin pages)
       const isAdmin = location.pathname.startsWith('/admin');
       
