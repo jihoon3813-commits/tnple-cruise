@@ -392,7 +392,7 @@ const ProductDetail = () => {
                            {product.originalPrice > product.price ? (
                              <p style={{ fontSize: '13px', color: '#ef4444', fontWeight: '700', marginTop: '12px' }}>* 총 {(product.originalPrice - product.price).toLocaleString()}원 즉시 할인 적용됨</p>
                            ) : (
-                             <p style={{ fontSize: '13px', color: mutedColor, fontWeight: '700', marginTop: '12px' }}>* 오직 올리고크루즈에서만 가능한 특별가</p>
+                             <p style={{ fontSize: '13px', color: mutedColor, fontWeight: '700', marginTop: '12px' }}>* 오직 티앤플코리아에서만 가능한 특별가</p>
                            )}
                         </>
                      )}

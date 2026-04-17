@@ -69,7 +69,7 @@ const Navbar = () => {
                <div style={{ padding: '8px', background: 'var(--primary)', borderRadius: '100px', display: 'flex' }}>
                  <Ship size={24} color="#fff" />
                </div>
-               <span style={{ fontWeight: '900', fontSize: '24px', letterSpacing: '-0.02em', color: 'var(--text-main)' }}>OLIGO</span>
+               <span style={{ fontWeight: '900', fontSize: '24px', letterSpacing: '-0.02em', color: 'var(--text-main)' }}>TNPLE KOREA</span>
              </>
           )}
         </Link>

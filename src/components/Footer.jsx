@@ -22,11 +22,11 @@ const Footer = () => {
               {config.logo ? (
                 <SafeMedia src={config.logo} style={{ height: '36px', objectFit: 'contain' }} />
               ) : (
-                <><Ship className="gold-text" /> <span>OLIGO</span></>
+                <><Ship className="gold-text" /> <span>TNPLE KOREA</span></>
               )}
             </div>
             <p style={{ color: hasLogo ? '#64748b' : '#8c95a1', fontSize: '14px', lineHeight: '1.8' }}>
-              프리미엄 럭셔리 크루즈 멤버십 서비스. 품격 있는 해상 여행의 정수를 올리고크루즈와 함께 경험해 보세요.
+              프리미엄 럭셔리 크루즈 멤버십 서비스. 품격 있는 해상 여행의 정수를 티앤플코리아와 함께 경험해 보세요.
             </p>
           </div>
           
@@ -61,7 +61,7 @@ const Footer = () => {
         </div>
 
         <div style={{ borderTop: `1px solid ${hasLogo ? 'var(--border-light)' : 'rgba(255,255,255,0.05)'}`, paddingTop: '40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: hasLogo ? '#94a3b8' : '#555', fontSize: '12px' }}>
-          <p>© 2026 올리고크루즈 멤버십. All rights reserved.</p>
+          <p>© 2026 티앤플코리아 크루즈 멤버십. All rights reserved.</p>
           <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
             <Link to="/admin" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none', opacity: 0.5, fontSize: '11px' }}>Admin Console</Link>
           </div>

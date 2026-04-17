@@ -693,7 +693,7 @@ const Home = () => {
                          </div>
                          <p style={{ fontSize: '20px', lineHeight: '1.8', color: '#334155', fontWeight: '500', whiteSpace: 'pre-wrap', flex: 1 }}>"{selectedReview.content}"</p>
                          <div style={{ marginTop: 'auto', paddingTop: '40px', borderTop: '1px solid #f1f5f9', color: '#94a3b8', fontSize: '14px', fontStyle: 'italic' }}>
-                            “올리고크루즈와 함께한 소중한 여행 기록입니다.”
+                            “티앤플코리아와 함께한 소중한 여행 기록입니다.”
                          </div>
                       </div>
                   </motion.div>

@@ -8,7 +8,7 @@ export const useConfig = () => useContext(ConfigContext);
 
 const DEFAULT_CONFIG = {
   hero: {
-    title: "올리고 크루즈\n멤버십",
+    title: "티앤플코리아 크루즈\n멤버십",
     subtitle: "당신을 위한 완벽한 여정",
     bgType: "image",
     bgUrl: "https://images.unsplash.com/photo-1548574505-5e239809ee19?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80",
@@ -69,10 +69,10 @@ export const ConfigProvider = ({ children }) => {
       reviewSectionBranding: heroData?.reviewSectionBranding || { show: true, title: "여행 후기", titleColor: "var(--text-main)", bgColor: "var(--bg-sub)", layout: "slider" },
       productDetailBranding: heroData?.productDetailBranding || { layout: "luxury", theme: "light", titleColor: "#0F172A", priceColor: "var(--primary)", accentColor: "var(--primary)", buttonColor: "var(--primary)", buttonTextColor: "#ffffff" },
       privacyPolicy: heroData?.privacyPolicy || "개인정보 수집 및 이용에 동의합니다.",
-      logo: heroData?.logo,
-      favicon: heroData?.favicon,
-      ogImage: heroData?.ogImage,
-      metaDescription: heroData?.metaDescription || "올리고 크루즈 - 프리미엄 크루즈 멤버십 서비스"
+      logo: heroData?.logo || "/logo.png",
+      favicon: heroData?.favicon || "/logo.png",
+      ogImage: heroData?.ogImage || "https://images.unsplash.com/photo-1548574505-5e239809ee19?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200",
+      metaDescription: heroData?.metaDescription || "티앤플코리아 크루즈 - 프리미엄 크루즈 멤버십 서비스"
     };
 
     return {
