@@ -35,6 +35,13 @@ function App() {
         meta.content = config.metaDescription;
         document.getElementsByTagName('head')[0].appendChild(meta);
       }
+
+      // Apply theme class to body
+      if (config.theme) {
+        // Remove existing theme classes (class starting with theme-)
+        const classes = document.body.className.split(' ').filter(c => !c.startsWith('theme-'));
+        document.body.className = [...classes, `theme-${config.theme}`].join(' ').trim();
+      }
     } catch (e) { console.error(e); }
   }, [config, loading]);
 
