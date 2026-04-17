@@ -11,7 +11,7 @@ export default async function middleware(req) {
   if (isCrawler) {
     try {
       // 1. Fetch site config from Convex HTTP API
-      const configRes = await fetch('https://incredible-tapir-714.convex.cloud/getSiteConfig');
+      const configRes = await fetch('https://prestigious-loris-727.convex.site/getSiteConfig');
       if (!configRes.ok) return; // Fallback to default if API is down
       
       const siteConfig = await configRes.json();
