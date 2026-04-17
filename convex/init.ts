@@ -8,7 +8,7 @@ export const seed = mutation({
     if (!existing) {
       await ctx.db.insert("siteConfig", {
         hero: {
-          title: "티앤플코리아 크루즈\n멤버십",
+          title: "T&PLE KOREA 크루즈\n멤버십",
           subtitle: "당신을 위한 완벽한 여정",
           bgType: "image",
           bgUrl: "https://images.unsplash.com/photo-1548574505-5e239809ee19?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80",
@@ -22,7 +22,7 @@ export const seed = mutation({
     if (sections.length === 0) {
       await ctx.db.insert("sections", {
         title: "궁극의 럭셔리",
-        content: "티앤플코리아 크루즈 멤버십과 함께 세계에서 가장 권위 있는 크루즈를 경험해 보세요.",
+        content: "T&PLE KOREA 크루즈 멤버십과 함께 세계에서 가장 권위 있는 크루즈를 경험해 보세요.",
         image: "https://images.unsplash.com/photo-1567815357002-ad216ca7bad0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
         layout: "left",
         style: "classic",

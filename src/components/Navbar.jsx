@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Ship, Menu, X, ArrowUpRight } from 'lucide-react';
+import { Ship, Menu, X, ArrowUpRight, Compass } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useConfig } from '../context/ConfigContext';
 import SafeMedia from './SafeMedia';
@@ -62,10 +62,15 @@ const Navbar = () => {
     <nav className={`nav ${scrolled ? 'scrolled' : ''}`}>
       <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0' }}>
         <Link to="/" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
-          <div style={{ padding: '8px', background: 'var(--accent, #D4AF37)', borderRadius: '100px', display: 'flex' }}>
-            <Ship size={24} color="#fff" />
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '40px', height: '40px', borderRadius: '12px', background: scrolled ? 'var(--bg-sub)' : 'rgba(255,255,255,0.1)', border: `1px solid ${scrolled ? 'var(--border-light)' : 'rgba(255,255,255,0.2)'}`, color: 'var(--accent, #D4AF37)' }}>
+            <Compass size={22} strokeWidth={2.5} />
           </div>
-          <span style={{ fontWeight: '900', fontSize: '24px', letterSpacing: '-0.02em', color: scrolled ? 'var(--text-main)' : (location.pathname === '/' ? '#fff' : 'var(--text-main)') }}>TNPLE KOREA</span>
+          <div style={{ display: 'flex', flexDirection: 'column', lineHeight: '1', gap: '2px' }}>
+            <span style={{ fontWeight: '900', fontSize: '20px', letterSpacing: '0.05em', color: scrolled ? 'var(--text-main)' : (location.pathname === '/' ? '#fff' : 'var(--text-main)') }}>
+              T<span style={{ color: 'var(--accent, #D4AF37)' }}>&</span>PLE
+            </span>
+            <span style={{ fontWeight: '500', fontSize: '10px', letterSpacing: '0.3em', color: scrolled ? 'var(--text-muted)' : (location.pathname === '/' ? 'rgba(255,255,255,0.6)' : 'var(--text-muted)') }}>KOREA</span>
+          </div>
         </Link>
 
         {/* Desktop Menu */}

@@ -16,9 +16,9 @@ const AdminSettings = () => {
   const [uploading, setUploading] = useState(null);
 
   const recommendedTags = [
-    "당신의 인생에서 가장 빛나는 순간, 티앤플코리아와 함께하세요.",
-    "세상의 끝까지 만끽하는 진정한 럭셔리, 티앤플코리아 크루즈 멤버십.",
-    "압도적인 스케일과 최상급 서비스, 티앤플코리아 프리미엄 크루즈 여행."
+    "당신의 인생에서 가장 빛나는 순간, T&PLE KOREA와 함께하세요.",
+    "세상의 끝까지 만끽하는 진정한 럭셔리, T&PLE KOREA 크루즈 멤버십.",
+    "압도적인 스케일과 최상급 서비스, T&PLE KOREA 프리미엄 크루즈 여행."
   ];
 
   const handleFileChange = async (e, field) => {
@@ -169,9 +169,9 @@ const AdminSettings = () => {
                      {settings.ogImage ? <SafeMedia src={settings.ogImage} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#94a3b8' }}><ImageIcon size={32} /></div>}
                   </div>
                   <div style={{ padding: '16px' }}>
-                     <div style={{ fontWeight: '800', fontSize: '14px', marginBottom: '6px' }}>티앤플코리아</div>
+                     <div style={{ fontWeight: '800', fontSize: '14px', marginBottom: '6px' }}>T&PLE KOREA</div>
                      <div style={{ fontSize: '12px', color: '#64748b', lineHeight: '1.4', height: '3.4em', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
-                        {settings.metaDescription || "티앤플코리아 크루즈 - 프리미엄 크루즈 멤버십 서비스"}
+                        {settings.metaDescription || "T&PLE KOREA 크루즈 - 프리미엄 크루즈 멤버십 서비스"}
                      </div>
                      <div style={{ fontSize: '10px', color: '#94a3b8', marginTop: '12px' }}>tnple-cruise.com</div>
                   </div>

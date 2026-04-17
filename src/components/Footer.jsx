@@ -1,6 +1,6 @@
 import { useConfig } from '../context/ConfigContext';
 import SafeMedia from './SafeMedia';
-import { Ship } from 'lucide-react';
+import { Ship, Compass } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Footer = () => {
@@ -19,13 +19,18 @@ const Footer = () => {
         <div style={{ display: 'grid', gridTemplateColumns: window.innerWidth < 1024 ? '1fr' : '1.2fr 1fr 1fr 1.2fr', gap: '50px', marginBottom: '80px' }}>
           <div style={{ gridColumn: 'span 1' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '24px', fontWeight: '700', marginBottom: '30px' }}>
-                <div style={{ padding: '8px', background: 'var(--accent, #D4AF37)', borderRadius: '100px', display: 'flex' }}>
-                  <Ship size={24} color="#fff" />
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(212, 175, 55, 0.1)', border: '1px solid rgba(212, 175, 55, 0.3)', color: 'var(--accent, #D4AF37)' }}>
+                  <Compass size={22} strokeWidth={2.5} />
                 </div>
-                <span style={{ color: hasLogo ? 'var(--text-main)' : '#fff' }}>TNPLE KOREA</span>
+                <div style={{ display: 'flex', flexDirection: 'column', lineHeight: '1', gap: '2px' }}>
+                  <span style={{ fontWeight: '900', fontSize: '20px', letterSpacing: '0.05em', color: hasLogo ? 'var(--text-main)' : '#fff' }}>
+                    T<span style={{ color: 'var(--accent, #D4AF37)' }}>&</span>PLE
+                  </span>
+                  <span style={{ fontWeight: '500', fontSize: '10px', letterSpacing: '0.3em', color: hasLogo ? 'var(--text-muted)' : 'rgba(255,255,255,0.6)' }}>KOREA</span>
+                </div>
             </div>
             <p style={{ color: hasLogo ? '#64748b' : '#8c95a1', fontSize: '14px', lineHeight: '1.8' }}>
-              프리미엄 럭셔리 크루즈 멤버십 서비스. 품격 있는 해상 여행의 정수를 티앤플코리아와 함께 경험해 보세요.
+              프리미엄 럭셔리 크루즈 멤버십 서비스. 품격 있는 해상 여행의 정수를 T&PLE KOREA와 함께 경험해 보세요.
             </p>
           </div>
           
@@ -60,7 +65,7 @@ const Footer = () => {
         </div>
 
         <div style={{ borderTop: `1px solid ${hasLogo ? 'var(--border-light)' : 'rgba(255,255,255,0.05)'}`, paddingTop: '40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: hasLogo ? '#94a3b8' : '#555', fontSize: '12px' }}>
-          <p>© 2026 티앤플코리아 크루즈 멤버십. All rights reserved.</p>
+          <p>© 2026 T&PLE KOREA 크루즈 멤버십. All rights reserved.</p>
           <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
             <Link to="/admin" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none', opacity: 0.5, fontSize: '11px' }}>Admin Console</Link>
           </div>
