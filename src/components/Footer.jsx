@@ -19,11 +19,10 @@ const Footer = () => {
         <div style={{ display: 'grid', gridTemplateColumns: window.innerWidth < 1024 ? '1fr' : '1.2fr 1fr 1fr 1.2fr', gap: '50px', marginBottom: '80px' }}>
           <div style={{ gridColumn: 'span 1' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '24px', fontWeight: '700', marginBottom: '30px' }}>
-              {config.logo ? (
-                <SafeMedia src={config.logo} style={{ height: '100px', objectFit: 'contain' }} />
-              ) : (
-                <><Ship className="gold-text" /> <span>TNPLE KOREA</span></>
-              )}
+                <div style={{ padding: '8px', background: 'var(--accent, #D4AF37)', borderRadius: '100px', display: 'flex' }}>
+                  <Ship size={24} color="#fff" />
+                </div>
+                <span style={{ color: hasLogo ? 'var(--text-main)' : '#fff' }}>TNPLE KOREA</span>
             </div>
             <p style={{ color: hasLogo ? '#64748b' : '#8c95a1', fontSize: '14px', lineHeight: '1.8' }}>
               프리미엄 럭셔리 크루즈 멤버십 서비스. 품격 있는 해상 여행의 정수를 티앤플코리아와 함께 경험해 보세요.

@@ -62,16 +62,10 @@ const Navbar = () => {
     <nav className={`nav ${scrolled ? 'scrolled' : ''}`}>
       <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0' }}>
         <Link to="/" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
-          {config.logo ? (
-             <SafeMedia src={config.logo} style={{ height: '72px', objectFit: 'contain', filter: 'brightness(1.1) contrast(1.1)' }} />
-          ) : (
-             <>
-               <div style={{ padding: '8px', background: 'var(--primary)', borderRadius: '100px', display: 'flex' }}>
-                 <Ship size={24} color="#fff" />
-               </div>
-               <span style={{ fontWeight: '900', fontSize: '24px', letterSpacing: '-0.02em', color: 'var(--text-main)' }}>TNPLE KOREA</span>
-             </>
-          )}
+          <div style={{ padding: '8px', background: 'var(--accent, #D4AF37)', borderRadius: '100px', display: 'flex' }}>
+            <Ship size={24} color="#fff" />
+          </div>
+          <span style={{ fontWeight: '900', fontSize: '24px', letterSpacing: '-0.02em', color: scrolled ? 'var(--text-main)' : (location.pathname === '/' ? '#fff' : 'var(--text-main)') }}>TNPLE KOREA</span>
         </Link>
 
         {/* Desktop Menu */}
