@@ -84,7 +84,7 @@ const TypographyTool = ({ target, label, currentProduct, handleTypographyUpdate 
 };
 
 const AdminProductManager = () => {
-  const { config, addProduct, updateProduct, deleteProduct, uploadFile } = useConfig();
+  const { config, addProduct, updateProduct, deleteProduct, uploadFile, triggerVercelDeploy } = useConfig();
   const [isEditing, setIsEditing] = useState(false);
   const [currentProduct, setCurrentProduct] = useState(null);
   const [editTab, setEditTab] = useState('info'); // 'info', 'detail', 'style'
@@ -133,6 +133,7 @@ const AdminProductManager = () => {
     } else {
       await addProduct(currentProduct);
     }
+    await triggerVercelDeploy();
     setIsEditing(false);
     setCurrentProduct(null);
   };
@@ -140,6 +141,7 @@ const AdminProductManager = () => {
   const handleDelete = async (id) => {
     if (window.confirm('정말 이 상품을 삭제하시겠습니까?')) {
       await deleteProduct(id);
+      await triggerVercelDeploy();
     }
   };
 

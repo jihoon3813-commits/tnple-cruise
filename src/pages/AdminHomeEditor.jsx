@@ -258,7 +258,7 @@ const THEMES = [
 ];
 
 const AdminHomeEditor = () => {
-  const { config, updateHero, updateTheme, updateSection, addSection, deleteSection, uploadFile, updateProductBranding, updateReviewBranding } = useConfig();
+  const { config, updateHero, updateTheme, updateSection, addSection, deleteSection, uploadFile, updateProductBranding, updateReviewBranding, triggerVercelDeploy } = useConfig();
   const [heroForm, setHeroForm] = useState(config.hero);
   const [productBrandingForm, setProductBrandingForm] = useState(config.productListBranding);
   const [reviewBrandingForm, setReviewBrandingForm] = useState(config.reviewSectionBranding);
@@ -277,6 +277,7 @@ const AdminHomeEditor = () => {
     try {
       const { productListBranding, reviewSectionBranding, ...cleanHero } = heroForm;
       await updateHero(cleanHero);
+      await triggerVercelDeploy();
       alert('홈페이지 히어로 설정이 저장되었습니다.');
     } catch (e) {
       alert('저장 실패: ' + e.message);
@@ -287,6 +288,7 @@ const AdminHomeEditor = () => {
     try {
       if (!productBrandingForm) throw new Error("브랜딩 데이터가 없습니다.");
       await updateProductBranding(productBrandingForm);
+      await triggerVercelDeploy();
       alert('상품 리스트 브랜딩 설정이 저장되었습니다.');
     } catch (e) {
       alert('저장 실패: ' + e.message);
@@ -297,6 +299,7 @@ const AdminHomeEditor = () => {
     try {
       if (!reviewBrandingForm) throw new Error("리뷰 브랜딩 데이터가 없습니다.");
       await updateReviewBranding(reviewBrandingForm);
+      await triggerVercelDeploy();
       alert('여행후기 섹션 브랜딩 설정이 저장되었습니다.');
     } catch (e) {
       alert('저장 실패: ' + e.message);
@@ -305,6 +308,7 @@ const AdminHomeEditor = () => {
 
   const handleThemeChange = async (theme) => {
     await updateTheme(theme);
+    await triggerVercelDeploy();
   };
 
   const handleHeroTypoUpdate = (target, field, value) => {

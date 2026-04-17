@@ -45,6 +45,7 @@ export const ConfigProvider = ({ children }) => {
   const updatePrivacyPolicyMutation = useMutation(api.siteConfig.updatePrivacyPolicy);
   const updateGlobalSettingsMutation = useMutation(api.siteConfig.updateGlobalSettings);
   const updateAdminPasswordMutation = useMutation(api.siteConfig.updateAdminPassword);
+  const triggerVercelDeployAction = useMutation(api.deploy.triggerVercelDeploy);
   const addReservationMutation = useMutation(api.reservations.add);
   const reservationsData = useQuery(api.reservations.list);
 
@@ -103,6 +104,14 @@ export const ConfigProvider = ({ children }) => {
       throw error;
     }
   };
+
+  const triggerVercelDeploy = async () => {
+    try {
+      await triggerVercelDeployAction();
+    } catch (e) {
+      console.error("Trigger deploy failed", e);
+    }
+  }
 
   const updateHero = async (data) => {
     const { 
@@ -265,6 +274,7 @@ export const ConfigProvider = ({ children }) => {
       updatePrivacyPolicy,
       updateGlobalSettings,
       updateAdminPassword,
+      triggerVercelDeploy,
       addReservation,
       reservations: reservationsData || []
     }}>

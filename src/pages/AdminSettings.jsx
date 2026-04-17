@@ -4,7 +4,7 @@ import { Shield, Save, CheckCircle2, Image as ImageIcon, Globe, Share2, Upload, 
 import SafeMedia from '../components/SafeMedia';
 
 const AdminSettings = () => {
-  const { config, updatePrivacyPolicy, updateGlobalSettings, uploadFile } = useConfig();
+  const { config, updatePrivacyPolicy, updateGlobalSettings, uploadFile, triggerVercelDeploy } = useConfig();
   const [privacyContent, setPrivacyContent] = useState(config.privacyPolicy || '');
   const [settings, setSettings] = useState({
     logo: config.logo || '',
@@ -54,6 +54,10 @@ const AdminSettings = () => {
     try {
       await updatePrivacyPolicy(privacyContent);
       await updateGlobalSettings(settings);
+      
+      // 버셀 배포 트리거 호출
+      await triggerVercelDeploy();
+      
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {

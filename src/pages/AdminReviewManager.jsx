@@ -51,7 +51,7 @@ const MultiMediaInput = ({ label, values = [], onChange, uploadFile }) => {
 };
 
 const AdminReviewManager = () => {
-  const { config, addReview, updateReview, deleteReview, uploadFile } = useConfig();
+  const { config, addReview, updateReview, deleteReview, uploadFile, triggerVercelDeploy } = useConfig();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState({
@@ -91,6 +91,7 @@ const AdminReviewManager = () => {
       } else {
         await addReview(form);
       }
+      await triggerVercelDeploy();
       setIsModalOpen(false);
     } catch (e) {
       alert("저장 실패: " + e.message);
@@ -130,7 +131,7 @@ const AdminReviewManager = () => {
                 <button onClick={() => handleEdit(review)} style={{ color: 'var(--primary)', border: 'none', background: 'none', cursor: 'pointer' }}>
                   <Edit2 size={16} />
                 </button>
-                <button onClick={() => deleteReview(review.id)} style={{ color: '#ef4444', border: 'none', background: 'none', cursor: 'pointer' }}>
+                <button onClick={async () => { await deleteReview(review.id); await triggerVercelDeploy(); }} style={{ color: '#ef4444', border: 'none', background: 'none', cursor: 'pointer' }}>
                   <Trash2 size={16} />
                 </button>
               </div>
