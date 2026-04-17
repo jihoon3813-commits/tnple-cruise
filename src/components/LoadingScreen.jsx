@@ -50,33 +50,33 @@ const LoadingScreen = () => {
           <div style={{ 
             width: '100px', 
             height: '100px', 
-            background: 'linear-gradient(135deg, #D4AF37 0%, #F5E6AD 100%)', 
-            borderRadius: '30px', 
+            background: 'rgba(212,175,55,0.1)', 
+            border: '2px solid rgba(212,175,55,0.3)',
+            borderRadius: '24px', 
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'center',
             margin: '0 auto 30px',
             boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
-            transform: 'rotate(-5deg)'
+            color: '#D4AF37'
           }}>
-            <Ship size={50} color="#050c18" strokeWidth={1.5} />
+            <Ship size={50} strokeWidth={1.5} />
           </div>
         </motion.div>
 
         <motion.h1
-          initial={{ opacity: 0, letterSpacing: '0.2em' }}
-          animate={{ opacity: 1, letterSpacing: '0.5em' }}
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.5, delay: 0.5 }}
           style={{
-            fontSize: '32px',
+            fontSize: '28px',
             fontWeight: '900',
             color: '#fff',
-            textTransform: 'uppercase',
             margin: 0,
-            fontFamily: "'Outfit', sans-serif"
+            fontFamily: "'Noto Sans KR', sans-serif"
           }}
         >
-          OLIGO
+          티앤플 코리아
         </motion.h1>
         
         <motion.div

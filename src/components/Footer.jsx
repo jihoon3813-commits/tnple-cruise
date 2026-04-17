@@ -19,14 +19,16 @@ const Footer = () => {
         <div style={{ display: 'grid', gridTemplateColumns: window.innerWidth < 1024 ? '1fr' : '1.2fr 1fr 1fr 1.2fr', gap: '50px', marginBottom: '80px' }}>
           <div style={{ gridColumn: 'span 1' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '24px', fontWeight: '700', marginBottom: '30px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(212, 175, 55, 0.1)', border: '1px solid rgba(212, 175, 55, 0.3)', color: 'var(--accent, #D4AF37)' }}>
-                  <Compass size={22} strokeWidth={2.5} />
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(212, 175, 55, 0.1)', border: '1px solid rgba(212, 175, 55, 0.3)', color: 'var(--accent, #D4AF37)' }}>
+                  <Ship size={22} strokeWidth={2} />
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', lineHeight: '1', gap: '2px' }}>
-                  <span style={{ fontWeight: '900', fontSize: '20px', letterSpacing: '0.05em', color: hasLogo ? 'var(--text-main)' : '#fff' }}>
-                    T<span style={{ color: 'var(--accent, #D4AF37)' }}>&</span>PLE
+                <div style={{ display: 'flex', flexDirection: 'column', lineHeight: '1.2' }}>
+                  <span style={{ fontWeight: '900', fontSize: '18px', color: hasLogo ? 'var(--text-main)' : '#fff' }}>
+                    티앤플 코리아
                   </span>
-                  <span style={{ fontWeight: '500', fontSize: '10px', letterSpacing: '0.3em', color: hasLogo ? 'var(--text-muted)' : 'rgba(255,255,255,0.6)' }}>KOREA</span>
+                  <span style={{ fontWeight: '600', fontSize: '9px', letterSpacing: '0.1em', opacity: 0.7, color: hasLogo ? 'var(--text-main)' : '#fff' }}>
+                    T&PLE KOREA
+                  </span>
                 </div>
             </div>
             <p style={{ color: hasLogo ? '#64748b' : '#8c95a1', fontSize: '14px', lineHeight: '1.8' }}>

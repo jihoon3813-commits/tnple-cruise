@@ -62,14 +62,16 @@ const Navbar = () => {
     <nav className={`nav ${scrolled ? 'scrolled' : ''}`}>
       <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0' }}>
         <Link to="/" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '40px', height: '40px', borderRadius: '12px', background: scrolled ? 'var(--bg-sub)' : 'rgba(255,255,255,0.1)', border: `1px solid ${scrolled ? 'var(--border-light)' : 'rgba(255,255,255,0.2)'}`, color: 'var(--accent, #D4AF37)' }}>
-            <Compass size={22} strokeWidth={2.5} />
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '40px', height: '40px', borderRadius: '10px', background: scrolled ? 'var(--bg-sub)' : 'rgba(255,255,255,0.1)', border: `1px solid ${scrolled ? 'var(--border-light)' : 'rgba(255,255,255,0.2)'}`, color: 'var(--accent, #D4AF37)' }}>
+            <Ship size={22} strokeWidth={2} />
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', lineHeight: '1', gap: '2px' }}>
-            <span style={{ fontWeight: '900', fontSize: '20px', letterSpacing: '0.05em', color: scrolled ? 'var(--text-main)' : (location.pathname === '/' ? '#fff' : 'var(--text-main)') }}>
-              T<span style={{ color: 'var(--accent, #D4AF37)' }}>&</span>PLE
+          <div style={{ display: 'flex', flexDirection: 'column', lineHeight: '1.1', gap: '0' }}>
+            <span style={{ fontWeight: '900', fontSize: '18px', letterSpacing: '-0.02em', color: scrolled ? 'var(--text-main)' : (location.pathname === '/' ? '#fff' : 'var(--text-main)') }}>
+              티앤플 코리아
             </span>
-            <span style={{ fontWeight: '500', fontSize: '10px', letterSpacing: '0.3em', color: scrolled ? 'var(--text-muted)' : (location.pathname === '/' ? 'rgba(255,255,255,0.6)' : 'var(--text-muted)') }}>KOREA</span>
+            <span style={{ fontWeight: '600', fontSize: '9px', letterSpacing: '0.1em', opacity: 0.7, color: scrolled ? 'var(--text-main)' : (location.pathname === '/' ? '#fff' : 'var(--text-main)') }}>
+              T&PLE KOREA
+            </span>
           </div>
         </Link>
 
