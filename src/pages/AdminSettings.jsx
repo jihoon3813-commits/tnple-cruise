@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useConfig } from '../context/ConfigContext';
-import { Shield, Save, CheckCircle2, Image as ImageIcon, Globe, Share2, Upload, X, Info } from 'lucide-react';
+import { Shield, Save, CheckCircle2, Image as ImageIcon, Globe, Share2, Upload, X, Info, Loader2 } from 'lucide-react';
 import SafeMedia from '../components/SafeMedia';
 
 const AdminSettings = () => {
@@ -14,6 +14,7 @@ const AdminSettings = () => {
     adminPassword: config.adminPassword || '1111'
   });
   const [success, setSuccess] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(null);
 
   useEffect(() => {
@@ -49,10 +50,18 @@ const AdminSettings = () => {
   };
 
   const handleSave = async () => {
-    await updatePrivacyPolicy(privacyContent);
-    await updateGlobalSettings(settings);
-    setSuccess(true);
-    setTimeout(() => setSuccess(false), 3000);
+    setSaving(true);
+    try {
+      await updatePrivacyPolicy(privacyContent);
+      await updateGlobalSettings(settings);
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 3000);
+    } catch (err) {
+      console.error("Save error:", err);
+      alert('저장 중 오류가 발생했습니다: ' + err.message);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -62,9 +71,21 @@ const AdminSettings = () => {
             <h2 style={{ fontSize: '20px', fontWeight: '800' }}>웹사이트 통합 설정</h2>
             <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>브랜딩, 파비콘, SNS 미리보기 등 웹사이트 기초 정보를 관리합니다.</p>
          </div>
-         <button className="luxury-btn" onClick={handleSave} style={{ gap: '8px', position: 'sticky', top: '100px', zIndex: 10 }}>
-            {success ? <CheckCircle2 size={18} /> : <Save size={18} />}
-            {success ? '모든 설정 저장됨' : '전체 설정 저장'}
+         <button 
+            className="luxury-btn" 
+            onClick={handleSave} 
+            disabled={saving}
+            style={{ 
+              gap: '8px', 
+              position: 'sticky', 
+              top: '100px', 
+              zIndex: 10,
+              opacity: saving ? 0.7 : 1,
+              cursor: saving ? 'not-allowed' : 'pointer'
+            }}
+         >
+            {saving ? <Loader2 className="animate-spin" size={18} /> : (success ? <CheckCircle2 size={18} /> : <Save size={18} />)}
+            {saving ? '저장 중...' : (success ? '모든 설정 저장됨' : '전체 설정 저장')}
          </button>
       </div>
 
