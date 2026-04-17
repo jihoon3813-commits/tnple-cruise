@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import Home from './pages/Home';
 import Admin from './pages/Admin';
 import ProductDetail from './pages/ProductDetail';
@@ -16,6 +16,7 @@ import LoadingScreen from './components/LoadingScreen';
 
 function App() {
   const { config, loading } = useConfig();
+  const location = useLocation();
 
   React.useEffect(() => {
     if (loading || !config) return;
@@ -36,14 +37,20 @@ function App() {
         document.getElementsByTagName('head')[0].appendChild(meta);
       }
 
-      // Apply theme class to body
-      if (config.theme) {
-        // Remove existing theme classes (class starting with theme-)
+      // Apply theme class to body (Excluding Admin pages)
+      const isAdmin = location.pathname.startsWith('/admin');
+      
+      if (config.theme && !isAdmin) {
+        // Remove existing theme classes and apply the new one
         const classes = document.body.className.split(' ').filter(c => !c.startsWith('theme-'));
         document.body.className = [...classes, `theme-${config.theme}`].join(' ').trim();
+      } else {
+        // On admin pages or when no theme is set, remove all theme classes
+        const classes = document.body.className.split(' ').filter(c => !c.startsWith('theme-'));
+        document.body.className = classes.join(' ').trim();
       }
     } catch (e) { console.error(e); }
-  }, [config, loading]);
+  }, [config, loading, location.pathname]);
 
   return (
     <AnimatePresence mode="wait">
