@@ -224,6 +224,11 @@ export const updateFooter = mutation({
       url: v.string(),
     }))),
     logoDescription: v.optional(v.string()),
+    csCenter: v.optional(v.object({
+      phone: v.optional(v.string()),
+      hours: v.optional(v.string()),
+      lunchTime: v.optional(v.string()),
+    })),
   },
   handler: async (ctx, args) => {
     const existing = await ctx.db.query("siteConfig").first();

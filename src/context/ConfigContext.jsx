@@ -83,7 +83,12 @@ export const ConfigProvider = ({ children }) => {
         companyInfo: "회사명: 티앤플코리아\n대표자: 홍길동 | 주소: 서울특별시 강남구 테헤란로 123\n사업자등록번호: 123-45-67890 | TEL: 02-1234-5678",
         copyright: "© 2024 T&PLE KOREA. All rights reserved.",
         externalLinks: [],
-        logoDescription: "프리미엄 럭셔리 크루즈 멤버십 서비스. 품격 있는 해상 여행의 정수를 T&PLE KOREA와 함께 경험해 보세요."
+        logoDescription: "프리미엄 럭셔리 크루즈 멤버십 서비스. 품격 있는 해상 여행의 정수를 T&PLE KOREA와 함께 경험해 보세요.",
+        csCenter: {
+          phone: "1600-0000",
+          hours: "운영시간: 평일 09:00 ~ 18:00",
+          lunchTime: "점심시간: 12:00 ~ 13:00 (토/일/공휴일 휴무)"
+        }
       }
     };
 

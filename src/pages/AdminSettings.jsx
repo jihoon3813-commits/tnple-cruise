@@ -18,7 +18,8 @@ const AdminSettings = () => {
     companyInfo: '',
     copyright: '',
     externalLinks: [],
-    logoDescription: ''
+    logoDescription: '',
+    csCenter: { phone: '', hours: '', lunchTime: '' }
   });
   const { updateFooter } = useConfig();
   const [success, setSuccess] = useState(false);
@@ -376,28 +377,66 @@ const AdminSettings = () => {
                </div>
             </div>
 
-            {/* Logo Description & Copyright */}
+            {/* Logo Description, Copyright & CS Center */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px' }}>
-               <div>
-                  <label style={{ fontSize: '13px', fontWeight: '700', marginBottom: '8px', display: 'block' }}>로고 하단 설명</label>
-                  <textarea 
-                     className="form-control" 
-                     rows={3} 
-                     value={footer.logoDescription}
-                     onChange={e => setFooter({ ...footer, logoDescription: e.target.value })}
-                     placeholder="프리미엄 럭셔리 크루즈 멤버십 서비스..."
-                     style={{ fontSize: '13px', lineHeight: '1.6' }}
-                  />
+               <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                  <div>
+                     <label style={{ fontSize: '13px', fontWeight: '700', marginBottom: '8px', display: 'block' }}>로고 하단 설명</label>
+                     <textarea 
+                        className="form-control" 
+                        rows={3} 
+                        value={footer.logoDescription}
+                        onChange={e => setFooter({ ...footer, logoDescription: e.target.value })}
+                        placeholder="프리미엄 럭셔리 크루즈 멤버십 서비스..."
+                        style={{ fontSize: '13px', lineHeight: '1.6' }}
+                     />
+                  </div>
+                  <div>
+                     <label style={{ fontSize: '13px', fontWeight: '700', marginBottom: '8px', display: 'block' }}>카피라이트</label>
+                     <input 
+                        type="text" 
+                        className="form-control" 
+                        value={footer.copyright}
+                        onChange={e => setFooter({ ...footer, copyright: e.target.value })}
+                        placeholder="© 2024 T&PLE KOREA. All rights reserved."
+                     />
+                  </div>
                </div>
+
                <div>
-                  <label style={{ fontSize: '13px', fontWeight: '700', marginBottom: '8px', display: 'block' }}>카피라이트</label>
-                  <input 
-                     type="text" 
-                     className="form-control" 
-                     value={footer.copyright}
-                     onChange={e => setFooter({ ...footer, copyright: e.target.value })}
-                     placeholder="© 2024 T&PLE KOREA. All rights reserved."
-                  />
+                  <label style={{ fontSize: '13px', fontWeight: '700', marginBottom: '16px', display: 'block' }}>CS CENTER 정보</label>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                     <div>
+                        <label style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '4px', display: 'block' }}>대표 전화번호</label>
+                        <input 
+                           type="text" 
+                           className="form-control" 
+                           value={footer.csCenter?.phone || ''}
+                           onChange={e => setFooter({ ...footer, csCenter: { ...footer.csCenter, phone: e.target.value } })}
+                           placeholder="1600-0000"
+                        />
+                     </div>
+                     <div>
+                        <label style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '4px', display: 'block' }}>운영시간 안내</label>
+                        <input 
+                           type="text" 
+                           className="form-control" 
+                           value={footer.csCenter?.hours || ''}
+                           onChange={e => setFooter({ ...footer, csCenter: { ...footer.csCenter, hours: e.target.value } })}
+                           placeholder="운영시간: 평일 09:00 ~ 18:00"
+                        />
+                     </div>
+                     <div>
+                        <label style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '4px', display: 'block' }}>점심시간/휴무 안내</label>
+                        <input 
+                           type="text" 
+                           className="form-control" 
+                           value={footer.csCenter?.lunchTime || ''}
+                           onChange={e => setFooter({ ...footer, csCenter: { ...footer.csCenter, lunchTime: e.target.value } })}
+                           placeholder="점심시간: 12:00 ~ 13:00 (토/일/공휴일 휴무)"
+                        />
+                     </div>
+                  </div>
                </div>
             </div>
          </div>
