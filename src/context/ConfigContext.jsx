@@ -45,6 +45,7 @@ export const ConfigProvider = ({ children }) => {
   const updatePrivacyPolicyMutation = useMutation(api.siteConfig.updatePrivacyPolicy);
   const updateGlobalSettingsMutation = useMutation(api.siteConfig.updateGlobalSettings);
   const updateAdminPasswordMutation = useMutation(api.siteConfig.updateAdminPassword);
+  const updateFooterMutation = useMutation(api.siteConfig.updateFooter);
   const triggerVercelDeployAction = useMutation(api.deploy.triggerVercelDeploy);
   const addReservationMutation = useMutation(api.reservations.add);
   const reservationsData = useQuery(api.reservations.list);
@@ -73,7 +74,17 @@ export const ConfigProvider = ({ children }) => {
       logo: heroData?.logo,
       favicon: heroData?.favicon,
       ogImage: heroData?.ogImage || "https://images.unsplash.com/photo-1548574505-5e239809ee19?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200",
-      metaDescription: heroData?.metaDescription || "T&PLE KOREA 크루즈 - 프리미엄 크루즈 멤버십 서비스"
+      metaDescription: heroData?.metaDescription || "T&PLE KOREA 크루즈 - 프리미엄 크루즈 멤버십 서비스",
+      footer: heroData?.footer || {
+        menus: [
+          { id: '1', label: '이용약관', url: '/terms' },
+          { id: '2', label: '개인정보처리방침', url: '/privacy' }
+        ],
+        companyInfo: "회사명: 티앤플코리아\n대표자: 홍길동 | 주소: 서울특별시 강남구 테헤란로 123\n사업자등록번호: 123-45-67890 | TEL: 02-1234-5678",
+        copyright: "© 2024 T&PLE KOREA. All rights reserved.",
+        externalLinks: [],
+        logoDescription: "프리미엄 럭셔리 크루즈 멤버십 서비스. 품격 있는 해상 여행의 정수를 T&PLE KOREA와 함께 경험해 보세요."
+      }
     };
 
     return {
@@ -222,6 +233,10 @@ export const ConfigProvider = ({ children }) => {
   const updateGlobalSettings = async (data) => {
     await updateGlobalSettingsMutation(data);
   };
+  
+  const updateFooter = async (data) => {
+    await updateFooterMutation(data);
+  };
 
   const addReservation = async (data) => {
     await addReservationMutation({
@@ -274,6 +289,7 @@ export const ConfigProvider = ({ children }) => {
       updatePrivacyPolicy,
       updateGlobalSettings,
       updateAdminPassword,
+      updateFooter,
       triggerVercelDeploy,
       addReservation,
       reservations: reservationsData || []

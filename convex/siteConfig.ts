@@ -208,3 +208,38 @@ export const updateAdminPassword = mutation({
     }
   },
 });
+
+export const updateFooter = mutation({
+  args: {
+    menus: v.optional(v.array(v.object({
+      id: v.string(),
+      label: v.string(),
+      url: v.string(),
+    }))),
+    companyInfo: v.optional(v.string()),
+    copyright: v.optional(v.string()),
+    externalLinks: v.optional(v.array(v.object({
+      id: v.string(),
+      label: v.string(),
+      url: v.string(),
+    }))),
+    logoDescription: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const existing = await ctx.db.query("siteConfig").first();
+    if (existing) {
+      await ctx.db.patch(existing._id, { footer: args });
+    } else {
+      await ctx.db.insert("siteConfig", {
+        footer: args,
+        hero: {
+          title: "T&PLE KOREA",
+          subtitle: "프리미엄 크루즈 멤버십",
+          bgType: "image",
+          bgUrl: "https://images.unsplash.com/photo-1548574505-5e239809ee19",
+          textPosition: "center"
+        }
+      });
+    }
+  },
+});

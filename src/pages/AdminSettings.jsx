@@ -13,6 +13,14 @@ const AdminSettings = () => {
     metaDescription: config.metaDescription || '',
     adminPassword: config.adminPassword || '1111'
   });
+  const [footer, setFooter] = useState(config.footer || {
+    menus: [],
+    companyInfo: '',
+    copyright: '',
+    externalLinks: [],
+    logoDescription: ''
+  });
+  const { updateFooter } = useConfig();
   const [success, setSuccess] = useState(false);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(null);
@@ -27,8 +35,51 @@ const AdminSettings = () => {
         metaDescription: config.metaDescription || '',
         adminPassword: config.adminPassword || '1111'
       });
+      if (config.footer) setFooter(config.footer);
     }
   }, [config]);
+
+  const handleAddMenuItem = () => {
+    setFooter(prev => ({
+      ...prev,
+      menus: [...(prev.menus || []), { id: Date.now().toString(), label: '', url: '' }]
+    }));
+  };
+
+  const handleRemoveMenuItem = (id) => {
+    setFooter(prev => ({
+      ...prev,
+      menus: prev.menus.filter(m => m.id !== id)
+    }));
+  };
+
+  const handleUpdateMenuItem = (id, field, value) => {
+    setFooter(prev => ({
+      ...prev,
+      menus: prev.menus.map(m => m.id === id ? { ...m, [field]: value } : m)
+    }));
+  };
+
+  const handleAddExternalLink = () => {
+    setFooter(prev => ({
+      ...prev,
+      externalLinks: [...(prev.externalLinks || []), { id: Date.now().toString(), label: '', url: '' }]
+    }));
+  };
+
+  const handleRemoveExternalLink = (id) => {
+    setFooter(prev => ({
+      ...prev,
+      externalLinks: prev.externalLinks.filter(l => l.id !== id)
+    }));
+  };
+
+  const handleUpdateExternalLink = (id, field, value) => {
+    setFooter(prev => ({
+      ...prev,
+      externalLinks: prev.externalLinks.map(l => l.id === id ? { ...l, [field]: value } : l)
+    }));
+  };
 
   const recommendedTags = [
     "당신의 인생에서 가장 빛나는 순간, T&PLE KOREA와 함께하세요.",
@@ -54,6 +105,7 @@ const AdminSettings = () => {
     try {
       await updatePrivacyPolicy(privacyContent);
       await updateGlobalSettings(settings);
+      await updateFooter(footer);
       
       // 버셀 배포 트리거 호출
       await triggerVercelDeploy();
@@ -231,6 +283,124 @@ const AdminSettings = () => {
             onChange={e => setPrivacyContent(e.target.value)}
             style={{ lineHeight: '1.6', fontSize: '14px' }}
          />
+      </div>
+
+      {/* Footer Settings */}
+      <div className="admin-card">
+         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+            <div style={{ padding: '8px', background: 'rgba(37, 99, 235, 0.1)', color: 'var(--primary)', borderRadius: '10px' }}><Globe size={20} /></div>
+            <h3 style={{ fontSize: '16px', fontWeight: '800' }}>푸터 정보 및 메뉴 관리</h3>
+         </div>
+
+         <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+            {/* Footer Menus */}
+            <div>
+               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                  <label style={{ fontSize: '13px', fontWeight: '700' }}>푸터 메뉴 (이용약관, 개인정보처리방침 등)</label>
+                  <button onClick={handleAddMenuItem} className="luxury-btn" style={{ padding: '4px 12px', fontSize: '12px' }}>+ 메뉴 추가</button>
+               </div>
+               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                  {(footer.menus || []).map(menu => (
+                     <div key={menu.id} style={{ display: 'flex', gap: '8px', alignItems: 'center', background: 'var(--bg-sub)', padding: '12px', borderRadius: '12px' }}>
+                        <div style={{ flex: 1 }}>
+                           <label style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '4px', display: 'block' }}>메뉴명</label>
+                           <input 
+                              type="text" 
+                              className="form-control" 
+                              style={{ padding: '6px 10px', fontSize: '13px' }}
+                              value={menu.label}
+                              onChange={e => handleUpdateMenuItem(menu.id, 'label', e.target.value)}
+                              placeholder="이용약관"
+                           />
+                        </div>
+                        <div style={{ flex: 2 }}>
+                           <label style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '4px', display: 'block' }}>URL</label>
+                           <input 
+                              type="text" 
+                              className="form-control" 
+                              style={{ padding: '6px 10px', fontSize: '13px' }}
+                              value={menu.url}
+                              onChange={e => handleUpdateMenuItem(menu.id, 'url', e.target.value)}
+                              placeholder="/terms"
+                           />
+                        </div>
+                        <button onClick={() => handleRemoveMenuItem(menu.id)} style={{ marginTop: '20px', padding: '8px', color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer' }}><X size={18} /></button>
+                     </div>
+                  ))}
+               </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '40px' }}>
+               {/* Company Info */}
+               <div>
+                  <label style={{ fontSize: '13px', fontWeight: '700', marginBottom: '8px', display: 'block' }}>회사 정보 (줄바꿈 포함)</label>
+                  <textarea 
+                     className="form-control" 
+                     rows={6} 
+                     value={footer.companyInfo}
+                     onChange={e => setFooter({ ...footer, companyInfo: e.target.value })}
+                     placeholder="회사명: ...&#10;대표자: ... | 주소: ...&#10;사업자등록번호: ... | TEL: ..."
+                     style={{ fontSize: '13px', lineHeight: '1.6' }}
+                  />
+               </div>
+
+               {/* External Links */}
+               <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                     <label style={{ fontSize: '13px', fontWeight: '700' }}>외부 링크 (SNS/기타)</label>
+                     <button onClick={handleAddExternalLink} className="luxury-btn" style={{ padding: '4px 12px', fontSize: '12px' }}>+ 링크 추가</button>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                     {(footer.externalLinks || []).map(link => (
+                        <div key={link.id} style={{ display: 'flex', gap: '8px', alignItems: 'center', background: 'var(--bg-sub)', padding: '10px', borderRadius: '12px' }}>
+                           <input 
+                              type="text" 
+                              className="form-control" 
+                              style={{ padding: '6px 10px', fontSize: '12px', flex: 1 }}
+                              value={link.label}
+                              onChange={e => handleUpdateExternalLink(link.id, 'label', e.target.value)}
+                              placeholder="블로그"
+                           />
+                           <input 
+                              type="text" 
+                              className="form-control" 
+                              style={{ padding: '6px 10px', fontSize: '12px', flex: 2 }}
+                              value={link.url}
+                              onChange={e => handleUpdateExternalLink(link.id, 'url', e.target.value)}
+                              placeholder="https://..."
+                           />
+                           <button onClick={() => handleRemoveExternalLink(link.id)} style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer' }}><X size={16} /></button>
+                        </div>
+                     ))}
+                  </div>
+               </div>
+            </div>
+
+            {/* Logo Description & Copyright */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px' }}>
+               <div>
+                  <label style={{ fontSize: '13px', fontWeight: '700', marginBottom: '8px', display: 'block' }}>로고 하단 설명</label>
+                  <textarea 
+                     className="form-control" 
+                     rows={3} 
+                     value={footer.logoDescription}
+                     onChange={e => setFooter({ ...footer, logoDescription: e.target.value })}
+                     placeholder="프리미엄 럭셔리 크루즈 멤버십 서비스..."
+                     style={{ fontSize: '13px', lineHeight: '1.6' }}
+                  />
+               </div>
+               <div>
+                  <label style={{ fontSize: '13px', fontWeight: '700', marginBottom: '8px', display: 'block' }}>카피라이트</label>
+                  <input 
+                     type="text" 
+                     className="form-control" 
+                     value={footer.copyright}
+                     onChange={e => setFooter({ ...footer, copyright: e.target.value })}
+                     placeholder="© 2024 T&PLE KOREA. All rights reserved."
+                  />
+               </div>
+            </div>
+         </div>
       </div>
 
       <div className="admin-card" style={{ border: '1px solid #fee2e2' }}>
