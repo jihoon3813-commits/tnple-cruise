@@ -829,11 +829,11 @@ const Home = () => {
               </div>
             </div>
 
-            {/* Service 3: Smart Post-Payment */}
+            {/* Service 3: Special Benefits & Discounts */}
             <div style={{ position: 'relative', height: '420px', overflow: 'hidden', border: '1px solid #E2E8F0' }}>
               <img 
                 src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
-                alt="여행 후 납부하는 후불제 멤버십" 
+                alt="멤버십 특별 우대 및 파격 할인 혜택" 
                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               />
               <div style={{ 
@@ -848,12 +848,12 @@ const Home = () => {
                 <div style={{ width: '36px', height: '36px', border: '1px solid var(--accent-gold)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-gold)', marginBottom: '16px' }}>
                   <ShieldCheck size={18} />
                 </div>
-                <span style={{ color: 'var(--accent-gold)', fontSize: '11px', fontWeight: '800', letterSpacing: '0.1em' }}>03. POST-PAYMENT</span>
+                <span style={{ color: 'var(--accent-gold)', fontSize: '11px', fontWeight: '800', letterSpacing: '0.1em' }}>03. EXCLUSIVE BENEFITS</span>
                 <h3 style={{ fontFamily: "'Pretendard', sans-serif", fontSize: '22px', fontWeight: '800', color: '#ffffff', marginTop: '4px', marginBottom: '8px' }}>
-                  여행 후 납부하는 스마트 멤버십
+                  멤버십 특별 우대 & 파격 할인
                 </h3>
                 <p style={{ color: '#CBD5E1', fontSize: '13px', lineHeight: '1.6' }}>
-                  목돈 없이 떠나는 안심 여행. 여행을 마음껏 즐긴 후 합리적인 월 분할 납부로 정산하는 차별화된 시스템
+                  시즌 한정 파격 할인과 객실당 최대 50만원 상당 선상 크레딧, 동반 할인 등 차별화된 멤버십 특전
                 </p>
               </div>
             </div>
@@ -890,42 +890,65 @@ const Home = () => {
                 생생한 고객 여행후기
               </h2>
             </div>
-            <span style={{ fontSize: '13px', color: '#64748B' }}>평균 만족도 4.9 / 5.0 (2,400+ 회원 이용)</span>
+            <span style={{ fontSize: '13px', color: '#64748B' }}>
+              평균 만족도 4.9 / 5.0 ({config?.reviews?.length ? `${config.reviews.length}개 등록` : '2,400+ 회원 이용'})
+            </span>
           </div>
 
           <div className="kensington-reviews-grid">
-            {REAL_REVIEWS.map((rev) => (
-              <div key={rev.id} className="sharp-card" style={{ background: '#FFFFFF', padding: '32px', border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                    <div style={{ display: 'flex', gap: '2px', color: '#EAB308' }}>
-                      {[...Array(rev.rating)].map((_, i) => (
-                        <Star key={i} size={15} fill="#EAB308" />
-                      ))}
-                    </div>
-                    <span style={{ fontSize: '11px', color: '#94A3B8' }}>{rev.date}</span>
-                  </div>
+            {(config?.reviews && config.reviews.length > 0 ? config.reviews : REAL_REVIEWS).map((rev, rIdx) => {
+              const authorName = rev.author || rev.user || rev.name || '고객님';
+              const rating = rev.rating || 5;
+              const route = rev.productTitle || rev.route || '동남아 럭셔리 크루즈';
+              const date = rev.createdAt ? new Date(rev.createdAt).toLocaleDateString() : (rev.date || '최근 이용');
+              const title = rev.title || (rev.content.length > 25 ? `${rev.content.slice(0, 25)}...` : rev.content);
 
-                  <h4 style={{ fontSize: '16px', fontWeight: '800', color: 'var(--navy-deep)', lineHeight: '1.4', marginBottom: '12px', fontFamily: "'Pretendard', sans-serif" }}>
-                    "{rev.title}"
-                  </h4>
-
-                  <p style={{ fontSize: '13px', color: '#475569', lineHeight: '1.7', marginBottom: '24px' }}>
-                    {rev.content}
-                  </p>
-                </div>
-
-                <div style={{ borderTop: '1px solid #F1F5F9', paddingTop: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div style={{ width: '36px', height: '36px', background: 'var(--navy-deep)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '13px' }}>
-                    {rev.name[0]}
-                  </div>
+              return (
+                <div key={rev.id || rev._id || rIdx} className="sharp-card" style={{ background: '#FFFFFF', padding: '32px', border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                   <div>
-                    <div style={{ fontSize: '13px', fontWeight: '800', color: 'var(--navy-deep)' }}>{rev.name}</div>
-                    <div style={{ fontSize: '11px', color: '#64748B' }}>{rev.route}</div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                      <div style={{ display: 'flex', gap: '2px', color: '#EAB308' }}>
+                        {[...Array(rating)].map((_, i) => (
+                          <Star key={i} size={15} fill="#EAB308" />
+                        ))}
+                      </div>
+                      <span style={{ fontSize: '11px', color: '#94A3B8' }}>{date}</span>
+                    </div>
+
+                    <h4 style={{ fontSize: '16px', fontWeight: '800', color: 'var(--navy-deep)', lineHeight: '1.4', marginBottom: '12px', fontFamily: "'Pretendard', sans-serif" }}>
+                      "{title}"
+                    </h4>
+
+                    <p style={{ fontSize: '13px', color: '#475569', lineHeight: '1.7', marginBottom: '24px' }}>
+                      {rev.content}
+                    </p>
+
+                    {rev.images && rev.images.length > 0 && (
+                      <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', overflowX: 'auto' }}>
+                        {rev.images.map((img, iIdx) => (
+                          <SafeMedia 
+                            key={iIdx} 
+                            src={img} 
+                            alt={`후기 이미지 ${iIdx + 1}`} 
+                            style={{ width: '70px', height: '70px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #E2E8F0' }} 
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <div style={{ borderTop: '1px solid #F1F5F9', paddingTop: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{ width: '36px', height: '36px', background: 'var(--navy-deep)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '13px' }}>
+                      {authorName[0]}
+                    </div>
+                    <div>
+                      <div style={{ fontSize: '13px', fontWeight: '800', color: 'var(--navy-deep)' }}>{authorName}</div>
+                      <div style={{ fontSize: '11px', color: '#64748B' }}>{route}</div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
         </div>
