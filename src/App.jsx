@@ -1,6 +1,7 @@
 import React from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import Home from './pages/Home';
+import Service from './pages/Service';
 import Admin from './pages/Admin';
 import ProductDetail from './pages/ProductDetail';
 import Reviews from './pages/Reviews';
@@ -83,28 +84,18 @@ function App() {
   }, [config, loading, location.pathname]);
 
   return (
-    <AnimatePresence mode="wait">
-      {loading ? (
-        <LoadingScreen key="loading" />
-      ) : (
-        <motion.div 
-          key="content"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-        >
-          <ScrollToTop />
-          <Navbar />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/admin/*" element={<Admin />} />
-            <Route path="/product/:id" element={<ProductDetail />} />
-            <Route path="/reviews" element={<Reviews />} />
-          </Routes>
-          <Footer />
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <div>
+      <ScrollToTop />
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/service" element={<Service />} />
+        <Route path="/admin/*" element={<Admin />} />
+        <Route path="/product/:id" element={<ProductDetail />} />
+        <Route path="/reviews" element={<Reviews />} />
+      </Routes>
+      <Footer />
+    </div>
   );
 }
 

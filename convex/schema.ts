@@ -193,6 +193,11 @@ export default defineSchema({
     schedule: v.optional(v.array(v.object({ day: v.number(), title: v.string(), content: v.string() }))),
     scheduleImage: v.optional(v.string()),
     typography: v.optional(v.any()),
+    features: v.optional(v.array(v.string())),
+    badge: v.optional(v.string()),
+    ship: v.optional(v.string()),
+    bookingPeriod: v.optional(v.string()),
+    travelPeriod: v.optional(v.string()),
   }),
   reviews: defineTable({
     user: v.optional(v.string()), // Legacy field blocking schema push

@@ -28,6 +28,11 @@ export const add = mutation({
     scheduleImage: v.optional(v.string()),
     schedule: v.optional(v.array(v.object({ day: v.number(), title: v.string(), content: v.string() }))),
     typography: v.optional(v.any()),
+    features: v.optional(v.array(v.string())),
+    badge: v.optional(v.string()),
+    ship: v.optional(v.string()),
+    bookingPeriod: v.optional(v.string()),
+    travelPeriod: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     return await ctx.db.insert("products", args);
@@ -48,6 +53,11 @@ export const update = mutation({
     scheduleImage: v.optional(v.string()),
     schedule: v.optional(v.array(v.object({ day: v.number(), title: v.string(), content: v.string() }))),
     typography: v.optional(v.any()),
+    features: v.optional(v.array(v.string())),
+    badge: v.optional(v.string()),
+    ship: v.optional(v.string()),
+    bookingPeriod: v.optional(v.string()),
+    travelPeriod: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const { id, ...data } = args;

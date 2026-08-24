@@ -1,89 +1,71 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useConfig } from '../context/ConfigContext';
-import { Calendar, CreditCard, Ship, MapPin, ArrowLeft, ChevronRight, ChevronLeft, Star, Clock, X } from 'lucide-react';
+import { Calendar, CreditCard, Ship, MapPin, ArrowLeft, ChevronRight, ChevronLeft, Star, Clock, X, CheckCircle2, Award } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import SafeMedia from '../components/SafeMedia';
 import BookingModal from '../components/BookingModal';
 
-const GALLERY_HEIGHT_DESKTOP = 600;
+const GALLERY_HEIGHT_DESKTOP = 460;
 const GALLERY_HEIGHT_MOBILE = 280;
 
 const ProductDetail = () => {
   const { id } = useParams();
   const { config } = useConfig();
-  const [isBookingOpen, setIsBookingOpen] = React.useState(false);
-  const [isGalleryOpen, setIsGalleryOpen] = React.useState(false);
-  const [galleryIdx, setGalleryIdx] = React.useState(0);
-  const [isMobile, setIsMobile] = React.useState(window.innerWidth < 768);
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
+  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+  const [galleryIdx, setGalleryIdx] = useState(0);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
   
-  React.useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 1024);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const product = config.products.find(p => p.id === id);
-  const branding = config.productDetailBranding || {};
+  const product = config?.products?.find(p => p.id === id);
 
-  if (!product) return <div className="container" style={{ paddingTop: '160px' }}>상품을 찾을 수 없습니다.</div>;
+  if (!product) {
+    return (
+      <div style={{ paddingTop: '160px', paddingBottom: '120px', minHeight: '80vh', textAlign: 'center', background: '#FFFFFF' }}>
+        <div className="container">
+          <h2 style={{ fontSize: '24px', fontWeight: '800', color: 'var(--navy-deep)', marginBottom: '16px' }}>상품을 찾을 수 없습니다.</h2>
+          <p style={{ color: '#64748B', marginBottom: '24px' }}>요청하신 크루즈 상품이 존재하지 않거나 삭제되었습니다.</p>
+          <Link to="/#packages" className="sharp-btn-dark" style={{ padding: '12px 24px', textDecoration: 'none' }}>
+            <ArrowLeft size={16} /> 추천 패키지 목록으로 돌아가기
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
-  const typo = product.typography || {};
-  const getStyle = (t, baseSize, scale = 1) => {
-    let color = typo[t]?.color;
-    if (t === 'title' && branding.titleColor) color = branding.titleColor;
-    if (t === 'price' && branding.priceColor) color = branding.priceColor;
-    if (t === 'description' && branding.descriptionColor) color = branding.descriptionColor;
+  const thumbnails = product.thumbnails && product.thumbnails.length > 0 
+    ? product.thumbnails 
+    : ['https://images.unsplash.com/photo-1548574505-5e239809ee19?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'];
 
-    let fontSize = typo[t]?.fontSize ? typo[t].fontSize * scale : parseInt(baseSize);
-    if (isMobile) {
-        if (t === 'title') fontSize = Math.min(fontSize, 36);
-        else if (t === 'description') fontSize = Math.min(fontSize, 16);
-        else if (t === 'price') fontSize = Math.min(fontSize, 28);
-        else fontSize = fontSize * 0.8;
-    }
+  const features = product.features && product.features.length > 0
+    ? product.features
+    : (product.schedule && product.schedule.length > 0
+        ? product.schedule.slice(0, 3).map(s => `${s.day}일차: ${s.title}`)
+        : ['발코니 오션뷰 객실', '전 일정 선상 뷔페 & 정찬', '기항지 한국인 가이드 투어']);
 
-    return {
-      fontSize: `${fontSize}px`,
-      color: color,
-      fontWeight: t === 'title' || t === 'price' ? '900' : '400'
-    };
-  };
+  const isSplit = product.paymentType === 'split';
+  const downPayment = product.downPayment || 0;
+  const installments = product.installments || 12;
+  const monthlyAmount = isSplit 
+    ? Math.round((product.price - downPayment) / installments)
+    : Math.round(product.price / 12);
 
-  const isDark = branding.theme === 'dark';
-  const isGlass = branding.theme === 'glass';
-  
-  const pageBg = isDark ? '#0F172A' : (isGlass ? '#F1F5F9' : '#ffffff');
-  const textColor = isDark ? '#F8FAFC' : 'var(--text-main)';
-  const mutedColor = isDark ? '#94A3B8' : (branding.descriptionColor || 'var(--text-muted)');
-  const cardBg = isDark ? 'rgba(255,255,255,0.05)' : (isGlass ? 'rgba(255,255,255,0.7)' : '#ffffff');
-  const cardBorder = isDark ? 'rgba(255,255,255,0.1)' : 'var(--border-light)';
+  const discountRate = product.originalPrice && product.originalPrice > product.price
+    ? Math.round((1 - product.price / product.originalPrice) * 100)
+    : 0;
+
+  const galleryHeight = isMobile ? GALLERY_HEIGHT_MOBILE : GALLERY_HEIGHT_DESKTOP;
+  const extraCount = thumbnails.length > 2 ? thumbnails.length - 2 : 0;
 
   const openGallery = (idx = 0) => {
     setGalleryIdx(idx);
     setIsGalleryOpen(true);
-  };
-
-  const galleryHeight = isMobile ? GALLERY_HEIGHT_MOBILE : GALLERY_HEIGHT_DESKTOP;
-  const extraCount = product.thumbnails.length > 2 ? product.thumbnails.length - 2 : 0;
-
-  const renderSchedule = () => {
-    if (product.scheduleImage) {
-        return <SafeMedia src={product.scheduleImage} style={{ width: '100%', borderRadius: isMobile ? '24px' : '40px', boxShadow: 'var(--shadow-md)' }} />;
-    }
-    return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '24px' : '40px' }}>
-            {(product.schedule || []).map((item, i) => (
-                <div key={i} style={{ display: 'flex', gap: isMobile ? '20px' : '40px' }}>
-                    <div style={{ fontSize: '13px', fontWeight: '900', color: branding.accentColor || 'var(--primary)', minWidth: isMobile ? '50px' : '60px', paddingTop: '4px' }}>DAY 0{item.day}</div>
-                    <div>
-                        <h4 style={{ fontSize: isMobile ? '18px' : '22px', fontWeight: '800', marginBottom: '8px', color: textColor }}>{item.title}</h4>
-                        <p style={{ color: mutedColor, fontSize: isMobile ? '14px' : '16px', lineHeight: '1.7' }}>{item.content}</p>
-                    </div>
-                </div>
-            ))}
-        </div>
-    );
   };
 
   const renderGalleryModal = () => (
@@ -96,7 +78,7 @@ const ProductDetail = () => {
           onClick={() => setIsGalleryOpen(false)}
           style={{
             position: 'fixed', inset: 0,
-            background: 'rgba(0,0,0,0.92)',
+            background: 'rgba(7, 13, 30, 0.95)',
             backdropFilter: 'blur(16px)',
             zIndex: 5000,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -109,25 +91,25 @@ const ProductDetail = () => {
             style={{
               position: 'absolute', top: '24px', right: '24px', zIndex: 5010,
               background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(8px)',
-              border: 'none', borderRadius: '50%',
-              width: '48px', height: '48px',
+              border: 'none', borderRadius: '0px',
+              width: '44px', height: '44px',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               cursor: 'pointer', color: '#fff'
             }}
           >
-            <X size={24} />
+            <X size={22} />
           </button>
 
           {/* Counter */}
           <div style={{
             position: 'absolute', top: '28px', left: '50%', transform: 'translateX(-50%)',
-            color: '#fff', fontSize: '14px', fontWeight: '700', zIndex: 5010,
-            background: 'rgba(255,255,255,0.1)', padding: '6px 20px', borderRadius: '100px'
+            color: '#fff', fontSize: '13px', fontWeight: '800', zIndex: 5010,
+            background: 'rgba(255,255,255,0.1)', padding: '6px 18px', borderRadius: '0px', border: '1px solid rgba(255,255,255,0.2)'
           }}>
-            {galleryIdx + 1} / {product.thumbnails.length}
+            {galleryIdx + 1} / {thumbnails.length}
           </div>
 
-          {/* Image */}
+          {/* Image Viewer */}
           <motion.div
             onClick={e => e.stopPropagation()}
             style={{
@@ -140,18 +122,18 @@ const ProductDetail = () => {
             <AnimatePresence mode="wait">
               <motion.div
                 key={galleryIdx}
-                initial={{ opacity: 0, scale: 0.95 }}
+                initial={{ opacity: 0, scale: 0.96 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.25 }}
+                exit={{ opacity: 0, scale: 0.96 }}
+                transition={{ duration: 0.2 }}
                 style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               >
                 <SafeMedia
-                  src={product.thumbnails[galleryIdx]}
+                  src={thumbnails[galleryIdx]}
                   style={{
                     maxWidth: '100%', maxHeight: '100%',
                     objectFit: 'contain',
-                    borderRadius: isMobile ? '0' : '24px'
+                    borderRadius: '0px'
                   }}
                 />
               </motion.div>
@@ -159,15 +141,15 @@ const ProductDetail = () => {
           </motion.div>
 
           {/* Navigation arrows */}
-          {product.thumbnails.length > 1 && (
+          {thumbnails.length > 1 && (
             <>
               <button
-                onClick={(e) => { e.stopPropagation(); setGalleryIdx((galleryIdx - 1 + product.thumbnails.length) % product.thumbnails.length); }}
+                onClick={(e) => { e.stopPropagation(); setGalleryIdx((galleryIdx - 1 + thumbnails.length) % thumbnails.length); }}
                 style={{
                   position: 'absolute', left: isMobile ? '12px' : '32px', top: '50%', transform: 'translateY(-50%)',
                   background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(4px)',
-                  border: 'none', borderRadius: '50%',
-                  width: '48px', height: '48px',
+                  border: 'none', borderRadius: '0px',
+                  width: '44px', height: '44px',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   cursor: 'pointer', color: '#fff', zIndex: 5010
                 }}
@@ -175,12 +157,12 @@ const ProductDetail = () => {
                 <ChevronLeft size={24} />
               </button>
               <button
-                onClick={(e) => { e.stopPropagation(); setGalleryIdx((galleryIdx + 1) % product.thumbnails.length); }}
+                onClick={(e) => { e.stopPropagation(); setGalleryIdx((galleryIdx + 1) % thumbnails.length); }}
                 style={{
                   position: 'absolute', right: isMobile ? '12px' : '32px', top: '50%', transform: 'translateY(-50%)',
                   background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(4px)',
-                  border: 'none', borderRadius: '50%',
-                  width: '48px', height: '48px',
+                  border: 'none', borderRadius: '0px',
+                  width: '44px', height: '44px',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   cursor: 'pointer', color: '#fff', zIndex: 5010
                 }}
@@ -191,22 +173,22 @@ const ProductDetail = () => {
           )}
 
           {/* Thumbnail strip */}
-          {product.thumbnails.length > 1 && (
+          {thumbnails.length > 1 && (
             <div style={{
               position: 'absolute', bottom: isMobile ? '20px' : '32px', left: '50%', transform: 'translateX(-50%)',
               display: 'flex', gap: '8px', zIndex: 5010,
-              background: 'rgba(0,0,0,0.4)', padding: '8px 12px', borderRadius: '16px',
-              backdropFilter: 'blur(8px)', maxWidth: '90vw', overflowX: 'auto'
+              background: 'rgba(0,0,0,0.6)', padding: '8px 12px', borderRadius: '0px',
+              border: '1px solid rgba(255,255,255,0.15)', backdropFilter: 'blur(8px)', maxWidth: '90vw', overflowX: 'auto'
             }}>
-              {product.thumbnails.map((thumb, idx) => (
+              {thumbnails.map((thumb, idx) => (
                 <div
                   key={idx}
                   onClick={(e) => { e.stopPropagation(); setGalleryIdx(idx); }}
                   style={{
-                    width: '48px', height: '48px', borderRadius: '8px', overflow: 'hidden',
+                    width: '48px', height: '48px', borderRadius: '0px', overflow: 'hidden',
                     cursor: 'pointer', flexShrink: 0,
-                    border: idx === galleryIdx ? '2px solid #fff' : '2px solid transparent',
-                    opacity: idx === galleryIdx ? 1 : 0.5,
+                    border: idx === galleryIdx ? '2px solid var(--accent-gold)' : '2px solid transparent',
+                    opacity: idx === galleryIdx ? 1 : 0.4,
                     transition: '0.2s'
                   }}
                 >
@@ -221,212 +203,403 @@ const ProductDetail = () => {
   );
 
   return (
-    <div className="product-detail" style={{ 
-      paddingTop: isMobile ? '80px' : '100px', 
-      paddingBottom: isMobile ? '40px' : '100px', 
-      background: pageBg,
-      color: textColor,
-      minHeight: '100vh',
-      transition: '0.3s'
+    <div style={{ 
+      paddingTop: '130px', 
+      paddingBottom: '100px', 
+      background: '#FFFFFF',
+      color: '#1A202C',
+      minHeight: '100vh'
     }}>
-      <div className="container" style={{ padding: isMobile ? '0 20px' : '0' }}>
-        {/* Breadcrumb */}
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: isMobile ? '20px' : '32px', fontSize: '13px', color: mutedColor }}>
-          <Link to="/" style={{ color: 'inherit', textDecoration: 'none' }}>홈</Link>
-          <ChevronRight size={14} />
-          <span style={{ color: textColor, fontWeight: '700' }}>{product.title}</span>
+      <div className="container">
+        
+        {/* Prominent Back to Product List Button */}
+        <div style={{ marginBottom: '24px' }}>
+          <Link 
+            to="/#packages" 
+            className="sharp-btn-outline" 
+            style={{ 
+              display: 'inline-flex', 
+              alignItems: 'center', 
+              gap: '8px', 
+              padding: '10px 20px', 
+              fontSize: '13px', 
+              fontWeight: '700', 
+              color: 'var(--navy-deep)', 
+              borderColor: '#CBD5E1', 
+              background: '#F8FAFC',
+              textDecoration: 'none',
+              borderRadius: '0px'
+            }}
+          >
+            <ArrowLeft size={16} /> 추천 상품 목록으로 가기
+          </Link>
         </div>
 
-        {/* Dynamic Layouts */}
-        {branding.layout === 'split' ? (
-           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? '32px' : '64px', marginBottom: isMobile ? '40px' : '80px', alignItems: 'center' }}>
-              <div 
-                onClick={() => openGallery(0)} 
-                style={{ height: `${galleryHeight}px`, borderRadius: isMobile ? '24px' : '40px', overflow: 'hidden', boxShadow: '0 30px 60px rgba(0,0,0,0.15)', cursor: 'pointer' }}
-              >
-                 <SafeMedia src={product.thumbnails[0]} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              </div>
-              <div>
-                 <h1 style={{ ...getStyle('title', '48px', 1.2), lineHeight: '1.2', marginBottom: '16px' }}>{product.title}</h1>
-                 <p style={{ ...getStyle('description', '20px', 1.1), lineHeight: '1.7', color: mutedColor }}>{product.description}</p>
-              </div>
-           </div>
-        ) : (
-           /* Default/Luxury Layout Header — fixed height */
-           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '2fr 1fr', gap: isMobile ? '12px' : '24px', height: `${galleryHeight}px`, maxHeight: `${galleryHeight}px`, overflow: 'hidden', marginBottom: isMobile ? '40px' : '64px' }}>
-             <div 
-               onClick={() => openGallery(0)} 
-               style={{ overflow: 'hidden', borderRadius: isMobile ? '20px' : '32px', boxShadow: 'var(--shadow-lg)', cursor: 'pointer', minHeight: 0, height: '100%' }}
-             >
-               <SafeMedia src={product.thumbnails[0]} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-             </div>
-             {!isMobile && (
-               <div style={{ display: 'grid', gridTemplateRows: '1fr 1fr', gap: '24px', minHeight: 0, height: '100%' }}>
-                 <div 
-                   onClick={() => openGallery(1)} 
-                   style={{ overflow: 'hidden', borderRadius: '32px', cursor: 'pointer', minHeight: 0 }}
-                 >
-                    <SafeMedia src={product.thumbnails[1] || product.thumbnails[0]} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', filter: 'brightness(0.8)' }} />
-                 </div>
-                 <div 
-                   onClick={() => openGallery(2)} 
-                   style={{ 
-                     background: cardBg, backdropFilter: isGlass ? 'blur(20px)' : 'none', 
-                     borderRadius: '32px', display: 'flex', flexDirection: 'column', 
-                     alignItems: 'center', justifyContent: 'center', 
-                     border: `1px solid ${cardBorder}`, cursor: 'pointer',
-                     minHeight: 0, transition: '0.3s'
-                   }}
-                   onMouseEnter={e => e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.1)' : '#f1f5f9'}
-                   onMouseLeave={e => e.currentTarget.style.background = cardBg}
-                 >
-                    <span style={{ fontSize: '28px', fontWeight: '900', color: branding.accentColor || 'var(--primary)' }}>+{extraCount > 0 ? extraCount : product.thumbnails.length}</span>
-                    <span style={{ fontSize: '13px', fontWeight: '700', color: mutedColor, marginTop: '4px' }}>사진 전체보기</span>
-                 </div>
-               </div>
-             )}
-           </div>
-        )}
-
+        {/* 2-Column Split: Left Scrolls freely, Right stays Sticky Floating */}
         <div style={{ 
-          display: (branding.layout === 'modern' || isMobile) ? 'block' : 'grid', 
-          gridTemplateColumns: branding.layout === 'modern' ? '1fr' : (branding.layout === 'split' ? '1fr 1fr' : '2fr 1fr'), 
-          gap: (branding.layout === 'modern' || isMobile) ? '40px' : (branding.layout === 'split' ? '64px' : '24px'), 
+          display: 'grid', 
+          gridTemplateColumns: isMobile ? '1fr' : '1.75fr 1fr', 
+          gap: isMobile ? '36px' : '48px', 
           alignItems: 'start' 
         }}>
-          {/* Main Content */}
-          <div style={{ maxWidth: (branding.layout === 'modern' && !isMobile) ? '800px' : 'none', margin: (branding.layout === 'modern' && !isMobile) ? '0 auto' : '0' }}>
-            {branding.layout !== 'split' && <h1 style={{ ...getStyle('title', '56px', 1.2), lineHeight: '1.2', marginBottom: '20px' }}>{product.title}</h1>}
+
+          {/* =========================================================================
+              LEFT COLUMN: Photo Gallery + Title + Features + Description + Schedule
+              ========================================================================= */}
+          <div>
             
-            <div style={{ display: 'flex', gap: '12px', marginBottom: isMobile ? '32px' : '48px', flexWrap: 'wrap' }}>
-              <div style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '6px', 
-                  background: branding.badgeColor || cardBg, 
-                  color: branding.badgeTextColor || textColor,
-                  border: branding.badgeColor ? 'none' : `1px solid ${cardBorder}`, 
-                  padding: '8px 18px', 
-                  borderRadius: '100px', 
-                  fontSize: '13px', 
-                  fontWeight: '700' 
-              }}>
-                 <Clock size={14} color={branding.badgeColor ? branding.badgeTextColor : (branding.accentColor || "var(--primary)")} /> 14일 여정
+            {/* Sharp Kensington Photo Gallery (2fr 1fr Grid) */}
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: isMobile ? '1fr' : '2fr 1fr', 
+              gap: '12px', 
+              height: `${galleryHeight}px`, 
+              maxHeight: `${galleryHeight}px`, 
+              overflow: 'hidden', 
+              marginBottom: '32px',
+              border: '1px solid #E2E8F0'
+            }}>
+              {/* Big Main Image */}
+              <div 
+                onClick={() => openGallery(0)} 
+                style={{ overflow: 'hidden', cursor: 'pointer', height: '100%', position: 'relative' }}
+              >
+                <SafeMedia src={thumbnails[0]} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', borderRadius: '0px' }} />
+                <div style={{ position: 'absolute', top: '16px', left: '16px', background: 'var(--navy-deep)', color: 'var(--accent-gold)', padding: '4px 12px', fontSize: '11px', fontWeight: '800', letterSpacing: '0.05em' }}>
+                  {product.badge || '티앤플 추천'}
+                </div>
               </div>
+
+              {/* Stacked Right Images */}
+              {!isMobile && (
+                <div style={{ display: 'grid', gridTemplateRows: '1fr 1fr', gap: '12px', height: '100%' }}>
+                  <div 
+                    onClick={() => openGallery(1)} 
+                    style={{ overflow: 'hidden', cursor: 'pointer', height: '100%' }}
+                  >
+                    <SafeMedia src={thumbnails[1] || thumbnails[0]} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', filter: 'brightness(0.85)', borderRadius: '0px' }} />
+                  </div>
+                  <div 
+                    onClick={() => openGallery(2)} 
+                    style={{ 
+                      background: 'var(--navy-deep)', 
+                      color: '#FFFFFF',
+                      display: 'flex', 
+                      flexDirection: 'column', 
+                      alignItems: 'center', 
+                      justifyContent: 'center', 
+                      cursor: 'pointer',
+                      height: '100%',
+                      transition: '0.2s',
+                      borderRadius: '0px'
+                    }}
+                  >
+                    <span style={{ fontSize: '28px', fontWeight: '900', color: 'var(--accent-gold)' }}>+{extraCount > 0 ? extraCount : thumbnails.length}</span>
+                    <span style={{ fontSize: '12px', fontWeight: '700', color: '#E2E8F0', marginTop: '4px' }}>사진 전체보기</span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Product Title */}
+            <h1 style={{ 
+              fontSize: isMobile ? '24px' : '32px', 
+              fontWeight: '800', 
+              color: 'var(--navy-deep)', 
+              lineHeight: '1.3', 
+              marginBottom: '16px', 
+              letterSpacing: '-0.02em',
+              fontFamily: "'Pretendard', sans-serif"
+            }}>
+              {product.title}
+            </h1>
+
+            {/* Dynamic Tag Badges from Database */}
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '24px', flexWrap: 'wrap' }}>
               <div style={{ 
-                  display: 'flex', 
+                display: 'inline-flex', 
+                alignItems: 'center', 
+                gap: '6px', 
+                background: 'var(--navy-deep)', 
+                color: 'var(--accent-gold)', 
+                padding: '6px 14px', 
+                fontSize: '12px', 
+                fontWeight: '700',
+                borderRadius: '0px'
+              }}>
+                <Ship size={13} /> {product.ship || '로얄캐리비안 스펙트럼호'}
+              </div>
+
+              <div style={{ 
+                display: 'inline-flex', 
+                alignItems: 'center', 
+                gap: '6px', 
+                background: '#F1F5F9', 
+                color: '#334155', 
+                border: '1px solid #CBD5E1', 
+                padding: '6px 14px', 
+                fontSize: '12px', 
+                fontWeight: '700',
+                borderRadius: '0px'
+              }}>
+                <Clock size={13} /> {product.schedule?.length ? `${product.schedule.length}일 여정 코스` : '프리미엄 여정'}
+              </div>
+
+              {product.bookingPeriod && (
+                <div style={{ 
+                  display: 'inline-flex', 
                   alignItems: 'center', 
                   gap: '6px', 
-                  background: branding.badgeColor || cardBg, 
-                  color: branding.badgeTextColor || textColor,
-                  border: branding.badgeColor ? 'none' : `1px solid ${cardBorder}`, 
-                  padding: '8px 18px', 
-                  borderRadius: '100px', 
-                  fontSize: '13px', 
-                  fontWeight: '700' 
-              }}>
-                 <Ship size={14} color={branding.badgeColor ? branding.badgeTextColor : (branding.accentColor || "var(--primary)")} /> 럭셔리 크루즈
+                  background: '#F8FAFC', 
+                  color: '#475569', 
+                  border: '1px solid #E2E8F0', 
+                  padding: '6px 14px', 
+                  fontSize: '12px', 
+                  fontWeight: '600',
+                  borderRadius: '0px'
+                }}>
+                  <Calendar size={13} /> {product.bookingPeriod}
+                </div>
+              )}
+            </div>
+
+            {/* Highlights Box: Features Entered in Admin */}
+            <div style={{ 
+              background: 'var(--bg-warm)', 
+              border: '1px solid #E2D9C8', 
+              padding: '24px', 
+              marginBottom: '28px',
+              borderRadius: '0px'
+            }}>
+              <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--accent-gold-dark)', letterSpacing: '0.12em', marginBottom: '14px', textTransform: 'uppercase' }}>
+                PACKAGE HIGHLIGHTS & PRIVILEGES (주요 혜택 및 특장점)
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {features.map((feat, fIdx) => (
+                  <div key={fIdx} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', fontWeight: '600', color: '#1E293B' }}>
+                    <span style={{ color: 'var(--accent-gold-dark)', fontSize: '15px' }}>▪</span>
+                    <span>{feat}</span>
+                  </div>
+                ))}
               </div>
             </div>
 
-            {branding.layout !== 'split' && <p style={{ ...getStyle('description', '20px', 1.1), lineHeight: '1.7', marginBottom: isMobile ? '40px' : '80px', color: mutedColor }}>{product.description}</p>}
+            {/* Description */}
+            <p style={{ fontSize: '15px', lineHeight: '1.8', color: '#475569', marginBottom: '48px', wordBreak: 'keep-all' }}>
+              {product.description}
+            </p>
 
-            <div style={{ borderTop: `1px solid ${cardBorder}`, paddingTop: isMobile ? '40px' : '80px', marginBottom: isMobile ? '40px' : '0' }}>
-              <h2 style={{ fontSize: isMobile ? '24px' : '32px', fontWeight: '900', marginBottom: isMobile ? '32px' : '48px', color: branding.sectionTitleColor || textColor }}>상세 여행 데일리 루틴</h2>
-              {renderSchedule()}
+            {/* Daily Schedule Section */}
+            <div style={{ borderTop: '2px solid var(--navy-deep)', paddingTop: '40px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px' }}>
+                <div>
+                  <span style={{ fontSize: '11px', fontWeight: '800', letterSpacing: '0.12em', color: 'var(--accent-gold-dark)', textTransform: 'uppercase' }}>
+                    ITINERARY SCHEDULE
+                  </span>
+                  <h2 style={{ fontSize: '24px', fontWeight: '800', color: 'var(--navy-deep)', marginTop: '4px', fontFamily: "'Pretendard', sans-serif" }}>
+                    상세 여행 데일리 루틴
+                  </h2>
+                </div>
+                <span style={{ fontSize: '12px', color: '#64748B' }}>
+                  총 {product.schedule?.length || 0}개 일정
+                </span>
+              </div>
+
+              {product.scheduleImage ? (
+                <div style={{ border: '1px solid #E2E8F0', overflow: 'hidden' }}>
+                  <SafeMedia src={product.scheduleImage} style={{ width: '100%', display: 'block', borderRadius: '0px' }} />
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  {(product.schedule || []).map((item, i) => (
+                    <div 
+                      key={i} 
+                      style={{ 
+                        border: '1px solid #E2E8F0', 
+                        padding: '24px', 
+                        background: '#FFFFFF',
+                        display: 'flex',
+                        gap: isMobile ? '16px' : '24px',
+                        alignItems: 'flex-start',
+                        borderRadius: '0px'
+                      }}
+                    >
+                      <div style={{ 
+                        background: 'var(--navy-deep)', 
+                        color: 'var(--accent-gold)', 
+                        fontSize: '12px', 
+                        fontWeight: '800', 
+                        padding: '8px 14px', 
+                        minWidth: '76px', 
+                        textAlign: 'center',
+                        borderRadius: '0px'
+                      }}>
+                        DAY 0{item.day}
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <h4 style={{ fontSize: '17px', fontWeight: '800', color: 'var(--navy-deep)', marginBottom: '8px' }}>
+                          {item.title}
+                        </h4>
+                        <p style={{ color: '#64748B', fontSize: '13px', lineHeight: '1.7', margin: 0 }}>
+                          {item.content}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
+
           </div>
 
-          {/* Sticky Sidebar */}
+          {/* =========================================================================
+              RIGHT COLUMN: Sticky Floating Price Card (Kensington Sharp Box - 이미지 2번)
+              ========================================================================= */}
           <aside style={{ 
-            position: (branding.layout === 'modern' || isMobile) ? 'static' : 'sticky', 
+            position: isMobile ? 'static' : 'sticky', 
             top: '120px', 
-            marginTop: (branding.layout === 'modern' || isMobile) ? '40px' : '0',
-            maxWidth: (branding.layout === 'modern' && !isMobile) ? '800px' : 'none',
-            margin: (branding.layout === 'modern' && !isMobile) ? '0 auto' : '0'
+            alignSelf: 'start',
+            zIndex: 30
           }}>
             <div style={{ 
-              padding: isMobile ? '32px' : '48px', 
-              borderRadius: isMobile ? '32px' : '40px', 
-              background: cardBg,
-              backdropFilter: isGlass ? 'blur(30px)' : 'none',
-              border: `1px solid ${cardBorder}`,
-              boxShadow: isDark ? '0 30px 60px rgba(0,0,0,0.5)' : '0 30px 60px rgba(0,0,0,0.08)' 
+              padding: isMobile ? '28px 20px' : '36px 32px', 
+              background: '#FFFFFF',
+              border: '1px solid #CBD5E1',
+              boxShadow: '0 12px 36px rgba(0,0,0,0.06)',
+              borderRadius: '0px'
             }}>
-               <div style={{ marginBottom: isMobile ? '32px' : '40px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                     <span style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em', color: mutedColor }}>
-                        {product.paymentType === 'split' ? '예약금 및 구성' : '총 패키지 금액'}
-                     </span>
-                     {product.paymentType === 'split' && (
-                        <span style={{ fontSize: '10px', padding: '2px 8px', background: branding.accentColor || 'var(--primary)', color: '#fff', borderRadius: '4px', fontWeight: '800' }}>분할납부형</span>
-                     )}
-                  </div>
-                  
-                  <div style={{ marginTop: '8px' }}>
-                     {product.paymentType === 'split' ? (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                           <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-                              <span style={{ fontSize: '14px', color: mutedColor }}>패키지 정가:</span>
-                              <span style={{ fontSize: '18px', fontWeight: '700', color: textColor }}>{product.originalPrice?.toLocaleString()}원</span>
-                           </div>
-                           <div style={{ background: isDark ? 'rgba(255,255,255,0.05)' : 'var(--bg-sub)', padding: '20px', borderRadius: '20px', border: `1px solid ${cardBorder}` }}>
-                              <div style={{ fontSize: '13px', color: branding.accentColor || 'var(--primary)', fontWeight: '800', marginBottom: '4px' }}>지금 필요한 예약금</div>
-                              <div style={{ fontSize: '32px', fontWeight: '900', color: branding.accentColor || 'var(--primary)' }}>{product.downPayment?.toLocaleString()}원</div>
-                              <p style={{ fontSize: '12px', color: mutedColor, marginTop: '8px', lineHeight: '1.5' }}>
-                                 * 나머지 잔금은 여행을 안전하게 다녀오신 후<br/>납입하시는 안심 플랜 상품입니다.
-                              </p>
-                           </div>
-                        </div>
-                     ) : (
-                        <>
-                           {product.originalPrice > 0 && product.originalPrice > product.price && (
-                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                                <span style={{ fontSize: '15px', color: mutedColor, textDecoration: 'line-through', fontWeight: '500' }}>{product.originalPrice.toLocaleString()}원</span>
-                                <span style={{ fontSize: '16px', color: '#ef4444', fontWeight: '900' }}>{Math.round((1 - product.price / product.originalPrice) * 100)}% 할인</span>
-                             </div>
-                           )}
-                           <div style={{ ...getStyle('price', '42px', 1.2), color: branding.accentColor || (isDark ? '#fff' : 'var(--primary)') }}>
-                              {product.price.toLocaleString()}원
-                           </div>
-                           {product.originalPrice > product.price ? (
-                             <p style={{ fontSize: '13px', color: '#ef4444', fontWeight: '700', marginTop: '12px' }}>* 총 {(product.originalPrice - product.price).toLocaleString()}원 즉시 할인 적용됨</p>
-                           ) : (
-                             <p style={{ fontSize: '13px', color: mutedColor, fontWeight: '700', marginTop: '12px' }}>* 오직 T&PLE KOREA에서만 가능한 특별가</p>
-                           )}
-                        </>
-                     )}
-                  </div>
-               </div>
+              <div style={{ borderBottom: '1px solid #F1F5F9', paddingBottom: '20px', marginBottom: '20px' }}>
+                <span style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--accent-gold-dark)' }}>
+                  {isSplit ? '스마트 후불제 플랜' : '총 패키지 금액'}
+                </span>
+                
+                {isSplit ? (
+                  <div style={{ marginTop: '12px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '4px' }}>
+                      <span style={{ fontSize: '12px', color: '#64748B' }}>총 상품 정가</span>
+                      <span style={{ fontSize: '15px', fontWeight: '700', color: '#64748B', textDecoration: 'line-through' }}>
+                        {(product.originalPrice || product.price).toLocaleString()}원
+                      </span>
+                    </div>
 
-               <button 
-                  className="luxury-btn" 
-                  onClick={() => setIsBookingOpen(true)}
-                  style={{ 
-                    width: '100%', 
-                    padding: '18px', 
-                    borderRadius: '16px', 
-                    fontSize: '15px', 
-                    justifyContent: 'center',
-                    background: branding.buttonColor || 'var(--primary)',
-                    color: branding.buttonTextColor || '#ffffff'
-                  }}
-               >
-                  전문 상담 신청하기
-               </button>
-               <p style={{ textAlign: 'center', fontSize: '11px', color: mutedColor, marginTop: '16px' }}>* 전문가 상담 후 최종 예약이 확정됩니다.</p>
+                    <div style={{ background: '#F8FAFC', padding: '16px', border: '1px solid #E2E8F0', marginTop: '10px' }}>
+                      <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--navy-deep)', marginBottom: '2px' }}>
+                        매월 납부 분할액
+                      </div>
+                      <div style={{ fontSize: '28px', fontWeight: '900', color: 'var(--accent-gold-dark)', letterSpacing: '-0.02em' }}>
+                        월 {monthlyAmount.toLocaleString()}원
+                      </div>
+                      <div style={{ fontSize: '11px', color: '#64748B', marginTop: '4px' }}>
+                        * {installments}개월 분할 납부 (착수 예약금: {downPayment.toLocaleString()}원)
+                      </div>
+                    </div>
+
+                    <p style={{ fontSize: '11px', color: '#64748B', marginTop: '12px', lineHeight: '1.6' }}>
+                      * 여행을 먼저 다녀오신 후 편안하게 정산하시는 티앤플 안심 후불 멤버십입니다.
+                    </p>
+                  </div>
+                ) : (
+                  <div style={{ marginTop: '12px' }}>
+                    {discountRate > 0 && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                        <span style={{ fontSize: '14px', color: '#94A3B8', textDecoration: 'line-through' }}>
+                          {product.originalPrice?.toLocaleString()}원
+                        </span>
+                        <span style={{ fontSize: '14px', color: '#EF4444', fontWeight: '800' }}>
+                          {discountRate}% 특별 할인
+                        </span>
+                      </div>
+                    )}
+                    
+                    <div style={{ fontSize: '32px', fontWeight: '900', color: 'var(--navy-deep)', letterSpacing: '-0.02em' }}>
+                      {product.price.toLocaleString()}원
+                    </div>
+
+                    {discountRate > 0 ? (
+                      <p style={{ fontSize: '11px', color: '#EF4444', fontWeight: '700', marginTop: '8px' }}>
+                        * 총 {(product.originalPrice - product.price).toLocaleString()}원 즉시 할인 적용됨
+                      </p>
+                    ) : (
+                      <p style={{ fontSize: '11px', color: '#64748B', marginTop: '8px' }}>
+                        * 멤버십 특별 우대가 적용
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Consultation CTA Button */}
+              <button 
+                className="sharp-btn-gold" 
+                onClick={() => setIsBookingOpen(true)}
+                style={{ 
+                  width: '100%', 
+                  padding: '16px', 
+                  fontSize: '14px', 
+                  letterSpacing: '0.04em',
+                  borderRadius: '0px'
+                }}
+              >
+                전문 상담 신청하기
+              </button>
+              
+              <p style={{ textAlign: 'center', fontSize: '11px', color: '#94A3B8', marginTop: '12px' }}>
+                * 전담 크루즈 컨시어지 상담 후 최종 예약이 확정됩니다.
+              </p>
             </div>
           </aside>
+
         </div>
       </div>
       
+      {/* Mobile Fixed Bottom Floating Bar */}
+      {isMobile && (
+        <div style={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          zIndex: 9999,
+          background: '#FFFFFF',
+          borderTop: '1px solid #CBD5E1',
+          padding: '12px 18px',
+          boxShadow: '0 -6px 24px rgba(0,0,0,0.12)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '12px'
+        }}>
+          <div>
+            <div style={{ fontSize: '10px', color: '#64748B', fontWeight: '700' }}>
+              {isSplit ? '스마트 후불 분할액' : (discountRate > 0 ? `${discountRate}% 특별할인가` : '회원 우대가')}
+            </div>
+            <div style={{ fontSize: '18px', fontWeight: '900', color: 'var(--navy-deep)', letterSpacing: '-0.02em' }}>
+              {isSplit ? `월 ${monthlyAmount.toLocaleString()}원` : `${product.price.toLocaleString()}원`}
+            </div>
+          </div>
+          <button 
+            onClick={() => setIsBookingOpen(true)}
+            className="sharp-btn-gold"
+            style={{
+              padding: '12px 22px',
+              fontSize: '13px',
+              fontWeight: '800',
+              whiteSpace: 'nowrap',
+              borderRadius: '0px'
+            }}
+          >
+            전문 상담 신청
+          </button>
+        </div>
+      )}
+
       {renderGalleryModal()}
 
       <BookingModal 
         isOpen={isBookingOpen} 
         onClose={() => setIsBookingOpen(false)} 
-        productTitle={product.title}
-        accentColor={branding.buttonColor || 'var(--primary)'}
+        productTitle={`[상세 페이지] ${product.title}`}
+        accentColor="var(--accent-gold-dark)"
       />
     </div>
   );

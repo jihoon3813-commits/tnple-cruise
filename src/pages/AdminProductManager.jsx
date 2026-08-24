@@ -94,6 +94,15 @@ const AdminProductManager = () => {
       ...product,
       thumbnails: product.thumbnails || [""],
       schedule: product.schedule || [],
+      features: product.features && product.features.length > 0 ? product.features : [
+        "발코니 오션뷰 객실",
+        "전 일정 선상 뷔페 & 정찬",
+        "기항지 한국인 가이드 투어"
+      ],
+      badge: product.badge || "티앤플 추천",
+      ship: product.ship || "로얄캐리비안 스펙트럼호",
+      bookingPeriod: product.bookingPeriod || "예약기간 : 상시 접수 중",
+      travelPeriod: product.travelPeriod || "출발일정 : 시즌 연중 운항",
       typography: product.typography || {
         title: { fontSize: 24, color: '#0F172A' },
         price: { fontSize: 18, color: '#2563EB' },
@@ -116,6 +125,15 @@ const AdminProductManager = () => {
       installments: 12,
       schedule: [],
       scheduleImage: "",
+      features: [
+        "발코니 오션뷰 객실",
+        "전 일정 선상 뷔페 & 정찬",
+        "기항지 한국인 가이드 투어"
+      ],
+      badge: "티앤플 베스트셀러",
+      ship: "로얄캐리비안 스펙트럼 오브 더 시즈",
+      bookingPeriod: "예약기간 : 상시 접수 중",
+      travelPeriod: "출발일정 : 매주 화/금 출발 (연중 운항)",
       typography: {
         title: { fontSize: 24, color: '#0F172A' },
         price: { fontSize: 18, color: '#2563EB' },
@@ -239,13 +257,82 @@ const AdminProductManager = () => {
                   </div>
                   {currentProduct.paymentType === 'split' && (
                     <>
-                      <PriceInput label="착수금" value={currentProduct.downPayment || 0} onChange={val => setCurrentProduct({...currentProduct, downPayment: val})} />
+                      <PriceInput label="착수금 (예약금)" value={currentProduct.downPayment || 0} onChange={val => setCurrentProduct({...currentProduct, downPayment: val})} />
                       <div>
                           <label className="admin-label">할부 개월수</label>
-                          <input type="number" className="form-control" value={currentProduct.installments || 1} onChange={e => setCurrentProduct({...currentProduct, installments: parseInt(e.target.value)})} />
+                          <input type="number" className="form-control" value={currentProduct.installments || 12} onChange={e => setCurrentProduct({...currentProduct, installments: parseInt(e.target.value)})} />
                       </div>
                     </>
                   )}
+
+                  {/* Kensington Sharp Card Metadata Fields */}
+                  <div>
+                      <label className="admin-label">카드 상단 뱃지 (예: 티앤플 베스트셀러, 스마트 후불제)</label>
+                      <input className="form-control" placeholder="티앤플 추천" value={currentProduct.badge || ""} onChange={e => setCurrentProduct({...currentProduct, badge: e.target.value})} />
+                  </div>
+
+                  <div>
+                      <label className="admin-label">선박명 / 부제 (예: 로얄캐리비안 스펙트럼호)</label>
+                      <input className="form-control" placeholder="로얄캐리비안 스펙트럼호" value={currentProduct.ship || ""} onChange={e => setCurrentProduct({...currentProduct, ship: e.target.value})} />
+                  </div>
+
+                  <div>
+                      <label className="admin-label">예약 기간 표기 (예: 예약기간 : 상시 접수 중)</label>
+                      <input className="form-control" placeholder="예약기간 : 상시 접수 중" value={currentProduct.bookingPeriod || ""} onChange={e => setCurrentProduct({...currentProduct, bookingPeriod: e.target.value})} />
+                  </div>
+
+                  <div>
+                      <label className="admin-label">출발 일정 표기 (예: 출발일정 : 매주 화/금 출발)</label>
+                      <input className="form-control" placeholder="출발일정 : 시즌 연중 운항" value={currentProduct.travelPeriod || ""} onChange={e => setCurrentProduct({...currentProduct, travelPeriod: e.target.value})} />
+                  </div>
+
+                  {/* Feature Bullet Points (리스트 노출 주요 혜택) */}
+                  <div style={{ gridColumn: 'span 2', borderTop: '1px solid var(--border-light)', paddingTop: '20px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                          <label className="admin-label" style={{ marginBottom: 0 }}>
+                            리스트 카드 주요 특징 / 혜택 (불릿 포인트)
+                          </label>
+                          <button 
+                            type="button"
+                            className="luxury-btn outline" 
+                            style={{ padding: '4px 12px', fontSize: '11px' }} 
+                            onClick={() => {
+                              const newFeats = [...(currentProduct.features || [])];
+                              newFeats.push("");
+                              setCurrentProduct({ ...currentProduct, features: newFeats });
+                            }}
+                          >
+                            <Plus size={12} /> 특징 항목 추가
+                          </button>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          {(currentProduct.features || [""]).map((feat, fIdx) => (
+                            <div key={fIdx} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                              <span style={{ fontSize: '13px', color: 'var(--primary)', fontWeight: '800', width: '20px' }}>▪</span>
+                              <input 
+                                className="form-control" 
+                                placeholder={`특징/혜택 ${fIdx + 1} (예: 발코니 오션뷰 객실, 한국인 가이드 동행 등)`} 
+                                value={feat} 
+                                onChange={e => {
+                                  const newFeats = [...currentProduct.features];
+                                  newFeats[fIdx] = e.target.value;
+                                  setCurrentProduct({ ...currentProduct, features: newFeats });
+                                }} 
+                              />
+                              <button 
+                                type="button"
+                                onClick={() => {
+                                  const newFeats = currentProduct.features.filter((_, i) => i !== fIdx);
+                                  setCurrentProduct({ ...currentProduct, features: newFeats });
+                                }} 
+                                style={{ padding: '8px 12px', border: 'none', background: 'var(--bg-sub)', borderRadius: '6px', cursor: 'pointer', color: '#ef4444' }}
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
+                          ))}
+                      </div>
+                  </div>
                 </div>
               )}
 
