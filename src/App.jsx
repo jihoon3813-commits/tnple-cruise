@@ -40,12 +40,13 @@ function App() {
 
       // SNS Open Graph Tags
       if (config) {
-        const titleText = `${config.siteName || '다온넷크루즈'} - 프리미엄 크루즈 멤버십`;
+        const titleText = config.ogTitle || `${config.siteName || '다온넷크루즈'} - 프리미엄 크루즈 여행`;
         document.title = titleText;
         const ogTags = [
           { property: 'og:title', content: titleText },
-          { property: 'og:description', content: config.metaDescription },
-          { property: 'og:image', content: config.ogImageUrl },
+          { property: 'og:site_name', content: config.siteName || '다온넷크루즈' },
+          { property: 'og:description', content: config.metaDescription || "세상의 끝까지 만끽하는 진정한 럭셔리, 다온넷크루즈 멤버십." },
+          { property: 'og:image', content: config.ogImageUrl || "https://jihoon3813-commits.github.io/tnple-cruise/og-image.png" },
           { property: 'og:url', content: window.location.href },
           { property: 'og:type', content: 'website' }
         ];

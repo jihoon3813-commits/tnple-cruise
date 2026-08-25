@@ -110,8 +110,9 @@ export const ConfigProvider = ({ children }) => {
       siteNameEn: heroData?.siteNameEn || "DAONNET CRUISE",
       logo: heroData?.logo,
       favicon: heroData?.favicon,
+      ogTitle: heroData?.ogTitle || (heroData?.siteName ? `${heroData.siteName} - 프리미엄 크루즈 여행` : "다온넷크루즈 - 프리미엄 크루즈 여행"),
       ogImage: heroData?.ogImage || "https://images.unsplash.com/photo-1548574505-5e239809ee19?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200",
-      metaDescription: heroData?.metaDescription || "DAONNET CRUISE 크루즈 - 프리미엄 크루즈 멤버십 서비스",
+      metaDescription: heroData?.metaDescription || "세상의 끝까지 만끽하는 진정한 럭셔리, 다온넷크루즈 멤버십.",
       footer: heroData?.footer || {
         menus: [
           { id: '1', label: '이용약관', url: '/terms' },

@@ -178,6 +178,7 @@ export const updateGlobalSettings = mutation({
     siteNameEn: v.optional(v.string()),
     logo: v.optional(v.string()),
     favicon: v.optional(v.string()),
+    ogTitle: v.optional(v.string()),
     ogImage: v.optional(v.string()),
     metaDescription: v.optional(v.string()),
     adminPassword: v.optional(v.string()),

@@ -119,6 +119,7 @@ const AdminSettings = () => {
         siteNameEn: config.siteNameEn || 'DAONNET CRUISE',
         logo: config.logo || '',
         favicon: config.favicon || '',
+        ogTitle: config.ogTitle || (config.siteName ? `${config.siteName} - 프리미엄 크루즈 여행` : '다온넷크루즈 - 프리미엄 크루즈 여행'),
         ogImage: config.ogImage || '',
         metaDescription: config.metaDescription || '',
         adminPassword: config.adminPassword || '1111'
@@ -204,9 +205,9 @@ const AdminSettings = () => {
   };
 
   const recommendedTags = [
-    "당신의 인생에서 가장 빛나는 순간, DAONNET CRUISE와 함께하세요.",
-    "세상의 끝까지 만끽하는 진정한 럭셔리, DAONNET CRUISE 크루즈 멤버십.",
-    "압도적인 스케일과 최상급 서비스, DAONNET CRUISE 프리미엄 크루즈 여행."
+    "세상의 끝까지 만끽하는 진정한 럭셔리, 다온넷크루즈 멤버십.",
+    "압도적인 스케일과 최상급 서비스, 다온넷크루즈 프리미엄 크루즈 여행.",
+    "당신의 인생에서 가장 빛나는 순간, 다온넷크루즈와 함께하세요."
   ];
 
   const handleFileChange = async (e, field) => {
@@ -551,11 +552,28 @@ const AdminSettings = () => {
       <div className="admin-card">
          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
             <div style={{ padding: '8px', background: 'rgba(37, 99, 235, 0.1)', color: 'var(--primary)', borderRadius: '10px' }}><Share2 size={20} /></div>
-            <h3 style={{ fontSize: '16px', fontWeight: '800' }}>SNS 링크 미리보기 설정 (Open Graph)</h3>
+            <h3 style={{ fontSize: '16px', fontWeight: '800' }}>SNS 링크 미리보기 설정 (Open Graph / 카카오톡 공유)</h3>
          </div>
 
          <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '40px' }}>
             <div>
+               <div className="form-group" style={{ marginBottom: '24px' }}>
+                  <label style={{ fontSize: '13px', fontWeight: '700', marginBottom: '8px', display: 'block' }}>
+                     SNS 공유 제목 (OG Title)
+                  </label>
+                  <input 
+                     type="text" 
+                     className="form-control"
+                     value={settings.ogTitle || ''}
+                     onChange={e => setSettings({ ...settings, ogTitle: e.target.value })}
+                     placeholder="예: 다온넷크루즈 - 프리미엄 크루즈 여행"
+                     style={{ fontSize: '13px' }}
+                  />
+                  <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '6px' }}>
+                     카카오톡, 문자메시지, 페이스북 등에 링크 공유 시 가장 굵게 노출되는 메인 제목입니다.
+                  </p>
+               </div>
+
                <div className="form-group">
                   <label style={{ fontSize: '13px', fontWeight: '700', marginBottom: '8px', display: 'block' }}>사이트 대표 이미지 (OG Image)</label>
                   <div style={{ border: '2px dashed var(--border-light)', borderRadius: '20px', padding: '24px', textAlign: 'center', background: 'var(--bg-sub)', marginBottom: '12px' }}>
@@ -575,7 +593,7 @@ const AdminSettings = () => {
                   <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>권장 사이즈: **1200x630px** (카톡/페이스북 최적화)</p>
                </div>
 
-               <div className="form-group" style={{ marginTop: '32px' }}>
+               <div className="form-group" style={{ marginTop: '28px' }}>
                   <label style={{ fontSize: '13px', fontWeight: '700', marginBottom: '8px', display: 'block' }}>사이트 설명 문구 (Meta Description)</label>
                   <textarea 
                      className="form-control" 
@@ -584,7 +602,7 @@ const AdminSettings = () => {
                      onChange={e => setSettings({ ...settings, metaDescription: e.target.value })}
                      placeholder="SNS 링크 공유 시 제목 아래에 노출되는 설명입니다."
                   />
-                  <div style={{ marginTop: '16px', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                  <div style={{ marginTop: '14px', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                      {recommendedTags.map((tag, i) => (
                         <button 
                            key={i} 
@@ -600,17 +618,21 @@ const AdminSettings = () => {
 
             {/* Preview Mockup */}
             <div>
-               <label style={{ fontSize: '13px', fontWeight: '700', marginBottom: '16px', display: 'block' }}>링크 공유 시 미리보기 예시</label>
-               <div style={{ background: '#f8fafc', borderRadius: '16px', overflow: 'hidden', border: '1px solid #e2e8f0', maxWidth: '300px' }}>
-                  <div style={{ height: '150px', background: '#e2e8f0', overflow: 'hidden' }}>
+               <label style={{ fontSize: '13px', fontWeight: '700', marginBottom: '16px', display: 'block' }}>카카오톡 / SNS 링크 공유 시 미리보기</label>
+               <div style={{ background: '#f8fafc', borderRadius: '16px', overflow: 'hidden', border: '1px solid #e2e8f0', maxWidth: '320px', boxShadow: '0 4px 12px rgba(0,0,0,0.06)' }}>
+                  <div style={{ height: '160px', background: '#e2e8f0', overflow: 'hidden' }}>
                      {settings.ogImage ? <SafeMedia src={settings.ogImage} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#94a3b8' }}><ImageIcon size={32} /></div>}
                   </div>
                   <div style={{ padding: '16px' }}>
-                     <div style={{ fontWeight: '800', fontSize: '14px', marginBottom: '6px' }}>DAONNET CRUISE</div>
-                     <div style={{ fontSize: '12px', color: '#64748b', lineHeight: '1.4', height: '3.4em', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
-                        {settings.metaDescription || "DAONNET CRUISE 크루즈 - 프리미엄 크루즈 멤버십 서비스"}
+                     <div style={{ fontWeight: '800', fontSize: '14px', marginBottom: '6px', color: '#1E293B', lineHeight: '1.3' }}>
+                        {settings.ogTitle || `${settings.siteName || '다온넷크루즈'} - 프리미엄 크루즈 여행`}
                      </div>
-                     <div style={{ fontSize: '10px', color: '#94a3b8', marginTop: '12px' }}>daonnet-cruise.com</div>
+                     <div style={{ fontSize: '12px', color: '#64748b', lineHeight: '1.45', height: '3.2em', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+                        {settings.metaDescription || "세상의 끝까지 만끽하는 진정한 럭셔리, 다온넷크루즈 멤버십."}
+                     </div>
+                     <div style={{ fontSize: '11px', color: '#2563EB', marginTop: '12px', textDecoration: 'underline' }}>
+                        daonnet-cruise.vercel.app
+                     </div>
                   </div>
                </div>
             </div>
