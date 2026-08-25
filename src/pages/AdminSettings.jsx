@@ -1,17 +1,102 @@
 import React, { useState, useEffect } from 'react';
 import { useConfig } from '../context/ConfigContext';
-import { Shield, Save, CheckCircle2, Image as ImageIcon, Globe, Share2, Upload, X, Info, Loader2 } from 'lucide-react';
+import { Shield, Save, CheckCircle2, Image as ImageIcon, Globe, Share2, Upload, X, Info, Loader2, Sparkles, Sliders, Plus, MapPin, Calendar, Users, CreditCard } from 'lucide-react';
 import SafeMedia from '../components/SafeMedia';
 
+const OptionsListEditor = ({ title, icon: Icon, items = [], onChange, placeholder }) => {
+  return (
+    <div style={{ background: '#F8FAFC', padding: '16px', border: '1px solid #E2E8F0', borderRadius: '0px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+        <label style={{ fontSize: '13px', fontWeight: '800', color: 'var(--navy-deep)', display: 'flex', alignItems: 'center', gap: '6px', margin: 0 }}>
+          {Icon && <Icon size={14} color="#D97706" />} {title} ({items.length}개)
+        </label>
+        <button
+          type="button"
+          onClick={() => onChange([...items, ''])}
+          style={{ padding: '4px 10px', fontSize: '11px', fontWeight: '700', background: 'var(--navy-deep)', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '0px', display: 'flex', alignItems: 'center', gap: '4px' }}
+        >
+          <Plus size={12} /> 옵션 추가
+        </button>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        {items.map((item, idx) => (
+          <div key={idx} style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <span style={{ fontSize: '11px', color: '#94A3B8', fontWeight: '700', width: '20px', textAlign: 'center' }}>{idx + 1}</span>
+            <input
+              type="text"
+              className="form-control"
+              value={item}
+              onChange={e => {
+                const next = [...items];
+                next[idx] = e.target.value;
+                onChange(next);
+              }}
+              placeholder={placeholder || `선택 옵션 ${idx + 1}`}
+              style={{ fontSize: '13px', padding: '8px 12px' }}
+            />
+            <button
+              type="button"
+              onClick={() => onChange(items.filter((_, i) => i !== idx))}
+              style={{ padding: '8px 10px', border: '1px solid #CBD5E1', background: '#FFFFFF', color: '#EF4444', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '0px' }}
+            >
+              <X size={14} />
+            </button>
+          </div>
+        ))}
+        {items.length === 0 && (
+          <div style={{ fontSize: '12px', color: '#94A3B8', textAlign: 'center', padding: '12px 0' }}>
+            등록된 옵션이 없습니다. [옵션 추가]를 눌러 항목을 추가해 주세요.
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 const AdminSettings = () => {
-  const { config, updatePrivacyPolicy, updateGlobalSettings, uploadFile, triggerVercelDeploy } = useConfig();
+  const { config, updatePrivacyPolicy, updateGlobalSettings, updateQuickPlanner, uploadFile, triggerVercelDeploy } = useConfig();
   const [privacyContent, setPrivacyContent] = useState(config.privacyPolicy || '');
   const [settings, setSettings] = useState({
+    siteName: config.siteName || '다온넷크루즈',
+    siteNameEn: config.siteNameEn || 'DAONNET CRUISE',
     logo: config.logo || '',
     favicon: config.favicon || '',
     ogImage: config.ogImage || '',
     metaDescription: config.metaDescription || '',
     adminPassword: config.adminPassword || '1111'
+  });
+  const [quickPlanner, setQuickPlanner] = useState({
+    badge: config.quickPlanner?.badge || 'SMART CUSTOM PLANNER',
+    title: config.quickPlanner?.title || '내 여행 계획에 맞춘 빠른 맞춤 견적 신청',
+    subtitle: config.quickPlanner?.subtitle || '희망하시는 여행지와 일정, 결제 방식을 선택하시면 전담 크루즈 플래너가 1:1 최적 여정과 특별 우대 혜택을 빠르게 안내해 드립니다.',
+    benefit1: config.quickPlanner?.benefit1 || '목돈 부담 없는 스마트 후불제 지원',
+    benefit2: config.quickPlanner?.benefit2 || '1:1 전담 한국인 컨시어지 올케어',
+    benefit3: config.quickPlanner?.benefit3 || '상담 고객 전원 선상 크레딧 우대 지원',
+    buttonText: config.quickPlanner?.buttonText || '맞춤 견적 신청',
+    destinations: config.quickPlanner?.destinations || [
+      "동남아 3개국 (싱가포르·말레이시아·태국)",
+      "지중해 클래식 (이탈리아·프랑스·스페인)",
+      "일본 오키나와 & 대만 에메랄드",
+      "알래스카 빙하 피오르드"
+    ],
+    schedules: config.quickPlanner?.schedules || [
+      "2026년 상반기 (3월~6월)",
+      "2026년 여름 성수기 (7월~8월)",
+      "2026년 가을 시즌 (9월~11월)",
+      "2026-2027 겨울 방학 시즌"
+    ],
+    members: config.quickPlanner?.members || [
+      "성인 2인 (부부/커플)",
+      "가족 (성인2 + 아동1~2)",
+      "부모님 동반 (3~4인)",
+      "단체/모임 (5인 이상)"
+    ],
+    paymentPlans: config.quickPlanner?.paymentPlans || [
+      "스마트 후불 분할 납부",
+      "멤버십 일시불 특별 우대",
+      "맞춤 상담 후 결정"
+    ]
   });
   const [footer, setFooter] = useState(config.footer || {
     menus: [],
@@ -30,12 +115,48 @@ const AdminSettings = () => {
     if (config) {
       setPrivacyContent(config.privacyPolicy || '');
       setSettings({
+        siteName: config.siteName || '다온넷크루즈',
+        siteNameEn: config.siteNameEn || 'DAONNET CRUISE',
         logo: config.logo || '',
         favicon: config.favicon || '',
         ogImage: config.ogImage || '',
         metaDescription: config.metaDescription || '',
         adminPassword: config.adminPassword || '1111'
       });
+      if (config.quickPlanner) {
+        setQuickPlanner({
+          badge: config.quickPlanner.badge || 'SMART CUSTOM PLANNER',
+          title: config.quickPlanner.title || '내 여행 계획에 맞춘 빠른 맞춤 견적 신청',
+          subtitle: config.quickPlanner.subtitle || '희망하시는 여행지와 일정, 결제 방식을 선택하시면 전담 크루즈 플래너가 1:1 최적 여정과 특별 우대 혜택을 빠르게 안내해 드립니다.',
+          benefit1: config.quickPlanner.benefit1 || '목돈 부담 없는 스마트 후불제 지원',
+          benefit2: config.quickPlanner.benefit2 || '1:1 전담 한국인 컨시어지 올케어',
+          benefit3: config.quickPlanner.benefit3 || '상담 고객 전원 선상 크레딧 우대 지원',
+          buttonText: config.quickPlanner.buttonText || '맞춤 견적 신청',
+          destinations: config.quickPlanner.destinations || [
+            "동남아 3개국 (싱가포르·말레이시아·태국)",
+            "지중해 클래식 (이탈리아·프랑스·스페인)",
+            "일본 오키나와 & 대만 에메랄드",
+            "알래스카 빙하 피오르드"
+          ],
+          schedules: config.quickPlanner.schedules || [
+            "2026년 상반기 (3월~6월)",
+            "2026년 여름 성수기 (7월~8월)",
+            "2026년 가을 시즌 (9월~11월)",
+            "2026-2027 겨울 방학 시즌"
+          ],
+          members: config.quickPlanner.members || [
+            "성인 2인 (부부/커플)",
+            "가족 (성인2 + 아동1~2)",
+            "부모님 동반 (3~4인)",
+            "단체/모임 (5인 이상)"
+          ],
+          paymentPlans: config.quickPlanner.paymentPlans || [
+            "스마트 후불 분할 납부",
+            "멤버십 일시불 특별 우대",
+            "맞춤 상담 후 결정"
+          ]
+        });
+      }
       if (config.footer) setFooter(config.footer);
     }
   }, [config]);
@@ -83,9 +204,9 @@ const AdminSettings = () => {
   };
 
   const recommendedTags = [
-    "당신의 인생에서 가장 빛나는 순간, T&PLE KOREA와 함께하세요.",
-    "세상의 끝까지 만끽하는 진정한 럭셔리, T&PLE KOREA 크루즈 멤버십.",
-    "압도적인 스케일과 최상급 서비스, T&PLE KOREA 프리미엄 크루즈 여행."
+    "당신의 인생에서 가장 빛나는 순간, DAONNET CRUISE와 함께하세요.",
+    "세상의 끝까지 만끽하는 진정한 럭셔리, DAONNET CRUISE 크루즈 멤버십.",
+    "압도적인 스케일과 최상급 서비스, DAONNET CRUISE 프리미엄 크루즈 여행."
   ];
 
   const handleFileChange = async (e, field) => {
@@ -106,6 +227,7 @@ const AdminSettings = () => {
     try {
       await updatePrivacyPolicy(privacyContent);
       await updateGlobalSettings(settings);
+      await updateQuickPlanner(quickPlanner);
       await updateFooter(footer);
       
       // 버셀 배포 트리거 호출
@@ -126,7 +248,7 @@ const AdminSettings = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
          <div>
             <h2 style={{ fontSize: '20px', fontWeight: '800' }}>웹사이트 통합 설정</h2>
-            <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>브랜딩, 파비콘, SNS 미리보기 등 웹사이트 기초 정보를 관리합니다.</p>
+            <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>브랜딩, 맞춤 견적 플래너 문구, 파비콘, 푸터 정보 등을 관리합니다.</p>
          </div>
          <button 
             className="luxury-btn" 
@@ -144,6 +266,229 @@ const AdminSettings = () => {
             {saving ? <Loader2 className="animate-spin" size={18} /> : (success ? <CheckCircle2 size={18} /> : <Save size={18} />)}
             {saving ? '저장 중...' : (success ? '모든 설정 저장됨' : '전체 설정 저장')}
          </button>
+      </div>
+
+      {/* =========================================================================
+          🏛️ SITE NAME & BASIC BRANDING CARD
+          ========================================================================= */}
+      <div className="admin-card" style={{ border: '2px solid var(--navy-deep)', background: '#FFFFFF' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', borderBottom: '1px solid #F1F5F9', paddingBottom: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ padding: '8px', background: 'rgba(11, 19, 43, 0.1)', color: 'var(--navy-deep)', borderRadius: '10px' }}>
+              <Globe size={20} />
+            </div>
+            <div>
+              <h3 style={{ fontSize: '16px', fontWeight: '800', color: 'var(--navy-deep)', margin: 0 }}>사이트명 및 브랜드명 설정</h3>
+              <p style={{ fontSize: '12px', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>헤더 네비게이션, 푸터, 메타 타이틀, 로고에 표기되는 사이트명을 직접 수정합니다.</p>
+            </div>
+          </div>
+          <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--navy-deep)', background: '#E2E8F0', padding: '4px 10px', borderRadius: '4px' }}>
+            사이트 전역 적용
+          </span>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+          <div>
+            <label style={{ fontSize: '13px', fontWeight: '700', marginBottom: '6px', display: 'block', color: 'var(--navy-deep)' }}>
+              사이트 국문명 (회사/브랜드명)
+            </label>
+            <input 
+              type="text" 
+              className="form-control"
+              value={settings.siteName || ''} 
+              onChange={e => setSettings({ ...settings, siteName: e.target.value })}
+              placeholder="예: 다온넷크루즈"
+              style={{ fontWeight: '700', fontSize: '14px', padding: '10px 14px' }}
+            />
+            <p style={{ fontSize: '11px', color: '#64748B', marginTop: '4px', margin: '4px 0 0 0' }}>
+              상단 로고 타이틀, 페이지 타이틀, 푸터 회사명 등에 즉시 반영됩니다.
+            </p>
+          </div>
+
+          <div>
+            <label style={{ fontSize: '13px', fontWeight: '700', marginBottom: '6px', display: 'block', color: 'var(--navy-deep)' }}>
+              사이트 영문명 (English Brand Name)
+            </label>
+            <input 
+              type="text" 
+              className="form-control"
+              value={settings.siteNameEn || ''} 
+              onChange={e => setSettings({ ...settings, siteNameEn: e.target.value })}
+              placeholder="예: DAONNET CRUISE"
+              style={{ fontWeight: '700', fontSize: '14px', padding: '10px 14px', letterSpacing: '0.05em' }}
+            />
+            <p style={{ fontSize: '11px', color: '#64748B', marginTop: '4px', margin: '4px 0 0 0' }}>
+              로고 아래 서브 영문 및 해외 라벨 표기에 반영됩니다.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* =========================================================================
+          ⚡ QUICK PLANNER / ESTIMATE BAR SETTINGS CARD
+          ========================================================================= */}
+      <div className="admin-card" style={{ border: '2px solid #D97706', background: '#FFFFFF' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', borderBottom: '1px solid #F1F5F9', paddingBottom: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ padding: '8px', background: 'rgba(217, 119, 6, 0.15)', color: '#D97706', borderRadius: '10px' }}>
+              <Sparkles size={20} />
+            </div>
+            <div>
+              <h3 style={{ fontSize: '16px', fontWeight: '800', color: 'var(--navy-deep)' }}>메인 빠른 맞춤 견적 플래너 섹션 문구 설정</h3>
+              <p style={{ fontSize: '12px', color: 'var(--text-muted)', margin: 0 }}>메인 히어로 바로 아래 노출되는 맞춤 플래너의 제목과 안내 문구를 수정합니다.</p>
+            </div>
+          </div>
+          <span style={{ fontSize: '11px', fontWeight: '800', color: '#D97706', background: '#FEF3C7', padding: '4px 10px', borderRadius: '4px' }}>
+            메인 상단 노출
+          </span>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '16px' }}>
+            <div>
+              <label style={{ fontSize: '13px', fontWeight: '700', marginBottom: '6px', display: 'block' }}>상단 영문 뱃지</label>
+              <input 
+                type="text" 
+                className="form-control"
+                value={quickPlanner.badge} 
+                onChange={e => setQuickPlanner({ ...quickPlanner, badge: e.target.value })}
+                placeholder="SMART CUSTOM PLANNER"
+              />
+            </div>
+            <div>
+              <label style={{ fontSize: '13px', fontWeight: '700', marginBottom: '6px', display: 'block' }}>메인 대제목</label>
+              <input 
+                type="text" 
+                className="form-control"
+                value={quickPlanner.title} 
+                onChange={e => setQuickPlanner({ ...quickPlanner, title: e.target.value })}
+                placeholder="내 여행 계획에 맞춘 빠른 맞춤 견적 신청"
+                style={{ fontWeight: '700' }}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label style={{ fontSize: '13px', fontWeight: '700', marginBottom: '6px', display: 'flex', justifyContent: 'space-between' }}>
+              <span>서브 설명 문구 (PC에서 한 줄로 깔끔하게 노출됩니다)</span>
+              <span style={{ fontSize: '11px', color: '#64748B' }}>권장 40~60자 내외</span>
+            </label>
+            <input 
+              type="text" 
+              className="form-control"
+              value={quickPlanner.subtitle} 
+              onChange={e => setQuickPlanner({ ...quickPlanner, subtitle: e.target.value })}
+              placeholder="희망하시는 여행지와 일정, 결제 방식을 선택하시면 전담 크루즈 플래너가 1:1 최적 여정과 특별 우대 혜택을 빠르게 안내해 드립니다."
+            />
+          </div>
+
+          <div style={{ borderTop: '1px solid #F1F5F9', paddingTop: '16px' }}>
+            <label style={{ fontSize: '13px', fontWeight: '700', marginBottom: '10px', display: 'block' }}>하단 3대 신뢰 혜택 문구</label>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
+              <div>
+                <span style={{ fontSize: '11px', color: '#64748B', display: 'block', marginBottom: '4px' }}>혜택 1</span>
+                <input 
+                  type="text" 
+                  className="form-control"
+                  value={quickPlanner.benefit1} 
+                  onChange={e => setQuickPlanner({ ...quickPlanner, benefit1: e.target.value })}
+                  placeholder="목돈 부담 없는 스마트 후불제 지원"
+                  style={{ fontSize: '12px' }}
+                />
+              </div>
+              <div>
+                <span style={{ fontSize: '11px', color: '#64748B', display: 'block', marginBottom: '4px' }}>혜택 2</span>
+                <input 
+                  type="text" 
+                  className="form-control"
+                  value={quickPlanner.benefit2} 
+                  onChange={e => setQuickPlanner({ ...quickPlanner, benefit2: e.target.value })}
+                  placeholder="1:1 전담 한국인 컨시어지 올케어"
+                  style={{ fontSize: '12px' }}
+                />
+              </div>
+              <div>
+                <span style={{ fontSize: '11px', color: '#64748B', display: 'block', marginBottom: '4px' }}>혜택 3</span>
+                <input 
+                  type="text" 
+                  className="form-control"
+                  value={quickPlanner.benefit3} 
+                  onChange={e => setQuickPlanner({ ...quickPlanner, benefit3: e.target.value })}
+                  placeholder="상담 고객 전원 선상 크레딧 우대 지원"
+                  style={{ fontSize: '12px' }}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <label style={{ fontSize: '13px', fontWeight: '700', marginBottom: '6px', display: 'block' }}>신청 버튼 문구</label>
+            <input 
+              type="text" 
+              className="form-control"
+              value={quickPlanner.buttonText} 
+              onChange={e => setQuickPlanner({ ...quickPlanner, buttonText: e.target.value })}
+              placeholder="맞춤 견적 신청"
+              style={{ maxWidth: '240px' }}
+            />
+          </div>
+
+          {/* =========================================================================
+              4 SELECT DROPDOWN OPTIONS EDITORS
+              ========================================================================= */}
+          <div style={{ borderTop: '2px dashed #E2E8F0', paddingTop: '20px', marginTop: '10px' }}>
+            <div style={{ marginBottom: '16px' }}>
+              <h4 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--navy-deep)', margin: '0 0 4px 0' }}>
+                드롭다운 셀렉트 4종 선택 항목 (옵션 리스트)
+              </h4>
+              <p style={{ fontSize: '12px', color: '#64748B', margin: 0 }}>
+                고객이 메인 화면에서 선택할 수 있는 4가지 셀렉트 박스의 선택지를 자유롭게 추가/수정/삭제합니다.
+              </p>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+              
+              {/* Select 1: Destinations */}
+              <OptionsListEditor 
+                title="1. 희망 여행지 / 노선" 
+                icon={MapPin}
+                items={quickPlanner.destinations || []}
+                onChange={destinations => setQuickPlanner({ ...quickPlanner, destinations })}
+                placeholder="예: 동남아 3개국 (싱가포르·말레이시아·태국)"
+              />
+
+              {/* Select 2: Schedules */}
+              <OptionsListEditor 
+                title="2. 희망 출발 시기" 
+                icon={Calendar}
+                items={quickPlanner.schedules || []}
+                onChange={schedules => setQuickPlanner({ ...quickPlanner, schedules })}
+                placeholder="예: 2026년 상반기 (3월~6월)"
+              />
+
+              {/* Select 3: Members */}
+              <OptionsListEditor 
+                title="3. 여행 인원" 
+                icon={Users}
+                items={quickPlanner.members || []}
+                onChange={members => setQuickPlanner({ ...quickPlanner, members })}
+                placeholder="예: 성인 2인 (부부/커플)"
+              />
+
+              {/* Select 4: Payment Plans */}
+              <OptionsListEditor 
+                title="4. 결제 방식 선택" 
+                icon={CreditCard}
+                items={quickPlanner.paymentPlans || []}
+                onChange={paymentPlans => setQuickPlanner({ ...quickPlanner, paymentPlans })}
+                placeholder="예: 스마트 후불 분할 납부"
+              />
+
+            </div>
+          </div>
+
+        </div>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
@@ -261,11 +606,11 @@ const AdminSettings = () => {
                      {settings.ogImage ? <SafeMedia src={settings.ogImage} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#94a3b8' }}><ImageIcon size={32} /></div>}
                   </div>
                   <div style={{ padding: '16px' }}>
-                     <div style={{ fontWeight: '800', fontSize: '14px', marginBottom: '6px' }}>T&PLE KOREA</div>
+                     <div style={{ fontWeight: '800', fontSize: '14px', marginBottom: '6px' }}>DAONNET CRUISE</div>
                      <div style={{ fontSize: '12px', color: '#64748b', lineHeight: '1.4', height: '3.4em', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
-                        {settings.metaDescription || "T&PLE KOREA 크루즈 - 프리미엄 크루즈 멤버십 서비스"}
+                        {settings.metaDescription || "DAONNET CRUISE 크루즈 - 프리미엄 크루즈 멤버십 서비스"}
                      </div>
-                     <div style={{ fontSize: '10px', color: '#94a3b8', marginTop: '12px' }}>tnple-cruise.com</div>
+                     <div style={{ fontSize: '10px', color: '#94a3b8', marginTop: '12px' }}>daonnet-cruise.com</div>
                   </div>
                </div>
             </div>
@@ -398,7 +743,7 @@ const AdminSettings = () => {
                         className="form-control" 
                         value={footer.copyright}
                         onChange={e => setFooter({ ...footer, copyright: e.target.value })}
-                        placeholder="© 2024 T&PLE KOREA. All rights reserved."
+                        placeholder="© 2024 DAONNET CRUISE. All rights reserved."
                      />
                   </div>
                </div>

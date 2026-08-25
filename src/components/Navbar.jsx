@@ -7,6 +7,7 @@ import BookingModal from './BookingModal';
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
+  const [hideMobileNav, setHideMobileNav] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [bookingModalOpen, setBookingModalOpen] = useState(false);
   const location = useLocation();
@@ -16,10 +17,25 @@ const Navbar = () => {
   const isAdmin = location.pathname.startsWith('/admin');
 
   useEffect(() => {
+    let lastScrollY = window.scrollY;
     const handleScroll = () => {
-      setScrolled(window.scrollY > 30);
+      const currentScrollY = window.scrollY;
+      setScrolled(currentScrollY > 30);
+
+      // Hide mobile nav on scroll down, show on scroll up (mobile only)
+      if (window.innerWidth < 1024) {
+        if (currentScrollY > 70 && currentScrollY > lastScrollY) {
+          setHideMobileNav(true);
+        } else {
+          setHideMobileNav(false);
+        }
+      } else {
+        setHideMobileNav(false);
+      }
+      lastScrollY = currentScrollY;
     };
-    window.addEventListener('scroll', handleScroll);
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -31,7 +47,20 @@ const Navbar = () => {
 
   const scrollToSection = (id) => {
     if (location.pathname !== '/') {
-      navigate(`/#${id}`);
+      navigate('/');
+      setTimeout(() => {
+        const el = document.getElementById(id);
+        if (el) {
+          const offset = 90;
+          const bodyRect = document.body.getBoundingClientRect().top;
+          const elementRect = el.getBoundingClientRect().top;
+          const offsetPosition = elementRect - bodyRect - offset;
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+        }
+      }, 120);
       return;
     }
     const el = document.getElementById(id);
@@ -51,19 +80,29 @@ const Navbar = () => {
   };
 
   const navLinks = [
-    { label: '서비스 소개', to: '/service', type: 'route' },
+    { label: '서비스 소개', to: '#service', type: 'scroll', sectionId: 'service' },
     { label: '추천 패키지', to: '#packages', type: 'scroll', sectionId: 'packages' },
-    { label: '멤버십 혜택', to: '#membership', type: 'scroll', sectionId: 'membership' },
-    { label: '여행후기', to: '#reviews', type: 'scroll', sectionId: 'reviews' },
+    { label: '여행 후기', to: '/reviews', type: 'route' },
+    { label: '이용안내 / FAQ', to: '#faq', type: 'scroll', sectionId: 'faq' },
   ];
 
   const isDark = !scrolled && location.pathname === '/';
 
   return (
     <>
-      <header style={{ position: 'fixed', top: 0, left: 0, width: '100%', zIndex: 1000, transition: 'all 0.3s ease' }}>
+      <header 
+        className={`kensington-header ${hideMobileNav ? 'mobile-hidden' : ''}`}
+        style={{ 
+          position: 'fixed', 
+          top: 0, 
+          left: 0, 
+          width: '100%', 
+          zIndex: 1000,
+          transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+        }}
+      >
         {/* Top Mini Utility Bar */}
-        <div style={{ 
+        <div className="top-mini-bar" style={{ 
           background: isDark ? 'rgba(11, 19, 43, 0.95)' : '#0B132B', 
           backdropFilter: 'blur(8px)',
           borderBottom: '1px solid rgba(255,255,255,0.08)',
@@ -74,14 +113,14 @@ const Navbar = () => {
         }}>
           <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-              <span style={{ color: 'var(--accent-gold)', fontWeight: '700' }}>T&PLE KOREA LUXURY CRUISE</span>
+              <span style={{ color: 'var(--accent-gold)', fontWeight: '700' }}>DAONNET LUXURY CRUISE</span>
               <span className="desktop-sub-header" style={{ opacity: 0.7 }}>싱가포르 · 말레이시아 · 태국 · 지중해 프리미엄 멤버십</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
               <a href="tel:1600-0000" style={{ color: '#fff', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '600' }}>
                 <Phone size={12} color="var(--accent-gold)" /> TEL. 1600-0000
               </a>
-              <Link to="/admin" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none', fontSize: '10px' }}>ADMIN</Link>
+              <Link to="/admin" target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none', fontSize: '10px' }}>ADMIN</Link>
             </div>
           </div>
         </div>
@@ -92,43 +131,42 @@ const Navbar = () => {
           backdropFilter: 'blur(12px)',
           borderBottom: isDark ? '1px solid rgba(255,255,255,0.12)' : '1px solid #e2e8f0',
           boxShadow: isDark ? 'none' : '0 4px 20px rgba(0,0,0,0.06)',
-          transition: 'all 0.3s ease'
+          transition: 'background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease'
         }}>
-          <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '76px' }}>
+          <div className="container nav-container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             
             {/* Left Brand Logo */}
-            <Link to="/" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none' }}>
-              <div style={{ 
-                width: '36px', 
-                height: '36px', 
+            <Link to="/" onClick={() => window.scrollTo({ top: 0, left: 0, behavior: 'instant' })} style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
+              <div className="nav-logo-box" style={{ 
                 border: isDark ? '1px solid var(--accent-gold)' : '1px solid var(--navy-deep)', 
                 display: 'flex', 
                 alignItems: 'center', 
                 justifyContent: 'center',
                 color: isDark ? 'var(--accent-gold)' : 'var(--navy-deep)',
-                background: isDark ? 'rgba(0,0,0,0.2)' : 'transparent'
+                background: isDark ? 'rgba(0,0,0,0.2)' : 'transparent',
+                boxShadow: isDark ? '0 0 15px rgba(212, 175, 55, 0.15)' : 'none'
               }}>
                 <Ship size={20} strokeWidth={1.8} />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <span style={{ 
-                  fontFamily: "'Cinzel', 'Noto Serif KR', serif", 
-                  fontWeight: '800', 
-                  fontSize: '18px', 
-                  letterSpacing: '0.08em', 
-                  color: isDark ? '#ffffff' : 'var(--navy-deep)' 
+                <span className="nav-logo-text" style={{ 
+                  fontFamily: "'Pretendard', 'Noto Sans KR', sans-serif", 
+                  fontWeight: '900', 
+                  letterSpacing: '-0.02em', 
+                  color: isDark ? '#ffffff' : 'var(--navy-deep)',
+                  lineHeight: '1.2'
                 }}>
-                  T&PLE KOREA
+                  {config.siteName || '다온넷크루즈'}
                 </span>
-                <span style={{ 
-                  fontSize: '9px', 
-                  letterSpacing: '0.22em', 
+                <span className="nav-logo-sub" style={{ 
+                  letterSpacing: '0.2em', 
                   textTransform: 'uppercase', 
-                  fontWeight: '600',
+                  fontWeight: '700',
                   color: isDark ? 'var(--accent-gold)' : 'var(--accent-gold-dark)',
-                  marginTop: '-2px'
+                  marginTop: '1px',
+                  fontFamily: "'Cinzel', serif"
                 }}>
-                  CRUISE & MEMBERSHIP
+                  {config.siteNameEn || 'DAONNET CRUISE'}
                 </span>
               </div>
             </Link>
@@ -270,7 +308,7 @@ const Navbar = () => {
       <BookingModal 
         isOpen={bookingModalOpen} 
         onClose={() => setBookingModalOpen(false)} 
-        productTitle="티앤플 코리아 프리미엄 크루즈 멤버십"
+        productTitle="다온넷크루즈 프리미엄 크루즈 멤버십"
         accentColor="var(--accent-gold-dark)"
       />
 

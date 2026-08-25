@@ -9,6 +9,7 @@
  */
 
 import type * as deploy from "../deploy.js";
+import type * as faqs from "../faqs.js";
 import type * as files from "../files.js";
 import type * as http from "../http.js";
 import type * as init from "../init.js";
@@ -26,6 +27,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   deploy: typeof deploy;
+  faqs: typeof faqs;
   files: typeof files;
   http: typeof http;
   init: typeof init;

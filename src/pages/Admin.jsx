@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
-import { Routes, Route, Link, useLocation } from 'react-router-dom';
+import { Routes, Route, Link, useLocation, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { LayoutDashboard, Image, Package, MessageSquare, Home as HomeIcon, LogOut, ChevronRight, Settings, Bell, Search, PhoneCall, ShieldCheck, Ship } from 'lucide-react';
-import AdminHomeEditor from './AdminHomeEditor';
+import { Ship, Lock, Package, MessageSquare, PhoneCall, ShieldCheck, LogOut, Search, Bell, HelpCircle } from 'lucide-react';
 import AdminProductManager from './AdminProductManager';
 import AdminReviewManager from './AdminReviewManager';
-import AdminProductDetailEditor from './AdminProductDetailEditor';
 import AdminReservationManager from './AdminReservationManager';
 import AdminSettings from './AdminSettings';
+import AdminFaqManager from './AdminFaqManager';
 import { useConfig } from '../context/ConfigContext';
 
 const Admin = () => {
   const { config } = useConfig();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return localStorage.getItem('tnple_admin_auth') === 'true' || sessionStorage.getItem('tnple_admin_auth') === 'true';
+  });
   const [passwordInput, setPasswordInput] = useState("");
   const location = useLocation();
 
@@ -20,9 +21,19 @@ const Admin = () => {
     e.preventDefault();
     const correctPassword = config?.adminPassword || "1111";
     if (passwordInput === correctPassword) {
+      localStorage.setItem('tnple_admin_auth', 'true');
+      sessionStorage.setItem('tnple_admin_auth', 'true');
       setIsAuthenticated(true);
     } else {
       alert("비밀번호가 올바르지 않습니다.");
+    }
+  };
+
+  const handleLogout = () => {
+    if (window.confirm("관리자 콘솔에서 로그아웃하시겠습니까?")) {
+      localStorage.removeItem('tnple_admin_auth');
+      sessionStorage.removeItem('tnple_admin_auth');
+      setIsAuthenticated(false);
     }
   };
 
@@ -65,7 +76,7 @@ const Admin = () => {
             <Ship size={40} strokeWidth={1.5} />
           </div>
 
-          <h2 style={{ fontSize: '24px', fontWeight: '900', color: '#fff', marginBottom: '12px', letterSpacing: '0.05em' }}>티앤플 코리아 관리자</h2>
+          <h2 style={{ fontSize: '24px', fontWeight: '900', color: '#fff', marginBottom: '12px', letterSpacing: '0.05em' }}>다온넷크루즈 관리자</h2>
           <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '13px', marginBottom: '40px', letterSpacing: '0.05em' }}>접속을 위해 관리자 인증번호를 입력하세요.</p>
           
           <div style={{ position: 'relative', marginBottom: '24px' }}>
@@ -120,10 +131,9 @@ const Admin = () => {
   }
 
   const navItems = [
-    { path: '/admin', name: '홈페이지 편집', icon: <HomeIcon size={20} /> },
-    { path: '/admin/products', name: '상품 리스트', icon: <Package size={20} /> },
-    { path: '/admin/product-detail', name: '상품 상세 브랜딩', icon: <Settings size={20} /> },
-    { path: '/admin/reviews', name: '리뷰 관리', icon: <MessageSquare size={20} /> },
+    { path: '/admin/products', name: '크루즈 패키지 관리', icon: <Package size={20} /> },
+    { path: '/admin/reviews', name: '여행 후기 관리', icon: <MessageSquare size={20} /> },
+    { path: '/admin/faqs', name: '자주 묻는 질문(FAQ) 관리', icon: <HelpCircle size={20} /> },
     { path: '/admin/reservations', name: '상담 신청 내역', icon: <PhoneCall size={20} /> },
     { path: '/admin/settings', name: '웹사이트 설정', icon: <ShieldCheck size={20} /> },
   ];
@@ -139,7 +149,7 @@ const Admin = () => {
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', lineHeight: '1.2' }}>
               <span style={{ fontWeight: '900', fontSize: '18px', color: 'var(--text-main)', letterSpacing: '-0.02em' }}>
-                티앤플 코리아
+                다온넷크루즈
               </span>
               <span style={{ fontWeight: '600', fontSize: '9px', letterSpacing: '0.1em', opacity: 0.6, color: 'var(--text-main)' }}>
                 ADMIN CONSOLE
@@ -162,11 +172,15 @@ const Admin = () => {
           ))}
         </nav>
 
-        <div style={{ marginTop: 'auto', borderTop: '1px solid var(--border-light)', paddingTop: '24px' }}>
-          <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', color: 'var(--text-muted)', textDecoration: 'none', transition: '0.3s' }} onMouseEnter={e => e.currentTarget.style.color='var(--primary)'} onMouseLeave={e => e.currentTarget.style.color='var(--text-muted)'}>
-            <LogOut size={18} />
+        <div style={{ marginTop: 'auto', borderTop: '1px solid var(--border-light)', paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+          <Link to="/" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 16px', color: 'var(--text-muted)', textDecoration: 'none', transition: '0.2s', borderRadius: '8px' }} onMouseEnter={e => { e.currentTarget.style.color='var(--primary)'; e.currentTarget.style.background='var(--bg-sub)'; }} onMouseLeave={e => { e.currentTarget.style.color='var(--text-muted)'; e.currentTarget.style.background='none'; }}>
+            <Ship size={16} />
             <span style={{ fontSize: '14px', fontWeight: '600' }}>프론트 사이트</span>
           </Link>
+          <button onClick={handleLogout} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 16px', color: '#EF4444', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', width: '100%', fontSize: '14px', fontWeight: '600', transition: '0.2s', borderRadius: '8px' }} onMouseEnter={e => e.currentTarget.style.background='rgba(239, 68, 68, 0.08)'} onMouseLeave={e => e.currentTarget.style.background='none'}>
+            <LogOut size={16} />
+            <span>로그아웃</span>
+          </button>
         </div>
       </aside>
 
@@ -202,10 +216,10 @@ const Admin = () => {
 
         <div style={{ padding: '40px' }}>
           <Routes>
-            <Route path="/" element={<AdminHomeEditor />} />
+            <Route path="/" element={<Navigate to="/admin/products" replace />} />
             <Route path="/products" element={<AdminProductManager />} />
-            <Route path="/product-detail" element={<AdminProductDetailEditor />} />
             <Route path="/reviews" element={<AdminReviewManager />} />
+            <Route path="/faqs" element={<AdminFaqManager />} />
             <Route path="/reservations" element={<AdminReservationManager />} />
             <Route path="/settings" element={<AdminSettings />} />
           </Routes>

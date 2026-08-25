@@ -11,19 +11,29 @@ const MediaInput = ({ label, value, onChange, placeholder = "URL 입력 또는 �
     const file = e.target.files[0];
     if (!file) return;
     setLoading(true);
-    const storageId = await uploadFile(file);
-    onChange(`storage:${storageId}`);
-    setLoading(false);
+    try {
+      const storageId = await uploadFile(file);
+      onChange(`storage:${storageId}`);
+    } catch (err) {
+      alert('파일 업로드 중 오류가 발생했습니다: ' + (err.message || err));
+    } finally {
+      setLoading(false);
+    }
   };
   return (
     <div className="form-group">
       {label && <label style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>{label}</label>}
-      <div style={{ display: 'flex', gap: '10px' }}>
+      <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+        {value && (
+          <div style={{ width: '40px', height: '40px', flexShrink: 0, borderRadius: '4px', overflow: 'hidden', border: '1px solid #CBD5E1' }}>
+            <SafeMedia src={value} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          </div>
+        )}
         <div style={{ position: 'relative', flex: 1 }}>
            <input className="form-control" value={value || ""} onChange={e => onChange(e.target.value)} placeholder={placeholder} />
            {value && value.startsWith('storage:') && <div style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', fontSize: '10px', color: 'var(--primary)', fontWeight: '700' }}>UPLOADED</div>}
         </div>
-        <button className="luxury-btn outline" style={{ padding: '0 12px' }} onClick={() => fileRef.current.click()} disabled={loading}>
+        <button type="button" className="luxury-btn outline" style={{ padding: '0 14px', height: '42px' }} onClick={() => fileRef.current.click()} disabled={loading}>
           {loading ? <Loader2 className="animate-spin" size={16} /> : <Upload size={16} />}
         </button>
         <input type="file" hidden ref={fileRef} onChange={onFileChange} />
@@ -99,7 +109,7 @@ const AdminProductManager = () => {
         "전 일정 선상 뷔페 & 정찬",
         "기항지 한국인 가이드 투어"
       ],
-      badge: product.badge || "티앤플 추천",
+      badge: product.badge || "다온넷 추천",
       ship: product.ship || "로얄캐리비안 스펙트럼호",
       bookingPeriod: product.bookingPeriod || "예약기간 : 상시 접수 중",
       travelPeriod: product.travelPeriod || "출발일정 : 시즌 연중 운항",
@@ -130,7 +140,7 @@ const AdminProductManager = () => {
         "전 일정 선상 뷔페 & 정찬",
         "기항지 한국인 가이드 투어"
       ],
-      badge: "티앤플 베스트셀러",
+      badge: "다온넷 베스트셀러",
       ship: "로얄캐리비안 스펙트럼 오브 더 시즈",
       bookingPeriod: "예약기간 : 상시 접수 중",
       travelPeriod: "출발일정 : 매주 화/금 출발 (연중 운항)",
@@ -144,16 +154,68 @@ const AdminProductManager = () => {
     setIsEditing(true);
   };
 
+  const [saving, setSaving] = useState(false);
+
   const handleSave = async () => {
-    if (currentProduct.id) {
-      const { id, _id, _creationTime, ...data } = currentProduct;
-      await updateProduct(id, data);
-    } else {
-      await addProduct(currentProduct);
+    if (!currentProduct) return;
+    if (!currentProduct.title || !currentProduct.title.trim()) {
+      alert('상품명을 입력해 주세요.');
+      return;
     }
-    await triggerVercelDeploy();
-    setIsEditing(false);
-    setCurrentProduct(null);
+
+    setSaving(true);
+    try {
+      // Clean and sanitize thumbnails
+      const cleanThumbnails = (currentProduct.thumbnails || []).filter(t => t && typeof t === 'string' && t.trim() !== '');
+      // Clean and sanitize features
+      const cleanFeatures = (currentProduct.features || []).filter(f => f && typeof f === 'string' && f.trim() !== '');
+      // Clean and sanitize schedule
+      const cleanSchedule = (currentProduct.schedule || []).map((s, idx) => ({
+        day: typeof s.day === 'number' ? s.day : (Number(s.day) || idx + 1),
+        title: String(s.title || ''),
+        content: String(s.content || '')
+      }));
+
+      const productPayload = {
+        title: String(currentProduct.title).trim(),
+        description: String(currentProduct.description || '').trim(),
+        price: Number(currentProduct.price) || 0,
+        originalPrice: currentProduct.originalPrice ? Number(currentProduct.originalPrice) : undefined,
+        thumbnails: cleanThumbnails,
+        paymentType: currentProduct.paymentType || 'full',
+        downPayment: currentProduct.downPayment ? Number(currentProduct.downPayment) : undefined,
+        installments: currentProduct.installments ? Number(currentProduct.installments) : undefined,
+        scheduleImage: currentProduct.scheduleImage && currentProduct.scheduleImage.trim() !== '' ? currentProduct.scheduleImage.trim() : undefined,
+        schedule: cleanSchedule,
+        features: cleanFeatures,
+        badge: currentProduct.badge || '다온넷 추천',
+        ship: currentProduct.ship || '',
+        bookingPeriod: currentProduct.bookingPeriod || '',
+        travelPeriod: currentProduct.travelPeriod || '',
+        typography: currentProduct.typography || {}
+      };
+
+      if (currentProduct.id) {
+        await updateProduct(currentProduct.id, productPayload);
+      } else {
+        await addProduct(productPayload);
+      }
+
+      try {
+        await triggerVercelDeploy();
+      } catch (e) {
+        console.warn("Deploy trigger ignored:", e);
+      }
+
+      setIsEditing(false);
+      setCurrentProduct(null);
+      alert('상품 패키지 정보가 성공적으로 반영되었습니다.');
+    } catch (err) {
+      console.error("Product save failed:", err);
+      alert('데이터 반영 중 오류가 발생했습니다: ' + (err.message || err));
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleDelete = async (id) => {
@@ -267,8 +329,8 @@ const AdminProductManager = () => {
 
                   {/* Kensington Sharp Card Metadata Fields */}
                   <div>
-                      <label className="admin-label">카드 상단 뱃지 (예: 티앤플 베스트셀러, 스마트 후불제)</label>
-                      <input className="form-control" placeholder="티앤플 추천" value={currentProduct.badge || ""} onChange={e => setCurrentProduct({...currentProduct, badge: e.target.value})} />
+                      <label className="admin-label">카드 상단 뱃지 (예: 다온넷 베스트셀러, 스마트 후불제)</label>
+                      <input className="form-control" placeholder="다온넷 추천" value={currentProduct.badge || ""} onChange={e => setCurrentProduct({...currentProduct, badge: e.target.value})} />
                   </div>
 
                   <div>
@@ -416,8 +478,17 @@ const AdminProductManager = () => {
               )}
 
               <div style={{ marginTop: '40px', display: 'flex', gap: '16px', justifyContent: 'flex-end' }}>
-                <button className="luxury-btn outline" onClick={() => setIsEditing(false)}>취소</button>
-                <button className="luxury-btn" onClick={handleSave}>데이터 반영</button>
+                <button type="button" className="luxury-btn outline" onClick={() => setIsEditing(false)} disabled={saving}>취소</button>
+                <button 
+                  type="button" 
+                  className="luxury-btn" 
+                  onClick={handleSave} 
+                  disabled={saving}
+                  style={{ opacity: saving ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: '8px' }}
+                >
+                  {saving && <Loader2 className="animate-spin" size={16} />}
+                  {saving ? '데이터 반영 중...' : '데이터 반영'}
+                </button>
               </div>
             </motion.div>
           </div>

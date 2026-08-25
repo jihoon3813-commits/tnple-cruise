@@ -88,11 +88,13 @@ body.theme-ocean {
   letter-spacing: -0.02em;
 }
 
-.container {
+html {
+  overflow-x: clip;
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
   width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 var(--container-padding);
+  margin: 0;
+  padding: 0;
 }
 
 body {
@@ -102,16 +104,19 @@ body {
   line-height: 1.6;
   overflow-x: clip;
   width: 100%;
+  margin: 0;
+  padding: 0;
   position: relative;
-  transition: var(--transition-smooth);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   word-break: keep-all;
 }
 
-html {
-  overflow-x: clip;
+.container {
   width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 var(--container-padding);
 }
 
 h1, h2, h3, h4, h5, h6 { 
@@ -504,12 +509,8 @@ button, input, select, textarea {
 }
 
 .kensington-hero-col {
-  flex: 1 !important;
-  transition: all 0.3s ease;
-}
-
-.kensington-hero-col:hover .hero-col-img {
-  transform: scale(1.05);
+  flex: 1 1 25% !important;
+  width: 25% !important;
 }
 
 .hero-mobile-slider {
@@ -559,22 +560,36 @@ button, input, select, textarea {
   }
 }
 
-/* Packages 4-Column Grid */
+/* Packages 3-Column Grid (Supports 1-col & 2-col Toggle) */
 .kensington-packages-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-@media (max-width: 1199px) {
+.kensington-packages-grid.force-1col {
+  grid-template-columns: 1fr !important;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+@media (max-width: 1023px) {
   .kensington-packages-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
   }
 }
 
 @media (max-width: 767px) {
   .kensington-packages-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px !important;
+  }
+  .kensington-packages-grid.force-1col {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
   }
 }
 
@@ -587,12 +602,19 @@ button, input, select, textarea {
 
 @media (max-width: 1023px) {
   .kensington-signature-grid {
-    grid-template-columns: 1fr;
-    gap: 20px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
   }
 }
 
-/* Reviews 3-Column Grid */
+@media (max-width: 640px) {
+  .kensington-signature-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+}
+
+/* Reviews 3-Column Grid (Mobile Horizontal Carousel/Slider) */
 .kensington-reviews-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -601,14 +623,534 @@ button, input, select, textarea {
 
 @media (max-width: 1023px) {
   .kensington-reviews-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 20px;
   }
+}
+
+@media (max-width: 767px) {
+  .kensington-reviews-grid {
+    display: flex !important;
+    overflow-x: auto !important;
+    scroll-snap-type: x mandatory !important;
+    -webkit-overflow-scrolling: touch !important;
+    gap: 14px !important;
+    padding-bottom: 16px !important;
+    padding-right: 20px !important;
+  }
+  .kensington-reviews-grid > div {
+    flex: 0 0 85% !important;
+    min-width: 270px !important;
+    scroll-snap-align: start !important;
+  }
+}
+
+/* Mobile Line Break & Typography Utilities */
+.mobile-break {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .mobile-break {
+    display: inline !important;
+  }
+  .kensington-quick-title {
+    font-size: 20px !important;
+    line-height: 1.35 !important;
+  }
+  .kensington-theme-title {
+    font-size: 22px !important;
+    line-height: 1.2 !important;
+  }
+  .kensington-theme-sub {
+    font-size: 20px !important;
+  }
+  .kensington-theme-tag {
+    font-size: 10px !important;
+  }
+  .kensington-packages-title {
+    font-size: 18px !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+  .kensington-pillar-title {
+    font-size: 22px !important;
+    line-height: 1.25 !important;
+  }
+  .kensington-process-title {
+    font-size: 22px !important;
+    line-height: 1.25 !important;
+  }
+  .kensington-faq-title {
+    font-size: 22px !important;
+    line-height: 1.25 !important;
+  }
+  .kensington-cta-title {
+    font-size: 20px !important;
+    line-height: 1.3 !important;
+  }
+  .kensington-process-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+  .kensington-process-card {
+    padding: 20px 14px !important;
+  }
+  .kensington-process-step {
+    font-size: 20px !important;
+    margin-bottom: 8px !important;
+  }
+
+  /* 2-Col Card Mobile Optimizations (No horizontal overflow/cutoff) */
+  .kensington-packages-grid .sharp-card {
+    min-width: 0 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+  .kensington-packages-grid .kensington-package-card-content {
+    padding: 10px 8px !important;
+  }
+  .kensington-packages-grid .kensington-package-card-title {
+    font-size: 12.5px !important;
+    line-height: 1.3 !important;
+    height: 32px !important;
+    margin-bottom: 4px !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+  }
+  .kensington-packages-grid .kensington-package-card-sub {
+    display: none !important;
+  }
+  .kensington-packages-grid .kensington-package-card-info {
+    padding: 4px 0 !important;
+    margin-bottom: 4px !important;
+    font-size: 9.5px !important;
+    gap: 2px !important;
+    line-height: 1.3 !important;
+  }
+  .kensington-packages-grid .kensington-package-card-features {
+    display: none !important;
+  }
+  .kensington-packages-grid .kensington-package-card-pricing {
+    padding: 6px 8px !important;
+    margin-bottom: 6px !important;
+  }
+  .kensington-packages-grid .kensington-package-card-price {
+    font-size: 13px !important;
+    font-weight: 900 !important;
+  }
+  .kensington-packages-grid .package-btn-grid {
+    gap: 4px !important;
+  }
+  .kensington-packages-grid .package-btn-grid a,
+  .kensington-packages-grid .package-btn-grid button {
+    padding: 6px 0 !important;
+    font-size: 10px !important;
+  }
+
+  /* Force 1-Col when selected */
+  .kensington-packages-grid.force-1col .kensington-package-card-content {
+    padding: 20px 16px !important;
+  }
+  .kensington-packages-grid.force-1col .kensington-package-card-title {
+    font-size: 16px !important;
+    height: auto !important;
+    margin-bottom: 6px !important;
+    -webkit-line-clamp: unset !important;
+  }
+  .kensington-packages-grid.force-1col .kensington-package-card-sub {
+    display: -webkit-box !important;
+  }
+  .kensington-packages-grid.force-1col .kensington-package-card-features {
+    display: flex !important;
+  }
+  .kensington-packages-grid.force-1col .kensington-package-card-info {
+    font-size: 11px !important;
+    padding: 8px 0 !important;
+  }
+  .kensington-packages-grid.force-1col .kensington-package-card-price {
+    font-size: 15px !important;
+  }
+  .kensington-packages-grid.force-1col .package-btn-grid a,
+  .kensington-packages-grid.force-1col .package-btn-grid button {
+    padding: 10px 0 !important;
+    font-size: 12px !important;
+  }
+}
+
+/* Kensington 4-Column Hero Hover Cross-Fade */
+.kensington-hero-col {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.kensington-hero-col .hero-col-base-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.96);
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 0.5s ease, transform 0.7s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.kensington-hero-col .hero-col-hover-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.98);
+  opacity: 0;
+  transform: scale(1.04);
+  transition: opacity 0.5s ease, transform 0.7s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.kensington-hero-col:hover .hero-col-base-img {
+  opacity: 0;
+  transform: scale(1.04);
+}
+
+.kensington-hero-col:hover .hero-col-hover-img {
+  opacity: 1;
+  transform: scale(1);
 }
 
 @media (max-width: 768px) {
   .container {
     padding: 0 16px !important;
+  }
+}
+
+/* Kensington Header Responsive & Mobile Hide */
+.kensington-home-wrap {
+  padding-top: 108px;
+}
+.kensington-hero-section {
+  height: calc(100vh - 108px);
+  min-height: 620px;
+}
+
+@media (max-width: 1023px) {
+  .kensington-header.mobile-hidden {
+    transform: translateY(-100%) !important;
+  }
+  .kensington-home-wrap {
+    padding-top: 75px !important;
+  }
+  .kensington-hero-section {
+    height: calc(100vh - 75px) !important;
+    height: calc(100dvh - 75px) !important;
+    min-height: 480px !important;
+  }
+  .hero-mobile-slider {
+    display: flex !important;
+    height: 100% !important;
+    width: 100% !important;
+  }
+  .hero-mobile-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    grid-template-rows: repeat(2, 1fr) !important;
+    height: 100% !important;
+    width: 100% !important;
+  }
+  .hero-mobile-cell {
+    height: 100% !important;
+    min-height: 0 !important;
+    position: relative !important;
+    overflow: hidden !important;
+  }
+  .hero-mobile-cell img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+  }
+  .nav-container {
+    height: 52px !important;
+  }
+  .top-mini-bar {
+    padding: 3px 0 !important;
+    font-size: 10px !important;
+  }
+  .top-mini-bar .desktop-sub-header {
+    display: none !important;
+  }
+  .nav-logo-box {
+    width: 30px !important;
+    height: 30px !important;
+  }
+  .nav-logo-text {
+    font-size: 15px !important;
+  }
+  .nav-logo-sub {
+    font-size: 8px !important;
+  }
+  .mobile-menu-btn {
+    padding: 6px !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .nav-container {
+    height: 76px !important;
+  }
+  .nav-logo-box {
+    width: 38px !important;
+    height: 38px !important;
+  }
+  .nav-logo-text {
+    font-size: 18px !important;
+  }
+  .nav-logo-sub {
+    font-size: 9px !important;
+  }
+  .kensington-header {
+    transform: none !important;
+  }
+}
+
+/* Editorial Theme Banners (Mobile 1:3 Slim Ratio) */
+.kensington-editorial-banner {
+  position: relative;
+  overflow: hidden;
+  min-height: 380px;
+  border: 1px solid #E2E8F0;
+}
+
+@media (max-width: 767px) {
+  .kensington-editorial-banner {
+    min-height: 155px !important;
+    height: 155px !important;
+    box-sizing: border-box !important;
+    border-radius: 4px !important;
+  }
+  .kensington-editorial-banner .banner-overlay {
+    padding: 14px 16px !important;
+    background: linear-gradient(to top, rgba(11, 19, 43, 0.95) 0%, rgba(11, 19, 43, 0.45) 65%, transparent 100%) !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  .kensington-editorial-banner span {
+    font-size: 9.5px !important;
+    letter-spacing: 0.08em !important;
+    color: var(--accent-gold) !important;
+  }
+  .kensington-editorial-banner h3 {
+    font-size: 16px !important;
+    margin-top: 3px !important;
+    margin-bottom: 4px !important;
+    line-height: 1.25 !important;
+    word-break: keep-all !important;
+    overflow-wrap: break-word !important;
+  }
+  .kensington-editorial-banner p {
+    font-size: 11.5px !important;
+    line-height: 1.4 !important;
+    color: #E2E8F0 !important;
+    margin: 0 !important;
+    word-break: keep-all !important;
+    overflow-wrap: break-word !important;
+    white-space: normal !important;
+    display: block !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+}
+
+/* 4 Core Service Pillars (Mobile 2-Column Grid) */
+.kensington-pillars-container {
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+}
+
+.kensington-pillar-card {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 40px;
+  align-items: center;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.03);
+}
+
+.kensington-pillar-card.pillar-even .kensington-pillar-img-block {
+  order: 2;
+}
+.kensington-pillar-card.pillar-even .kensington-pillar-text-block {
+  order: 1;
+}
+
+.kensington-pillar-img-block {
+  height: 380px;
+}
+
+.kensington-pillar-text-block {
+  padding: 36px 44px;
+}
+
+@media (max-width: 1023px) {
+  .kensington-pillar-card {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .kensington-pillar-card.pillar-even .kensington-pillar-img-block {
+    order: 1;
+  }
+  .kensington-pillar-card.pillar-even .kensington-pillar-text-block {
+    order: 2;
+  }
+  .kensington-pillar-img-block {
+    height: 280px;
+  }
+  .kensington-pillar-text-block {
+    padding: 24px 20px;
+  }
+}
+
+@media (max-width: 767px) {
+  .kensington-pillars-container {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 0 !important;
+  }
+  .kensington-pillar-card {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.03) !important;
+    border: 1px solid #E2E8F0 !important;
+    background: #FFFFFF !important;
+    margin: 0 !important;
+  }
+  .kensington-pillar-card.pillar-even .kensington-pillar-img-block {
+    order: 1 !important;
+  }
+  .kensington-pillar-card.pillar-even .kensington-pillar-text-block {
+    order: 2 !important;
+  }
+  .kensington-pillar-card .kensington-pillar-img-block {
+    height: 100px !important;
+    min-height: 100px !important;
+    width: 100% !important;
+    position: relative !important;
+    order: 1 !important;
+    overflow: hidden !important;
+  }
+  .kensington-pillar-card .kensington-pillar-img-block img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
+  }
+  .kensington-pillar-card .kensington-pillar-badge {
+    position: absolute !important;
+    top: 6px !important;
+    left: 6px !important;
+    padding: 2px 6px !important;
+    font-size: 10px !important;
+    font-weight: 900 !important;
+    background: var(--navy-deep) !important;
+    color: var(--accent-gold) !important;
+    line-height: 1 !important;
+  }
+  .kensington-pillar-card .kensington-pillar-text-block {
+    padding: 12px 10px 14px !important;
+    order: 2 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+    flex: 1 !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    text-align: left !important;
+  }
+  .kensington-pillar-card .kensington-pillar-tag {
+    font-size: 9.5px !important;
+    font-weight: 800 !important;
+    color: var(--accent-gold-dark) !important;
+    letter-spacing: 0.04em !important;
+    margin-bottom: 3px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+  }
+  .kensington-pillar-card .kensington-pillar-card-title {
+    font-size: 13px !important;
+    font-weight: 800 !important;
+    color: var(--navy-deep) !important;
+    line-height: 1.35 !important;
+    margin: 0 0 6px 0 !important;
+    height: 36px !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+    word-break: keep-all !important;
+    overflow-wrap: break-word !important;
+    text-align: left !important;
+  }
+  .kensington-pillar-card .kensington-pillar-card-sub {
+    display: none !important;
+  }
+  .kensington-pillar-card .kensington-pillar-card-desc {
+    display: none !important;
+  }
+  .kensington-pillar-card .kensington-pillar-card-points {
+    border-top: 1px solid #F1F5F9 !important;
+    padding-top: 8px !important;
+    margin-top: 2px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .kensington-pillar-card .kensington-pillar-point-item {
+    font-size: 10.5px !important;
+    color: #334155 !important;
+    font-weight: 600 !important;
+    line-height: 1.35 !important;
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 5px !important;
+    word-break: keep-all !important;
+    overflow-wrap: break-word !important;
+  }
+  .kensington-pillar-card .kensington-pillar-point-item svg {
+    margin-top: 2px !important;
+    flex-shrink: 0 !important;
+  }
+}
+
+/* Booking Modal Form Typography & Inputs */
+.booking-modal-inputs-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+@media (max-width: 640px) {
+  .booking-modal-inputs-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
   }
 }
 

@@ -45,7 +45,7 @@ export const updateTheme = mutation({
       await ctx.db.insert("siteConfig", { 
         theme: args.theme,
         hero: {
-          title: "T&PLE KOREA",
+          title: "DAONNET CRUISE",
           subtitle: "프리미엄 크루즈 멤버십",
           bgType: "image",
           bgUrl: "https://images.unsplash.com/photo-1548574505-5e239809ee19",
@@ -75,7 +75,7 @@ export const updateProductBranding = mutation({
       await ctx.db.insert("siteConfig", { 
         productListBranding: args,
         hero: {
-          title: "T&PLE KOREA",
+          title: "DAONNET CRUISE",
           subtitle: "프리미엄 크루즈 멤버십",
           bgType: "image",
           bgUrl: "https://images.unsplash.com/photo-1548574505-5e239809ee19",
@@ -107,7 +107,7 @@ export const updateReviewBranding = mutation({
       await ctx.db.insert("siteConfig", { 
         reviewSectionBranding: args,
         hero: {
-          title: "T&PLE KOREA",
+          title: "DAONNET CRUISE",
           subtitle: "프리미엄 크루즈 멤버십",
           bgType: "image",
           bgUrl: "https://images.unsplash.com/photo-1548574505-5e239809ee19",
@@ -140,7 +140,7 @@ export const updateProductDetailBranding = mutation({
       await ctx.db.insert("siteConfig", { 
         productDetailBranding: args,
         hero: {
-          title: "T&PLE KOREA",
+          title: "DAONNET CRUISE",
           subtitle: "프리미엄 크루즈 멤버십",
           bgType: "image",
           bgUrl: "https://images.unsplash.com/photo-1548574505-5e239809ee19",
@@ -161,7 +161,7 @@ export const updatePrivacyPolicy = mutation({
       await ctx.db.insert("siteConfig", { 
         privacyPolicy: args.content,
         hero: {
-          title: "T&PLE KOREA",
+          title: "DAONNET CRUISE",
           subtitle: "프리미엄 크루즈 멤버십",
           bgType: "image",
           bgUrl: "https://images.unsplash.com/photo-1548574505-5e239809ee19",
@@ -174,6 +174,8 @@ export const updatePrivacyPolicy = mutation({
 
 export const updateGlobalSettings = mutation({
   args: {
+    siteName: v.optional(v.string()),
+    siteNameEn: v.optional(v.string()),
     logo: v.optional(v.string()),
     favicon: v.optional(v.string()),
     ogImage: v.optional(v.string()),
@@ -188,7 +190,7 @@ export const updateGlobalSettings = mutation({
       await ctx.db.insert("siteConfig", { 
         ...args,
         hero: {
-          title: "T&PLE KOREA",
+          title: "DAONNET CRUISE",
           subtitle: "프리미엄 크루즈 멤버십",
           bgType: "image",
           bgUrl: "https://images.unsplash.com/photo-1548574505-5e239809ee19",
@@ -205,6 +207,39 @@ export const updateAdminPassword = mutation({
     const existing = await ctx.db.query("siteConfig").first();
     if (existing) {
       await ctx.db.patch(existing._id, { adminPassword: args.password });
+    }
+  },
+});
+
+export const updateQuickPlanner = mutation({
+  args: {
+    badge: v.optional(v.string()),
+    title: v.optional(v.string()),
+    subtitle: v.optional(v.string()),
+    benefit1: v.optional(v.string()),
+    benefit2: v.optional(v.string()),
+    benefit3: v.optional(v.string()),
+    buttonText: v.optional(v.string()),
+    destinations: v.optional(v.array(v.string())),
+    schedules: v.optional(v.array(v.string())),
+    members: v.optional(v.array(v.string())),
+    paymentPlans: v.optional(v.array(v.string())),
+  },
+  handler: async (ctx, args) => {
+    const existing = await ctx.db.query("siteConfig").first();
+    if (existing) {
+      await ctx.db.patch(existing._id, { quickPlanner: args });
+    } else {
+      await ctx.db.insert("siteConfig", {
+        quickPlanner: args,
+        hero: {
+          title: "DAONNET CRUISE",
+          subtitle: "프리미엄 크루즈 멤버십",
+          bgType: "image",
+          bgUrl: "https://images.unsplash.com/photo-1548574505-5e239809ee19",
+          textPosition: "center"
+        }
+      });
     }
   },
 });
@@ -238,7 +273,7 @@ export const updateFooter = mutation({
       await ctx.db.insert("siteConfig", {
         footer: args,
         hero: {
-          title: "T&PLE KOREA",
+          title: "DAONNET CRUISE",
           subtitle: "프리미엄 크루즈 멤버십",
           bgType: "image",
           bgUrl: "https://images.unsplash.com/photo-1548574505-5e239809ee19",

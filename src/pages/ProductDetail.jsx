@@ -266,7 +266,7 @@ const ProductDetail = () => {
               >
                 <SafeMedia src={thumbnails[0]} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', borderRadius: '0px' }} />
                 <div style={{ position: 'absolute', top: '16px', left: '16px', background: 'var(--navy-deep)', color: 'var(--accent-gold)', padding: '4px 12px', fontSize: '11px', fontWeight: '800', letterSpacing: '0.05em' }}>
-                  {product.badge || '티앤플 추천'}
+                  {product.badge || '다온넷 추천'}
                 </div>
               </div>
 
@@ -495,7 +495,7 @@ const ProductDetail = () => {
                     </div>
 
                     <p style={{ fontSize: '11px', color: '#64748B', marginTop: '12px', lineHeight: '1.6' }}>
-                      * 여행을 먼저 다녀오신 후 편안하게 정산하시는 티앤플 안심 후불 멤버십입니다.
+                      * 여행을 먼저 다녀오신 후 편안하게 정산하시는 다온넷 안심 후불 멤버십입니다.
                     </p>
                   </div>
                 ) : (
@@ -543,10 +543,36 @@ const ProductDetail = () => {
                 전문 상담 신청하기
               </button>
               
-              <p style={{ textAlign: 'center', fontSize: '11px', color: '#94A3B8', marginTop: '12px' }}>
+              <p style={{ textAlign: 'center', fontSize: '11px', color: '#94A3B8', marginTop: '12px', marginBottom: 0 }}>
                 * 전담 크루즈 컨시어지 상담 후 최종 예약이 확정됩니다.
               </p>
             </div>
+
+            {/* Back to Product List Button Below Price Box */}
+            <div style={{ marginTop: '14px' }}>
+              <Link 
+                to="/#packages" 
+                className="sharp-btn-outline" 
+                style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center',
+                  gap: '8px', 
+                  width: '100%',
+                  padding: '14px 20px', 
+                  fontSize: '13px', 
+                  fontWeight: '700', 
+                  color: 'var(--navy-deep)', 
+                  borderColor: '#CBD5E1', 
+                  background: '#F8FAFC',
+                  textDecoration: 'none',
+                  borderRadius: '0px'
+                }}
+              >
+                <ArrowLeft size={16} /> 추천 상품 목록으로 가기
+              </Link>
+            </div>
+
           </aside>
 
         </div>

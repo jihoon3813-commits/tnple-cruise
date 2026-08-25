@@ -76,7 +76,7 @@ const LoadingScreen = () => {
             fontFamily: "'Noto Sans KR', sans-serif"
           }}
         >
-          티앤플 코리아
+          다온넷크루즈
         </motion.h1>
         
         <motion.div

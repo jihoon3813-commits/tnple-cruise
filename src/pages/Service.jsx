@@ -15,7 +15,7 @@ const SERVICE_PILLARS = [
     subtitle: '시즌 한정 파격 할인과 선상 크레딧 등 독점 우대 혜택',
     icon: Gift,
     image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    description: '티앤플 코리아 멤버십 고객님만을 위해 최고급 크루즈 여정을 가장 합리적인 특가로 제안합니다. 조기 예약 할인, 다인원 동반 할인, 특별 선상 크레딧 바우처 지원 등 풍성한 할인 혜택을 통해 프리미엄 크루즈를 최고의 가치로 경험하실 수 있습니다.',
+    description: '다온넷크루즈 멤버십 고객님만을 위해 최고급 크루즈 여정을 가장 합리적인 특가로 제안합니다. 조기 예약 할인, 다인원 동반 할인, 특별 선상 크레딧 바우처 지원 등 풍성한 할인 혜택을 통해 프리미엄 크루즈를 최고의 가치로 경험하실 수 있습니다.',
     points: [
       '조기 예약(얼리버드) 및 시즌 한정 파격 특별 할인 제공',
       '가족/단체 동반 예약 시 추가 할인 프로모션 적용',
@@ -54,7 +54,7 @@ const SERVICE_PILLARS = [
     subtitle: '선상 크레딧, 객실 업그레이드, 면세점 바우처 등 VIP 혜택',
     icon: ShieldCheck,
     image: 'https://images.unsplash.com/photo-1548574505-5e239809ee19?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    description: '티앤플 코리아 멤버십 회원만을 위한 차별화된 혜택입니다. 시즌별 객실 무료 업그레이드 기회는 물론, 선상에서 현금처럼 사용 가능한 선상 크레딧(OBC) 바우처 지원, 직계 가족 동반 할인 등 품격 높은 특전을 상시 제공합니다.',
+    description: '다온넷크루즈 멤버십 회원만을 위한 차별화된 혜택입니다. 시즌별 객실 무료 업그레이드 기회는 물론, 선상에서 현금처럼 사용 가능한 선상 크레딧(OBC) 바우처 지원, 직계 가족 동반 할인 등 품격 높은 특전을 상시 제공합니다.',
     points: [
       '예약 시 발코니 오션뷰 객실 우선 배정 프로모션',
       '객실당 최대 50만원 상당의 선상 크레딧(OBC) 바우처 제공',
@@ -72,12 +72,12 @@ const STEPS = [
 
 const FAQS = [
   {
-    q: '티앤플 코리아 멤버십 특별 할인은 어떻게 적용되나요?',
+    q: '다온넷크루즈 멤버십 특별 할인은 어떻게 적용되나요?',
     a: '상담 신청 시 희망하시는 일정과 인원에 따라 얼리버드 조기 예약 할인, 동반 인원 추가 할인, 시즌 프로모션 및 선상 크레딧 바우처가 복합 적용되어 최저가 우대 혜택을 받으실 수 있습니다.'
   },
   {
     q: '해외여행이 처음인데 언어나 여권 준비가 걱정됩니다.',
-    a: '티앤플 코리아는 여권 유효기간 확인, 전자입국신고서(SG Arrival Card 등) 작성부터 기항지 투어까지 1:1로 꼼꼼히 대행 및 안내해 드립니다. 전 일정 한국인 전문 인솔자가 동행하므로 언어 걱정 없이 안심하고 즐기실 수 있습니다.'
+    a: '다온넷크루즈는 여권 유효기간 확인, 전자입국신고서(SG Arrival Card 등) 작성부터 기항지 투어까지 1:1로 꼼꼼히 대행 및 안내해 드립니다. 전 일정 한국인 전문 인솔자가 동행하므로 언어 걱정 없이 안심하고 즐기실 수 있습니다.'
   },
   {
     q: '크루즈 선상에서 추가로 지출되는 비용이 있나요?',
@@ -92,7 +92,7 @@ const FAQS = [
 const Service = () => {
   const [openFaq, setOpenFaq] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [consultTitle, setConsultTitle] = useState('티앤플 코리아 서비스 상담');
+  const [consultTitle, setConsultTitle] = useState('다온넷크루즈 서비스 상담');
 
   return (
     <div style={{ background: '#FFFFFF', color: '#1A202C', minHeight: '100vh', paddingTop: '110px' }}>
@@ -101,19 +101,19 @@ const Service = () => {
       <section style={{ position: 'relative', height: '480px', background: 'var(--navy-deep)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
         <img 
           src="https://images.unsplash.com/photo-1548574505-5e239809ee19?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" 
-          alt="티앤플 코리아 서비스 소개" 
+          alt="다온넷크루즈 서비스 소개" 
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.35)' }}
         />
         <div style={{ position: 'relative', zIndex: 10, textAlign: 'center', padding: '0 20px', maxWidth: '900px' }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', border: '1px solid var(--accent-gold)', padding: '4px 14px', marginBottom: '16px', background: 'rgba(0,0,0,0.3)' }}>
             <Anchor size={14} color="var(--accent-gold)" />
             <span style={{ color: 'var(--accent-gold)', fontSize: '11px', fontWeight: '800', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
-              T&PLE KOREA MEMBERSHIP SERVICE
+              DAONNET CRUISE MEMBERSHIP SERVICE
             </span>
           </div>
           <h1 style={{ fontFamily: "'Pretendard', sans-serif", fontSize: '42px', fontWeight: '800', color: '#FFFFFF', lineHeight: '1.3', marginBottom: '16px', letterSpacing: '-0.02em' }}>
             크루즈 여행의 품격을 바꾸는<br />
-            <span style={{ color: 'var(--accent-gold)', fontStyle: 'italic' }}>티앤플 코리아 멤버십</span>
+            <span style={{ color: 'var(--accent-gold)', fontStyle: 'italic' }}>다온넷크루즈 멤버십</span>
           </h1>
           <p style={{ color: '#E2E8F0', fontSize: '16px', lineHeight: '1.7', opacity: 0.9 }}>
             단순한 여행 상품 판매를 넘어, 출국부터 귀국까지<br />
@@ -131,7 +131,7 @@ const Service = () => {
               FOUR EXCLUSIVE VALUES
             </span>
             <h2 style={{ fontFamily: "'Pretendard', sans-serif", fontSize: '34px', fontWeight: '800', color: 'var(--navy-deep)', marginTop: '8px' }}>
-              티앤플 코리아의 4대 핵심 서비스
+              다온넷크루즈의 4대 핵심 서비스
             </h2>
             <div style={{ width: '60px', height: '2px', background: 'var(--accent-gold)', margin: '16px auto 0' }} />
           </div>
@@ -220,7 +220,7 @@ const Service = () => {
               HOW IT WORKS
             </span>
             <h2 style={{ fontFamily: "'Pretendard', sans-serif", fontSize: '32px', fontWeight: '800', color: 'var(--navy-deep)', marginTop: '8px' }}>
-              티앤플 멤버십 이용 프로세스
+              다온넷 멤버십 이용 프로세스
             </h2>
             <p style={{ color: '#64748B', fontSize: '14px', marginTop: '8px' }}>상담 신청부터 여행, 귀국 후 분할 정산까지 안전하고 편리한 4단계</p>
           </div>
@@ -311,7 +311,7 @@ const Service = () => {
           </div>
 
           <button 
-            onClick={() => { setConsultTitle("티앤플 코리아 멤버십 서비스 맞춤 상담"); setIsModalOpen(true); }}
+            onClick={() => { setConsultTitle("다온넷크루즈 멤버십 서비스 맞춤 상담"); setIsModalOpen(true); }}
             className="sharp-btn-gold" 
             style={{ padding: '16px 36px', fontSize: '14px' }}
           >

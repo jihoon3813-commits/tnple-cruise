@@ -19,8 +19,8 @@ http.route({
     }
 
     return new Response(JSON.stringify({
-      title: "T&PLE KOREA",
-      description: config?.metaDescription || "T&PLE KOREA 크루즈 - 프리미엄 크루즈 멤버십 서비스",
+      title: "DAONNET CRUISE",
+      description: config?.metaDescription || "DAONNET CRUISE 크루즈 - 프리미엄 크루즈 멤버십 서비스",
       ogImage: ogImageUrl
     }), {
       status: 200,

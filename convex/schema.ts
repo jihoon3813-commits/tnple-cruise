@@ -73,7 +73,22 @@ export default defineSchema({
       buttonColor: v.optional(v.string()),
       buttonTextColor: v.optional(v.string()),
     })),
+    quickPlanner: v.optional(v.object({
+      badge: v.optional(v.string()),
+      title: v.optional(v.string()),
+      subtitle: v.optional(v.string()),
+      benefit1: v.optional(v.string()),
+      benefit2: v.optional(v.string()),
+      benefit3: v.optional(v.string()),
+      buttonText: v.optional(v.string()),
+      destinations: v.optional(v.array(v.string())),
+      schedules: v.optional(v.array(v.string())),
+      members: v.optional(v.array(v.string())),
+      paymentPlans: v.optional(v.array(v.string())),
+    })),
     privacyPolicy: v.optional(v.string()),
+    siteName: v.optional(v.string()),
+    siteNameEn: v.optional(v.string()),
     logo: v.optional(v.string()),
     favicon: v.optional(v.string()),
     ogImage: v.optional(v.string()),
@@ -200,12 +215,16 @@ export default defineSchema({
     travelPeriod: v.optional(v.string()),
   }),
   reviews: defineTable({
-    user: v.optional(v.string()), // Legacy field blocking schema push
+    user: v.optional(v.string()), // Legacy field
     author: v.optional(v.string()),
+    title: v.optional(v.string()),
     productTitle: v.optional(v.string()),
     rating: v.optional(v.number()),
     content: v.string(),
+    date: v.optional(v.string()),
     images: v.optional(v.array(v.string())),
+    showOnHome: v.optional(v.boolean()),
+    order: v.optional(v.number()),
   }),
   reservations: defineTable({
     name: v.string(),
@@ -213,5 +232,12 @@ export default defineSchema({
     productTitle: v.string(),
     notes: v.optional(v.string()),
     status: v.string(), // "pending", "contacted", "completed"
+  }),
+  faqs: defineTable({
+    question: v.string(),
+    answer: v.string(),
+    category: v.optional(v.string()),
+    order: v.optional(v.number()),
+    isActive: v.optional(v.boolean()),
   }),
 });

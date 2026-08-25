@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import Home from './pages/Home';
 import Service from './pages/Service';
 import Admin from './pages/Admin';
@@ -40,8 +40,10 @@ function App() {
 
       // SNS Open Graph Tags
       if (config) {
+        const titleText = `${config.siteName || '다온넷크루즈'} - 프리미엄 크루즈 멤버십`;
+        document.title = titleText;
         const ogTags = [
-          { property: 'og:title', content: 'T&PLE KOREA - 프리미엄 크루즈' },
+          { property: 'og:title', content: titleText },
           { property: 'og:description', content: config.metaDescription },
           { property: 'og:image', content: config.ogImageUrl },
           { property: 'og:url', content: window.location.href },
@@ -89,7 +91,7 @@ function App() {
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/service" element={<Service />} />
+        <Route path="/service" element={<Navigate to="/" replace />} />
         <Route path="/admin/*" element={<Admin />} />
         <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/reviews" element={<Reviews />} />
