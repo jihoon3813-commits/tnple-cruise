@@ -10,7 +10,7 @@ http.route({
   handler: httpAction(async (ctx, request) => {
     const config = await ctx.runQuery(api.siteConfig.get);
     
-    // Resolve logo/ogImage URLs if they are storage IDs
+    // Resolve ogImage URL if it is a storage ID
     let ogImageUrl = config?.ogImage || "";
     if (ogImageUrl.startsWith("storage:")) {
       const storageId = ogImageUrl.split("storage:")[1];
@@ -18,15 +18,22 @@ http.route({
       ogImageUrl = url || "";
     }
 
+    // Use admin-configured ogTitle, fallback to siteName, then default
+    const title = config?.ogTitle || config?.siteName || "다온넷크루즈 - 프리미엄 크루즈 여행";
+    const description = config?.metaDescription || "세상의 끝까지 만끽하는 진정한 럭셔리, 다온넷크루즈 멤버십.";
+    const siteName = config?.siteName || "다온넷크루즈";
+
     return new Response(JSON.stringify({
-      title: "DAONNET CRUISE",
-      description: config?.metaDescription || "DAONNET CRUISE 크루즈 - 프리미엄 크루즈 멤버십 서비스",
-      ogImage: ogImageUrl
+      title,
+      description,
+      siteName,
+      ogImage: ogImageUrl,
     }), {
       status: 200,
       headers: { 
         "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*" 
+        "Access-Control-Allow-Origin": "*",
+        "Cache-Control": "public, max-age=60",
       },
     });
   }),
