@@ -967,7 +967,7 @@ button, input, select, textarea {
   }
 }
 
-/* 4 Core Service Pillars (Mobile 2-Column Grid) */
+/* 4 Core Service Pillars */
 .kensington-pillars-container {
   display: flex;
   flex-direction: column;
@@ -978,10 +978,11 @@ button, input, select, textarea {
   display: grid;
   grid-template-columns: 1fr 1.1fr;
   gap: 40px;
-  align-items: center;
+  align-items: stretch;
   background: #FFFFFF;
   border: 1px solid #E2E8F0;
   box-shadow: 0 8px 24px rgba(0,0,0,0.03);
+  overflow: hidden;
 }
 
 .kensington-pillar-card.pillar-even .kensington-pillar-img-block {
@@ -992,11 +993,38 @@ button, input, select, textarea {
 }
 
 .kensington-pillar-img-block {
+  position: relative;
+  width: 100%;
   height: 380px;
+  min-height: 380px;
+  overflow: hidden;
+}
+
+.kensington-pillar-img-block img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.kensington-pillar-badge {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 2;
+  padding: 4px 10px;
+  font-size: 13px;
+  font-weight: 900;
+  background: var(--navy-deep);
+  color: var(--accent-gold);
+  line-height: 1;
 }
 
 .kensington-pillar-text-block {
   padding: 36px 44px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 @media (max-width: 1023px) {
@@ -1012,6 +1040,7 @@ button, input, select, textarea {
   }
   .kensington-pillar-img-block {
     height: 280px;
+    min-height: 280px;
   }
   .kensington-pillar-text-block {
     padding: 24px 20px;
