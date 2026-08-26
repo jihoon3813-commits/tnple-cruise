@@ -847,7 +847,7 @@ const Home = () => {
 
           {/* Sharp Grid with 1col/2col Mode */}
           <div className={`kensington-packages-grid ${packageViewMode === '1col' ? 'force-1col' : 'force-2col'}`}>
-            {displayPackages.map((pkg) => (
+            {displayPackages.map((pkg, pIdx) => (
               <div 
                 key={pkg.id} 
                 className="sharp-card"
@@ -865,6 +865,7 @@ const Home = () => {
                     <SafeMedia 
                       src={pkg.image} 
                       alt={pkg.title} 
+                      priority={pIdx < 4}
                       style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s ease' }} 
                     />
                     <div style={{ position: 'absolute', top: '12px', left: '12px', zIndex: 10, background: 'var(--navy-deep)', color: 'var(--accent-gold)', fontSize: '9.5px', fontWeight: '800', padding: '3px 8px', letterSpacing: '0.04em' }}>

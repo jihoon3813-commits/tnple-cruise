@@ -264,7 +264,7 @@ const ProductDetail = () => {
                 onClick={() => openGallery(0)} 
                 style={{ overflow: 'hidden', cursor: 'pointer', height: '100%', position: 'relative' }}
               >
-                <SafeMedia src={thumbnails[0]} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', borderRadius: '0px' }} />
+                <SafeMedia priority={true} src={thumbnails[0]} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', borderRadius: '0px' }} />
                 <div style={{ position: 'absolute', top: '16px', left: '16px', background: 'var(--navy-deep)', color: 'var(--accent-gold)', padding: '4px 12px', fontSize: '11px', fontWeight: '800', letterSpacing: '0.05em' }}>
                   {product.badge || '다온넷 추천'}
                 </div>
@@ -277,7 +277,7 @@ const ProductDetail = () => {
                     onClick={() => openGallery(1)} 
                     style={{ overflow: 'hidden', cursor: 'pointer', height: '100%' }}
                   >
-                    <SafeMedia src={thumbnails[1] || thumbnails[0]} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', filter: 'brightness(0.85)', borderRadius: '0px' }} />
+                    <SafeMedia priority={true} src={thumbnails[1] || thumbnails[0]} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', filter: 'brightness(0.85)', borderRadius: '0px' }} />
                   </div>
                   <div 
                     onClick={() => openGallery(2)} 

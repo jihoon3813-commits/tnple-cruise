@@ -1,17 +1,47 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 
+async function resolveStorageUrl(ctx: any, str: string | undefined): Promise<string | undefined> {
+  if (!str) return str;
+  if (typeof str === 'string' && str.startsWith("storage:")) {
+    const storageId = str.replace("storage:", "");
+    try {
+      const url = await ctx.storage.getUrl(storageId);
+      return url || str;
+    } catch {
+      return str;
+    }
+  }
+  return str;
+}
+
+async function resolveProductUrls(ctx: any, product: any) {
+  if (!product) return product;
+  const thumbnails = await Promise.all(
+    (product.thumbnails || []).map((t: string) => resolveStorageUrl(ctx, t))
+  );
+  const scheduleImage = await resolveStorageUrl(ctx, product.scheduleImage);
+  return {
+    ...product,
+    rawThumbnails: product.thumbnails, // Keep original for editing
+    thumbnails: thumbnails.filter(Boolean),
+    scheduleImage,
+  };
+}
+
 export const list = query({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db.query("products").collect();
+    const products = await ctx.db.query("products").collect();
+    return await Promise.all(products.map((p) => resolveProductUrls(ctx, p)));
   },
 });
 
 export const getById = query({
   args: { id: v.id("products") },
   handler: async (ctx, args) => {
-    return await ctx.db.get(args.id);
+    const product = await ctx.db.get(args.id);
+    return await resolveProductUrls(ctx, product);
   },
 });
 

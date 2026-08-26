@@ -1,24 +1,70 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import { motion, AnimatePresence } from 'framer-motion';
 
 /**
- * SafeMedia: Optimized media component for Oligo Cruise
- * - Automatically resolves storage IDs
- * - Implemented Lazy Loading (Intersection Observer)
- * - Optimized Video Preloading (preload="metadata")
- * - Smooth Fade-in Reveal for better UX
+ * Optimize common image URLs (like Unsplash) for high-speed thumbnail delivery
  */
-const SafeMedia = ({ src, className, style, type = 'image', alt = "", brightness = 1, shading = 0 }) => {
-  const isStorageId = src?.startsWith('storage:');
+const getOptimizedSrc = (url, isPriority) => {
+  if (!url || typeof url !== 'string') return url;
+  
+  // Optimize Unsplash images by adjusting width & quality
+  if (url.includes('images.unsplash.com')) {
+    try {
+      const u = new URL(url);
+      u.searchParams.set('auto', 'format');
+      u.searchParams.set('fit', 'crop');
+      // Set reasonable dimensions for cards/thumbnails to drastically cut payload size
+      if (!u.searchParams.get('w') || parseInt(u.searchParams.get('w') || '0', 10) > 800) {
+        u.searchParams.set('w', isPriority ? '800' : '600');
+      }
+      u.searchParams.set('q', '75');
+      return u.toString();
+    } catch {
+      return url;
+    }
+  }
+  return url;
+};
+
+/**
+ * SafeMedia: High-Performance Optimized media component
+ * - Fast server/client storage resolution with fallback
+ * - Instant eager rendering for priority items
+ * - Broad prefetch margin (600px) for non-priority items
+ * - Async decoding & native fast loading
+ */
+const SafeMedia = ({ 
+  src, 
+  className, 
+  style, 
+  type = 'image', 
+  alt = "", 
+  brightness = 1, 
+  shading = 0,
+  priority = false 
+}) => {
+  const isStorageId = typeof src === 'string' && src.startsWith('storage:');
   const storageId = isStorageId ? src.split('storage:')[1] : null;
   const resolvedUrl = useQuery(api.files.getUrl, storageId ? { storageId } : "skip");
+  
   const [loaded, setLoaded] = useState(false);
-  const [inView, setInView] = useState(false);
-  const ref = useRef();
+  const [inView, setInView] = useState(priority);
+  const ref = useRef(null);
+  const imgRef = useRef(null);
 
+  // Lazy loading observer with generous 600px rootMargin so images start loading well before entering view
   useEffect(() => {
+    if (priority) {
+      setInView(true);
+      return;
+    }
+
+    if (typeof IntersectionObserver === 'undefined') {
+      setInView(true);
+      return;
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -26,19 +72,27 @@ const SafeMedia = ({ src, className, style, type = 'image', alt = "", brightness
           observer.disconnect();
         }
       },
-      { rootMargin: '200px' } 
+      { rootMargin: '600px' } 
     );
 
     if (ref.current) {
-        observer.observe(ref.current);
+      observer.observe(ref.current);
     }
     return () => observer.disconnect();
-  }, []);
+  }, [priority]);
 
-  const finalSrc = isStorageId ? resolvedUrl : src;
+  const rawSrc = isStorageId ? resolvedUrl : src;
+  const finalSrc = getOptimizedSrc(rawSrc, priority);
+
+  // Check if image is already cached in browser on mount/update
+  useEffect(() => {
+    if (imgRef.current && imgRef.current.complete && imgRef.current.naturalWidth > 0) {
+      setLoaded(true);
+    }
+  }, [finalSrc, inView]);
 
   const innerObjectFit = style?.objectFit || 'cover';
-  const innerFilter = style?.filter || `brightness(${brightness})`;
+  const innerFilter = style?.filter || (brightness < 1 ? `brightness(${brightness})` : undefined);
   
   const wrapperStyle = {
     position: style?.position || 'relative',
@@ -55,19 +109,19 @@ const SafeMedia = ({ src, className, style, type = 'image', alt = "", brightness
     ...(style?.inset !== undefined ? { inset: style.inset } : {}),
     ...(style?.top !== undefined ? { top: style.top } : {}),
     ...(style?.left !== undefined ? { left: style.left } : {}),
-    background: '#1a1a1a' // Dark background for media loading
+    background: '#E2E8F0' // Clean light placeholder
   };
 
-  if (!inView) {
-      return <div ref={ref} style={{ ...wrapperStyle, background: '#f1f5f9' }} className={className} />;
-  }
-
   if (isStorageId && !resolvedUrl) {
-    return <div ref={ref} style={{ ...wrapperStyle, background: '#f1f5f9' }} className={className} />;
+    return <div ref={ref} style={wrapperStyle} className={className} />;
   }
 
-  const isVideo = type === 'video' || (finalSrc && (finalSrc.endsWith('.mp4') || finalSrc.endsWith('.webm') || finalSrc.endsWith('.mov')));
-  const isYouTube = finalSrc?.includes('youtube.com') || finalSrc?.includes('youtu.be');
+  if (!inView) {
+    return <div ref={ref} style={wrapperStyle} className={className} />;
+  }
+
+  const isVideo = type === 'video' || (typeof finalSrc === 'string' && (finalSrc.endsWith('.mp4') || finalSrc.endsWith('.webm') || finalSrc.endsWith('.mov')));
+  const isYouTube = typeof finalSrc === 'string' && (finalSrc.includes('youtube.com') || finalSrc.includes('youtu.be'));
   
   const getYouTubeId = (url) => {
     if (!url) return null;
@@ -78,16 +132,6 @@ const SafeMedia = ({ src, className, style, type = 'image', alt = "", brightness
 
   return (
     <div ref={ref} style={wrapperStyle} className={className}>
-      <AnimatePresence>
-        {!loaded && (
-           <motion.div 
-             initial={{ opacity: 1 }}
-             exit={{ opacity: 0 }}
-             style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: '#f1f5f9', zIndex: 10 }}
-           />
-        )}
-      </AnimatePresence>
-
       {isYouTube ? (
         <iframe
           src={`https://www.youtube.com/embed/${getYouTubeId(finalSrc)}?autoplay=1&mute=1&controls=0&loop=1&playlist=${getYouTubeId(finalSrc)}&modestbranding=1&rel=0&iv_load_policy=3&showinfo=0&disablekb=1&playlist=${getYouTubeId(finalSrc)}`}
@@ -101,7 +145,7 @@ const SafeMedia = ({ src, className, style, type = 'image', alt = "", brightness
             pointerEvents: 'none',
             filter: innerFilter,
             opacity: loaded ? 1 : 0,
-            transition: 'opacity 0.6s ease',
+            transition: 'opacity 0.3s ease',
             zIndex: 1
           }}
           frameBorder="0"
@@ -115,30 +159,50 @@ const SafeMedia = ({ src, className, style, type = 'image', alt = "", brightness
           loop 
           muted 
           playsInline 
-          style={{ width: '100%', height: '100%', objectFit: innerObjectFit, display: 'block', filter: innerFilter, opacity: loaded ? 1 : 0, transition: 'opacity 0.6s ease', zIndex: 1 }} 
+          preload="metadata"
+          style={{ 
+            width: '100%', 
+            height: '100%', 
+            objectFit: innerObjectFit, 
+            display: 'block', 
+            filter: innerFilter, 
+            opacity: loaded ? 1 : 0, 
+            transition: 'opacity 0.3s ease', 
+            zIndex: 1 
+          }} 
           onLoadedData={() => setLoaded(true)}
         />
       ) : (
-        <motion.img 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: loaded ? 1 : 0 }}
+        <img 
+          ref={imgRef}
           src={finalSrc} 
           alt={alt} 
-          loading="lazy"
+          loading={priority ? "eager" : "lazy"}
+          decoding="async"
+          fetchPriority={priority ? "high" : "auto"}
           onLoad={() => setLoaded(true)}
-          style={{ width: '100%', height: '100%', objectFit: innerObjectFit, display: 'block', filter: innerFilter, zIndex: 1 }} 
+          style={{ 
+            width: '100%', 
+            height: '100%', 
+            objectFit: innerObjectFit, 
+            display: 'block', 
+            filter: innerFilter, 
+            opacity: loaded ? 1 : 0,
+            transition: 'opacity 0.25s ease-out, transform 0.5s ease',
+            zIndex: 1 
+          }} 
         />
       )}
 
       {/* Overlays rendered AFTER media for visual priority */}
       {brightness < 1 && (
-        <div style={{ position: 'absolute', inset: 0, background: 'black', opacity: 1 - brightness, zIndex: 2, pointerEvents: 'none' }}></div>
+        <div style={{ position: 'absolute', inset: 0, background: 'black', opacity: 1 - brightness, zIndex: 2, pointerEvents: 'none' }} />
       )}
       {shading > 0 && (
-        <div style={{ position: 'absolute', inset: 0, background: 'black', opacity: shading, zIndex: 3, pointerEvents: 'none' }}></div>
+        <div style={{ position: 'absolute', inset: 0, background: 'black', opacity: shading, zIndex: 3, pointerEvents: 'none' }} />
       )}
     </div>
   );
 };
 
-export default SafeMedia;
+export default React.memo(SafeMedia);
