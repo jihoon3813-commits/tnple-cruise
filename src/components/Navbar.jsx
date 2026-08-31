@@ -120,7 +120,6 @@ const Navbar = () => {
               <a href="tel:1600-0000" style={{ color: '#fff', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '600' }}>
                 <Phone size={12} color="var(--accent-gold)" /> TEL. 1600-0000
               </a>
-              <Link to="/admin" target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none', fontSize: '10px' }}>ADMIN</Link>
             </div>
           </div>
         </div>
@@ -137,38 +136,57 @@ const Navbar = () => {
             
             {/* Left Brand Logo */}
             <Link to="/" onClick={() => window.scrollTo({ top: 0, left: 0, behavior: 'instant' })} style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
-              <div className="nav-logo-box" style={{ 
-                border: isDark ? '1px solid var(--accent-gold)' : '1px solid var(--navy-deep)', 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center',
-                color: isDark ? 'var(--accent-gold)' : 'var(--navy-deep)',
-                background: isDark ? 'rgba(0,0,0,0.2)' : 'transparent',
-                boxShadow: isDark ? '0 0 15px rgba(212, 175, 55, 0.15)' : 'none'
-              }}>
-                <Ship size={20} strokeWidth={1.8} />
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <span className="nav-logo-text" style={{ 
-                  fontFamily: "'Pretendard', 'Noto Sans KR', sans-serif", 
-                  fontWeight: '900', 
-                  letterSpacing: '-0.02em', 
-                  color: isDark ? '#ffffff' : 'var(--navy-deep)',
-                  lineHeight: '1.2'
-                }}>
-                  {config.siteName || '다온넷크루즈'}
-                </span>
-                <span className="nav-logo-sub" style={{ 
-                  letterSpacing: '0.2em', 
-                  textTransform: 'uppercase', 
-                  fontWeight: '700',
-                  color: isDark ? 'var(--accent-gold)' : 'var(--accent-gold-dark)',
-                  marginTop: '1px',
-                  fontFamily: "'Cinzel', serif"
-                }}>
-                  {config.siteNameEn || 'DAONNET CRUISE'}
-                </span>
-              </div>
+              {config.logoUrl ? (
+                <img 
+                  src={config.logoUrl} 
+                  alt={config.siteName || '다온넷크루즈'} 
+                  className="nav-logo-img"
+                  style={{
+                    height: '34px',
+                    width: 'auto',
+                    maxWidth: '175px',
+                    objectFit: 'contain',
+                    display: 'block',
+                    filter: isDark ? 'brightness(0) invert(1)' : 'none',
+                    transition: 'filter 0.2s ease'
+                  }}
+                />
+              ) : (
+                <>
+                  <div className="nav-logo-box" style={{ 
+                    border: isDark ? '1px solid var(--accent-gold)' : '1px solid var(--navy-deep)', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    color: isDark ? 'var(--accent-gold)' : 'var(--navy-deep)',
+                    background: isDark ? 'rgba(0,0,0,0.2)' : 'transparent',
+                    boxShadow: isDark ? '0 0 15px rgba(212, 175, 55, 0.15)' : 'none'
+                  }}>
+                    <Ship size={20} strokeWidth={1.8} />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <span className="nav-logo-text" style={{ 
+                      fontFamily: "'Pretendard', 'Noto Sans KR', sans-serif", 
+                      fontWeight: '900', 
+                      letterSpacing: '-0.02em', 
+                      color: isDark ? '#ffffff' : 'var(--navy-deep)',
+                      lineHeight: '1.2'
+                    }}>
+                      {config.siteName || '다온넷크루즈'}
+                    </span>
+                    <span className="nav-logo-sub" style={{ 
+                      letterSpacing: '0.2em', 
+                      textTransform: 'uppercase', 
+                      fontWeight: '700',
+                      color: isDark ? 'var(--accent-gold)' : 'var(--accent-gold-dark)',
+                      marginTop: '1px',
+                      fontFamily: "'Cinzel', serif"
+                    }}>
+                      {config.siteNameEn || 'DAONNET CRUISE'}
+                    </span>
+                  </div>
+                </>
+              )}
             </Link>
 
             {/* Desktop Navigation Links */}

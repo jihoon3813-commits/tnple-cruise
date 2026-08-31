@@ -144,17 +144,27 @@ const Admin = () => {
       <aside className="admin-nav" style={{ boxShadow: 'inset -1px 0 0 var(--border-light)' }}>
         <div style={{ padding: '0 10px 40px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '6px' }}>
-            <div style={{ width: '38px', height: '38px', background: 'rgba(37, 99, 235, 0.05)', border: '1px solid rgba(37, 99, 235, 0.1)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)' }}>
-               <Ship size={20} strokeWidth={2.5} />
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: '1.2' }}>
-              <span style={{ fontWeight: '900', fontSize: '18px', color: 'var(--text-main)', letterSpacing: '-0.02em' }}>
-                다온넷크루즈
-              </span>
-              <span style={{ fontWeight: '600', fontSize: '9px', letterSpacing: '0.1em', opacity: 0.6, color: 'var(--text-main)' }}>
-                ADMIN CONSOLE
-              </span>
-            </div>
+            {config?.logoUrl ? (
+              <img 
+                src={config.logoUrl} 
+                alt="Logo" 
+                style={{ height: '28px', width: 'auto', maxWidth: '145px', objectFit: 'contain', display: 'block' }} 
+              />
+            ) : (
+              <>
+                <div style={{ width: '38px', height: '38px', background: 'rgba(37, 99, 235, 0.05)', border: '1px solid rgba(37, 99, 235, 0.1)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)' }}>
+                   <Ship size={20} strokeWidth={2.5} />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', lineHeight: '1.2' }}>
+                  <span style={{ fontWeight: '900', fontSize: '18px', color: 'var(--text-main)', letterSpacing: '-0.02em' }}>
+                    다온넷크루즈
+                  </span>
+                  <span style={{ fontWeight: '600', fontSize: '9px', letterSpacing: '0.1em', opacity: 0.6, color: 'var(--text-main)' }}>
+                    ADMIN CONSOLE
+                  </span>
+                </div>
+              </>
+            )}
           </div>
         </div>
         

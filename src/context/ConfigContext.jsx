@@ -6,6 +6,8 @@ const ConfigContext = createContext();
 
 export const useConfig = () => useContext(ConfigContext);
 
+const DEFAULT_LOGO = "https://res.cloudinary.com/lyjyvy54/image/upload/v1788136353/logo_%EB%8B%A4%EC%98%A8%EB%84%B7_%ED%81%AC%EB%A3%A8%EC%A6%88_%EA%B0%80%EB%A1%9C_dgdmxz.png";
+
 const DEFAULT_CONFIG = {
   hero: {
     title: "DAONNET CRUISE 크루즈\n멤버십",
@@ -108,7 +110,7 @@ export const ConfigProvider = ({ children }) => {
       privacyPolicy: heroData?.privacyPolicy || "개인정보 수집 및 이용에 동의합니다.",
       siteName: heroData?.siteName || "다온넷크루즈",
       siteNameEn: heroData?.siteNameEn || "DAONNET CRUISE",
-      logo: heroData?.logo,
+      logo: heroData?.logo || DEFAULT_LOGO,
       favicon: heroData?.favicon,
       ogTitle: heroData?.ogTitle || (heroData?.siteName ? `${heroData.siteName} - 프리미엄 크루즈 여행` : "다온넷크루즈 - 프리미엄 크루즈 여행"),
       ogImage: heroData?.ogImage || "https://images.unsplash.com/photo-1548574505-5e239809ee19?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200",
@@ -118,10 +120,10 @@ export const ConfigProvider = ({ children }) => {
           { id: '1', label: '이용약관', url: '/terms' },
           { id: '2', label: '개인정보처리방침', url: '/privacy' }
         ],
-        companyInfo: "회사명: 다온넷크루즈\n대표자: 홍길동 | 주소: 서울특별시 강남구 테헤란로 123\n사업자등록번호: 123-45-67890 | TEL: 02-1234-5678",
-        copyright: "© 2024 DAONNET CRUISE. All rights reserved.",
+        companyInfo: "회사명 : (주)다온넷\n대표 : 변현진 | 사업자 : 217-81-52314\n주소 : 경기도 의정부시 배꽃길 63, 3동 7층\nE-mail : daon3711@naver.com\n개인정보 관리 책임자 : 변현진(daon3711@naver.com)",
+        copyright: "© 2026 (주)다온넷. All rights reserved.",
         externalLinks: [],
-        logoDescription: "프리미엄 럭셔리 크루즈 멤버십 서비스. 품격 있는 해상 여행의 정수를 DAONNET CRUISE와 함께 경험해 보세요.",
+        logoDescription: "프리미엄 럭셔리 크루즈 멤버십 서비스. 품격 있는 해상 여행의 정수를 (주)다온넷과 함께 경험해 보세요.",
         csCenter: {
           phone: "1600-0000",
           hours: "운영시간: 평일 09:00 ~ 18:00",
@@ -132,7 +134,7 @@ export const ConfigProvider = ({ children }) => {
 
     return {
        ...raw,
-       logoUrl: raw.logo?.startsWith('storage:') ? resolvedLogo : raw.logo,
+       logoUrl: (raw.logo?.startsWith('storage:') ? resolvedLogo : raw.logo) || DEFAULT_LOGO,
        faviconUrl: raw.favicon?.startsWith('storage:') ? resolvedFavicon : raw.favicon,
        ogImageUrl: raw.ogImage?.startsWith('storage:') ? resolvedOgImage : raw.ogImage,
     };

@@ -830,6 +830,27 @@ button, input, select, textarea {
   }
 }
 
+/* Kensington Footer Responsive Grid */
+.kensington-footer-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1.2fr;
+  gap: 48px;
+}
+
+@media (max-width: 1023px) {
+  .kensington-footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 36px;
+  }
+}
+
+@media (max-width: 767px) {
+  .kensington-footer-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}
+
 /* Kensington Header Responsive & Mobile Hide */
 .kensington-home-wrap {
   padding-top: 108px;
@@ -885,14 +906,18 @@ button, input, select, textarea {
     display: none !important;
   }
   .nav-logo-box {
-    width: 30px !important;
-    height: 30px !important;
+    width: 26px !important;
+    height: 26px !important;
+  }
+  .nav-logo-img {
+    height: 26px !important;
+    max-width: 130px !important;
   }
   .nav-logo-text {
-    font-size: 15px !important;
+    font-size: 14px !important;
   }
   .nav-logo-sub {
-    font-size: 8px !important;
+    font-size: 7.5px !important;
   }
   .mobile-menu-btn {
     padding: 6px !important;
@@ -903,9 +928,13 @@ button, input, select, textarea {
   .nav-container {
     height: 76px !important;
   }
+  .nav-logo-img {
+    height: 34px !important;
+    max-width: 175px !important;
+  }
   .nav-logo-box {
-    width: 38px !important;
-    height: 38px !important;
+    width: 32px !important;
+    height: 32px !important;
   }
   .nav-logo-text {
     font-size: 18px !important;
