@@ -214,6 +214,8 @@ export default defineSchema({
     ship: v.optional(v.string()),
     bookingPeriod: v.optional(v.string()),
     travelPeriod: v.optional(v.string()),
+    startDate: v.optional(v.string()), // Sort key & departure date (e.g. "2026-09-02")
+    order: v.optional(v.number()), // Manual display order override
   }),
   reviews: defineTable({
     user: v.optional(v.string()), // Legacy field

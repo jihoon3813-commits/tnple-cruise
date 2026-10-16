@@ -113,6 +113,8 @@ const AdminProductManager = () => {
       ship: product.ship || "로얄캐리비안 스펙트럼호",
       bookingPeriod: product.bookingPeriod || "예약기간 : 상시 접수 중",
       travelPeriod: product.travelPeriod || "출발일정 : 시즌 연중 운항",
+      startDate: product.startDate || product.extractedDate || "",
+      order: product.order !== undefined ? product.order : "",
       typography: product.typography || {
         title: { fontSize: 24, color: '#0F172A' },
         price: { fontSize: 18, color: '#2563EB' },
@@ -144,6 +146,8 @@ const AdminProductManager = () => {
       ship: "로얄캐리비안 스펙트럼 오브 더 시즈",
       bookingPeriod: "예약기간 : 상시 접수 중",
       travelPeriod: "출발일정 : 매주 화/금 출발 (연중 운항)",
+      startDate: "",
+      order: "",
       typography: {
         title: { fontSize: 24, color: '#0F172A' },
         price: { fontSize: 18, color: '#2563EB' },
@@ -192,6 +196,8 @@ const AdminProductManager = () => {
         ship: currentProduct.ship || '',
         bookingPeriod: currentProduct.bookingPeriod || '',
         travelPeriod: currentProduct.travelPeriod || '',
+        startDate: currentProduct.startDate && currentProduct.startDate.trim() !== '' ? currentProduct.startDate.trim() : undefined,
+        order: (currentProduct.order !== undefined && currentProduct.order !== '') ? Number(currentProduct.order) : undefined,
         typography: currentProduct.typography || {}
       };
 
@@ -254,6 +260,18 @@ const AdminProductManager = () => {
                </div>
             </div>
             <div style={{ padding: '24px' }}>
+               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '8px' }}>
+                 {(product.startDate || product.extractedDate) && (
+                   <span style={{ fontSize: '11px', fontWeight: '700', padding: '3px 8px', background: '#EFF6FF', color: '#1D4ED8', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                     <Calendar size={12} /> {product.startDate || product.extractedDate}
+                   </span>
+                 )}
+                 {product.order !== undefined && (
+                   <span style={{ fontSize: '11px', fontWeight: '700', padding: '3px 8px', background: '#F1F5F9', color: '#475569', borderRadius: '4px' }}>
+                     순서: {product.order}
+                   </span>
+                 )}
+               </div>
                <h3 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '8px', color: 'var(--text-main)' }}>{product.title}</h3>
                <div style={{ display: 'flex', gap: '12px', color: 'var(--text-muted)', fontSize: '13px', marginBottom: '16px' }}><div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><MapPin size={14} /> 지중해</div><div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Clock size={14} /> 14일</div></div>
                 <div style={{ borderTop: '1px solid var(--border-light)', paddingTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
@@ -346,6 +364,33 @@ const AdminProductManager = () => {
                   <div>
                       <label className="admin-label">출발 일정 표기 (예: 출발일정 : 매주 화/금 출발)</label>
                       <input className="form-control" placeholder="출발일정 : 시즌 연중 운항" value={currentProduct.travelPeriod || ""} onChange={e => setCurrentProduct({...currentProduct, travelPeriod: e.target.value})} />
+                  </div>
+
+                  <div>
+                      <label className="admin-label">출발 일자 (정렬 기준 일자, 예: 2026-09-02)</label>
+                      <input 
+                        type="date" 
+                        className="form-control" 
+                        value={currentProduct.startDate || ""} 
+                        onChange={e => setCurrentProduct({...currentProduct, startDate: e.target.value})} 
+                      />
+                      <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px', display: 'block' }}>
+                        * 비워둘 경우 상품명이나 출발 일정에서 일자를 자동 인식하여 순서대로 정렬됩니다.
+                      </span>
+                  </div>
+
+                  <div>
+                      <label className="admin-label">노출 순서 우선순위 (선택)</label>
+                      <input 
+                        type="number" 
+                        className="form-control" 
+                        placeholder="기본값: 일자 순 자동 정렬" 
+                        value={currentProduct.order ?? ""} 
+                        onChange={e => setCurrentProduct({...currentProduct, order: e.target.value})} 
+                      />
+                      <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px', display: 'block' }}>
+                        * 숫자가 작을수록 우선 노출됩니다. 비워두면 일자 순으로 정렬됩니다.
+                      </span>
                   </div>
 
                   {/* Feature Bullet Points (리스트 노출 주요 혜택) */}

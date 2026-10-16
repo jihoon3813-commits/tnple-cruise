@@ -242,9 +242,19 @@ const Home = () => {
   const [searchMembers, setSearchMembers] = useState('성인 2인');
   const [searchPayment, setSearchPayment] = useState('스마트 후불 분할 납부');
 
-  // Normalize Admin Database Products to Kensington luxury grid format
-  const displayPackages = (dbProducts && dbProducts.length > 0)
-    ? dbProducts.map((p, idx) => {
+  // Normalize Admin Database Products to Kensington luxury grid format (sorted by date)
+  const sortedDbProducts = [...dbProducts].sort((a, b) => {
+    if (a.order !== undefined && b.order !== undefined && a.order !== b.order) {
+      return a.order - b.order;
+    }
+    const dateA = a.startDate || a.extractedDate || '9999-99-99';
+    const dateB = b.startDate || b.extractedDate || '9999-99-99';
+    if (dateA !== dateB) return dateA.localeCompare(dateB);
+    return (a._creationTime || 0) - (b._creationTime || 0);
+  });
+
+  const displayPackages = (sortedDbProducts && sortedDbProducts.length > 0)
+    ? sortedDbProducts.map((p, idx) => {
         const thumb = p.thumbnails && p.thumbnails.length > 0 
           ? p.thumbnails[0] 
           : 'https://images.unsplash.com/photo-1548574505-5e239809ee19?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80';
@@ -271,8 +281,10 @@ const Home = () => {
               ? p.schedule.slice(0, 3).map(s => `${s.day}일차: ${s.title}`)
               : ['발코니 오션뷰 객실', '전 일정 선상 뷔페 & 정찬', '기항지 한국인 가이드 투어']);
 
+        const dateStr = p.startDate || p.extractedDate;
+        const defaultTravelPeriod = dateStr ? `출발일정 : ${dateStr} 출발` : '출발일정 : 시즌 연중 운항';
         const bookingPeriod = p.bookingPeriod || '예약기간 : 상시 접수 중';
-        const travelPeriod = p.travelPeriod || '출발일정 : 시즌 연중 운항';
+        const travelPeriod = p.travelPeriod || defaultTravelPeriod;
 
         return {
           id: p.id || p._id,
@@ -285,6 +297,7 @@ const Home = () => {
           image: thumb,
           bookingPeriod,
           travelPeriod,
+          startDate: dateStr,
           price: `${p.price?.toLocaleString()}원`,
           originalPrice: p.originalPrice ? `${p.originalPrice.toLocaleString()}원` : null,
           discountRate,
