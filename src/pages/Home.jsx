@@ -5,7 +5,7 @@ import {
   Ship, Calendar, Users, MapPin, CreditCard, ArrowRight, 
   ChevronRight, Star, Check, Sparkles, Compass, ShieldCheck, 
   Award, Coffee, Utensils, Anchor, PhoneCall, ArrowUpRight, ChevronLeft, Gift,
-  CheckCircle2, ChevronDown, ChevronUp, LayoutGrid, Square
+  CheckCircle2, ChevronDown, ChevronUp, LayoutGrid, Square, ArrowDown, ArrowUp
 } from 'lucide-react';
 import { useConfig } from '../context/ConfigContext';
 import SafeMedia from '../components/SafeMedia';
@@ -235,6 +235,7 @@ const Home = () => {
   const [modalTitle, setModalTitle] = useState('다온넷크루즈 프리미엄 크루즈');
   const [openFaq, setOpenFaq] = useState(0);
   const [packageViewMode, setPackageViewMode] = useState('2col');
+  const [sortOrder, setSortOrder] = useState('date-asc'); // 'date-asc' (빠른순) | 'date-desc' (늦은순)
 
   // Quick Bar Form State
   const [searchDestination, setSearchDestination] = useState('동남아 3개국 (싱가포르·말레이시아·태국)');
@@ -244,13 +245,15 @@ const Home = () => {
 
   // Normalize Admin Database Products to Kensington luxury grid format (sorted by date)
   const sortedDbProducts = [...dbProducts].sort((a, b) => {
-    if (a.order !== undefined && b.order !== undefined && a.order !== b.order) {
-      return a.order - b.order;
-    }
     const dateA = a.startDate || a.extractedDate || '9999-99-99';
     const dateB = b.startDate || b.extractedDate || '9999-99-99';
-    if (dateA !== dateB) return dateA.localeCompare(dateB);
-    return (a._creationTime || 0) - (b._creationTime || 0);
+    if (sortOrder === 'date-desc') {
+      if (dateA !== dateB) return dateB.localeCompare(dateA);
+      return (b._creationTime || 0) - (a._creationTime || 0);
+    } else {
+      if (dateA !== dateB) return dateA.localeCompare(dateB);
+      return (a._creationTime || 0) - (b._creationTime || 0);
+    }
   });
 
   const displayPackages = (sortedDbProducts && sortedDbProducts.length > 0)
@@ -802,48 +805,99 @@ const Home = () => {
                 </h2>
               </div>
 
-              {/* View Mode Toggle Switcher (1열 / 2열 보기) */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#E2E8F0', padding: '3px', borderRadius: '4px' }}>
-                <button
-                  type="button"
-                  onClick={() => setPackageViewMode('1col')}
-                  style={{
-                    padding: '5px 10px',
-                    fontSize: '11px',
-                    fontWeight: '700',
-                    border: 'none',
-                    cursor: 'pointer',
-                    background: packageViewMode === '1col' ? 'var(--navy-deep)' : 'transparent',
-                    color: packageViewMode === '1col' ? '#FFFFFF' : '#475569',
-                    borderRadius: '3px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                    transition: 'all 0.2s ease'
-                  }}
-                >
-                  <Square size={12} /> 1열 보기
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setPackageViewMode('2col')}
-                  style={{
-                    padding: '5px 10px',
-                    fontSize: '11px',
-                    fontWeight: '700',
-                    border: 'none',
-                    cursor: 'pointer',
-                    background: packageViewMode === '2col' ? 'var(--navy-deep)' : 'transparent',
-                    color: packageViewMode === '2col' ? '#FFFFFF' : '#475569',
-                    borderRadius: '3px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                    transition: 'all 0.2s ease'
-                  }}
-                >
-                  <LayoutGrid size={12} /> 2열 보기
-                </button>
+              {/* Controls: Date Sort + View Mode Switcher */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                {/* Date Sort Switcher (출발일자 빠른순 / 늦은순) */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#F1F5F9', padding: '3px', borderRadius: '6px', border: '1px solid #E2E8F0' }}>
+                  <button
+                    type="button"
+                    onClick={() => setSortOrder('date-asc')}
+                    style={{
+                      padding: '5px 10px',
+                      fontSize: '11px',
+                      fontWeight: sortOrder === 'date-asc' ? '800' : '600',
+                      border: 'none',
+                      cursor: 'pointer',
+                      background: sortOrder === 'date-asc' ? 'var(--navy-deep)' : 'transparent',
+                      color: sortOrder === 'date-asc' ? '#FFFFFF' : '#64748B',
+                      borderRadius: '4px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      transition: 'all 0.2s ease',
+                      boxShadow: sortOrder === 'date-asc' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'
+                    }}
+                  >
+                    <ArrowDown size={12} /> 출발일 빠른순
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSortOrder('date-desc')}
+                    style={{
+                      padding: '5px 10px',
+                      fontSize: '11px',
+                      fontWeight: sortOrder === 'date-desc' ? '800' : '600',
+                      border: 'none',
+                      cursor: 'pointer',
+                      background: sortOrder === 'date-desc' ? 'var(--navy-deep)' : 'transparent',
+                      color: sortOrder === 'date-desc' ? '#FFFFFF' : '#64748B',
+                      borderRadius: '4px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      transition: 'all 0.2s ease',
+                      boxShadow: sortOrder === 'date-desc' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'
+                    }}
+                  >
+                    <ArrowUp size={12} /> 출발일 늦은순
+                  </button>
+                </div>
+
+                {/* View Mode Toggle Switcher (1열 / 2열 보기) */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#F1F5F9', padding: '3px', borderRadius: '6px', border: '1px solid #E2E8F0' }}>
+                  <button
+                    type="button"
+                    onClick={() => setPackageViewMode('1col')}
+                    style={{
+                      padding: '5px 10px',
+                      fontSize: '11px',
+                      fontWeight: packageViewMode === '1col' ? '800' : '600',
+                      border: 'none',
+                      cursor: 'pointer',
+                      background: packageViewMode === '1col' ? 'var(--navy-deep)' : 'transparent',
+                      color: packageViewMode === '1col' ? '#FFFFFF' : '#64748B',
+                      borderRadius: '4px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      transition: 'all 0.2s ease',
+                      boxShadow: packageViewMode === '1col' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'
+                    }}
+                  >
+                    <Square size={12} /> 1열 보기
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPackageViewMode('2col')}
+                    style={{
+                      padding: '5px 10px',
+                      fontSize: '11px',
+                      fontWeight: packageViewMode === '2col' ? '800' : '600',
+                      border: 'none',
+                      cursor: 'pointer',
+                      background: packageViewMode === '2col' ? 'var(--navy-deep)' : 'transparent',
+                      color: packageViewMode === '2col' ? '#FFFFFF' : '#64748B',
+                      borderRadius: '4px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      transition: 'all 0.2s ease',
+                      boxShadow: packageViewMode === '2col' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'
+                    }}
+                  >
+                    <LayoutGrid size={12} /> 2열 보기
+                  </button>
+                </div>
               </div>
             </div>
 
