@@ -244,16 +244,9 @@ const Home = () => {
   const [searchPayment, setSearchPayment] = useState('스마트 후불 분할 납부');
 
   // Normalize Admin Database Products to Kensington luxury grid format (sorted by date, closed sailings last)
-  const todayKst = new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10);
   const isClosedProduct = (p) => {
-    const fields = [p.badge, p.title, p.bookingPeriod, p.travelPeriod, p.ship];
-    const hasClosedText = fields.some((val) => {
-      if (!val || typeof val !== 'string') return false;
-      return val.replace(/마감\s*임박/g, '').includes('마감');
-    });
-    if (hasClosedText) return true;
-    const dateStr = p.startDate || p.extractedDate;
-    return Boolean(dateStr && dateStr !== '9999-99-99' && dateStr < todayKst);
+    const fields = [p.badge, p.title, p.description, p.bookingPeriod, p.travelPeriod, p.ship];
+    return fields.some((val) => typeof val === 'string' && val.includes('마감'));
   };
 
   const sortedDbProducts = [...dbProducts].sort((a, b) => {
