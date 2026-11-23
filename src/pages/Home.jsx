@@ -245,7 +245,8 @@ const Home = () => {
 
   // Normalize Admin Database Products to Kensington luxury grid format (sorted by date, closed sailings last)
   const isClosedProduct = (p) => {
-    const fields = [p.badge, p.title, p.description, p.bookingPeriod, p.travelPeriod, p.ship];
+    if (!p) return false;
+    const fields = [p.badge, p.title, p.description, p.subtitle, p.bookingPeriod, p.travelPeriod, p.ship];
     return fields.some((val) => typeof val === 'string' && val.includes('마감'));
   };
 
@@ -303,6 +304,7 @@ const Home = () => {
           id: p.id || p._id,
           raw: p,
           isDb: true,
+          isClosed: isClosedProduct(p),
           badge,
           title: p.title,
           subtitle: p.description || '다온넷크루즈 멤버십 회원 전용 크루즈 패키지',
@@ -924,16 +926,19 @@ const Home = () => {
 
           {/* Sharp Grid with 1col/2col Mode */}
           <div className={`kensington-packages-grid ${packageViewMode === '1col' ? 'force-1col' : 'force-2col'}`}>
-            {displayPackages.map((pkg, pIdx) => (
+            {displayPackages.map((pkg, pIdx) => {
+              const isClosed = pkg.isClosed ?? isClosedProduct(pkg);
+              return (
               <div 
                 key={pkg.id} 
                 className="sharp-card"
                 style={{ 
                   display: 'flex', 
                   flexDirection: 'column', 
-                  background: '#FFFFFF', 
-                  border: '1px solid #E2E8F0',
-                  boxShadow: '0 4px 16px rgba(0,0,0,0.04)'
+                  background: isClosed ? '#E2E8F0' : '#FFFFFF', 
+                  border: isClosed ? '1px solid #CBD5E1' : '1px solid #E2E8F0',
+                  boxShadow: isClosed ? 'inset 0 0 0 1px rgba(148,163,184,0.2), 0 2px 8px rgba(0,0,0,0.03)' : '0 4px 16px rgba(0,0,0,0.04)',
+                  opacity: isClosed ? 0.85 : 1
                 }}
               >
                 {/* Photo & Badge */}
@@ -943,9 +948,18 @@ const Home = () => {
                       src={pkg.image} 
                       alt={pkg.title} 
                       priority={pIdx < 4}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s ease' }} 
+                      style={{ 
+                        width: '100%', 
+                        height: '100%', 
+                        objectFit: 'cover', 
+                        transition: 'transform 0.5s ease',
+                        filter: isClosed ? 'grayscale(55%) brightness(0.82)' : 'none'
+                      }} 
                     />
-                    <div style={{ position: 'absolute', top: '12px', left: '12px', zIndex: 10, background: 'var(--navy-deep)', color: 'var(--accent-gold)', fontSize: '9.5px', fontWeight: '800', padding: '3px 8px', letterSpacing: '0.04em' }}>
+                    {isClosed && (
+                      <div style={{ position: 'absolute', inset: 0, background: 'rgba(15, 23, 42, 0.25)', pointerEvents: 'none' }} />
+                    )}
+                    <div style={{ position: 'absolute', top: '12px', left: '12px', zIndex: 10, background: isClosed ? '#475569' : 'var(--navy-deep)', color: isClosed ? '#E2E8F0' : 'var(--accent-gold)', fontSize: '9.5px', fontWeight: '800', padding: '3px 8px', letterSpacing: '0.04em' }}>
                       {pkg.badge}
                     </div>
                     <div style={{ position: 'absolute', bottom: '0', left: '0', right: '0', zIndex: 10, background: 'linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 100%)', padding: '8px 12px', color: '#fff', fontSize: '10px', fontWeight: '600' }}>
@@ -958,7 +972,7 @@ const Home = () => {
                 <div className="kensington-package-card-content" style={{ padding: '24px', display: 'flex', flexDirection: 'column', flex: 1, justifyContent: 'space-between' }}>
                   <div>
                     <Link to={pkg.isDb ? `/product/${pkg.id}` : '#'} style={{ textDecoration: 'none', color: 'inherit' }}>
-                      <h3 className="kensington-package-card-title" style={{ fontSize: '17px', fontWeight: '800', color: 'var(--navy-deep)', lineHeight: '1.4', marginBottom: '8px', fontFamily: "'Pretendard', sans-serif", transition: 'color 0.2s' }}>
+                      <h3 className="kensington-package-card-title" style={{ fontSize: '17px', fontWeight: '800', color: isClosed ? '#475569' : 'var(--navy-deep)', lineHeight: '1.4', marginBottom: '8px', fontFamily: "'Pretendard', sans-serif", transition: 'color 0.2s' }}>
                         {pkg.title}
                       </h3>
                     </Link>
@@ -966,15 +980,15 @@ const Home = () => {
                       {pkg.subtitle}
                     </p>
 
-                    <div className="kensington-package-card-info" style={{ borderTop: '1px solid #F1F5F9', borderBottom: '1px solid #F1F5F9', padding: '12px 0', marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '11px', color: '#475569' }}>
+                    <div className="kensington-package-card-info" style={{ borderTop: isClosed ? '1px solid #CBD5E1' : '1px solid #F1F5F9', borderBottom: isClosed ? '1px solid #CBD5E1' : '1px solid #F1F5F9', padding: '12px 0', marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '11px', color: '#475569' }}>
                       <div>📅 {pkg.bookingPeriod}</div>
                       <div>🚢 {pkg.travelPeriod}</div>
                     </div>
 
                     <div className="kensington-package-card-features" style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '20px' }}>
                       {pkg.features.map((feat, fIdx) => (
-                        <div key={fIdx} style={{ fontSize: '12px', color: '#334155', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <span style={{ color: 'var(--accent-gold-dark)' }}>▪</span> {feat}
+                        <div key={fIdx} style={{ fontSize: '12px', color: isClosed ? '#475569' : '#334155', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <span style={{ color: isClosed ? '#64748B' : 'var(--accent-gold-dark)' }}>▪</span> {feat}
                         </div>
                       ))}
                     </div>
@@ -982,22 +996,22 @@ const Home = () => {
 
                   {/* Pricing & Buttons */}
                   <div>
-                    <div className="kensington-package-card-pricing" style={{ background: '#F8FAFC', padding: '10px 12px', border: '1px solid #E2E8F0', marginBottom: '14px' }}>
+                    <div className="kensington-package-card-pricing" style={{ background: isClosed ? '#CBD5E1' : '#F8FAFC', padding: '10px 12px', border: isClosed ? '1px solid #94A3B8' : '1px solid #E2E8F0', marginBottom: '14px' }}>
                       {pkg.originalPrice ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
                           {pkg.discountRate && (
-                            <span style={{ fontSize: '11px', fontWeight: '900', color: '#DC2626' }}>
+                            <span style={{ fontSize: '11px', fontWeight: '900', color: isClosed ? '#64748B' : '#DC2626' }}>
                               {pkg.discountRate}%
                             </span>
                           )}
-                          <span style={{ fontSize: '11px', color: '#94A3B8', textDecoration: 'line-through' }}>
+                          <span style={{ fontSize: '11px', color: isClosed ? '#64748B' : '#94A3B8', textDecoration: 'line-through' }}>
                             {pkg.originalPrice}
                           </span>
                         </div>
                       ) : null}
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                        <span style={{ fontSize: '11px', color: '#64748B', fontWeight: '600' }}>판매가</span>
-                        <span className="kensington-package-card-price" style={{ fontSize: '16px', fontWeight: '900', color: 'var(--navy-deep)', letterSpacing: '-0.02em' }}>
+                        <span style={{ fontSize: '11px', color: isClosed ? '#475569' : '#64748B', fontWeight: '600' }}>판매가</span>
+                        <span className="kensington-package-card-price" style={{ fontSize: '16px', fontWeight: '900', color: isClosed ? '#475569' : 'var(--navy-deep)', letterSpacing: '-0.02em' }}>
                           {pkg.price}
                         </span>
                       </div>
@@ -1008,7 +1022,7 @@ const Home = () => {
                         <Link 
                           to={`/product/${pkg.id}`}
                           className="sharp-btn-outline"
-                          style={{ textAlign: 'center', padding: '9px 0', fontSize: '11px', color: 'var(--navy-deep)', textDecoration: 'none', fontWeight: '700' }}
+                          style={{ textAlign: 'center', padding: '9px 0', fontSize: '11px', color: isClosed ? '#475569' : 'var(--navy-deep)', borderColor: isClosed ? '#94A3B8' : undefined, textDecoration: 'none', fontWeight: '700' }}
                         >
                           상세보기
                         </Link>
@@ -1016,7 +1030,7 @@ const Home = () => {
                       <button 
                         onClick={() => handleOpenProductConsultation(pkg)}
                         className="sharp-btn-dark"
-                        style={{ width: '100%', padding: '9px 0', fontSize: '11px' }}
+                        style={{ width: '100%', padding: '9px 0', fontSize: '11px', background: isClosed ? '#64748B' : undefined, borderColor: isClosed ? '#64748B' : undefined }}
                       >
                         상담 신청
                       </button>
@@ -1026,7 +1040,8 @@ const Home = () => {
                 </div>
 
               </div>
-            ))}
+              );
+            })}
           </div>
 
         </div>
