@@ -243,8 +243,25 @@ const Home = () => {
   const [searchMembers, setSearchMembers] = useState('성인 2인');
   const [searchPayment, setSearchPayment] = useState('스마트 후불 분할 납부');
 
-  // Normalize Admin Database Products to Kensington luxury grid format (sorted by date)
+  // Normalize Admin Database Products to Kensington luxury grid format (sorted by date, closed sailings last)
+  const todayKst = new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  const isClosedProduct = (p) => {
+    const fields = [p.badge, p.title, p.bookingPeriod, p.travelPeriod, p.ship];
+    const hasClosedText = fields.some((val) => {
+      if (!val || typeof val !== 'string') return false;
+      return val.replace(/마감\s*임박/g, '').includes('마감');
+    });
+    if (hasClosedText) return true;
+    const dateStr = p.startDate || p.extractedDate;
+    return Boolean(dateStr && dateStr !== '9999-99-99' && dateStr < todayKst);
+  };
+
   const sortedDbProducts = [...dbProducts].sort((a, b) => {
+    const closedA = isClosedProduct(a);
+    const closedB = isClosedProduct(b);
+    if (closedA !== closedB) {
+      return closedA ? 1 : -1;
+    }
     const dateA = a.startDate || a.extractedDate || '9999-99-99';
     const dateB = b.startDate || b.extractedDate || '9999-99-99';
     if (sortOrder === 'date-desc') {

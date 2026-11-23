@@ -41,6 +41,25 @@ export function extractProductDate(product: any): string {
   return "9999-99-99";
 }
 
+function getKstTodayString(): string {
+  return new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10);
+}
+
+function isClosedProduct(product: any, todayStr: string): boolean {
+  const fields = [product.badge, product.title, product.bookingPeriod, product.travelPeriod, product.ship];
+  const hasClosedText = fields.some((val) => {
+    if (!val || typeof val !== 'string') return false;
+    return val.replace(/마감\s*임박/g, '').includes('마감');
+  });
+  if (hasClosedText) return true;
+
+  const dateStr = extractProductDate(product);
+  if (dateStr !== "9999-99-99" && dateStr < todayStr) {
+    return true;
+  }
+  return false;
+}
+
 async function resolveProductUrls(ctx: any, product: any) {
   if (!product) return product;
   const thumbnails = await Promise.all(
@@ -61,7 +80,13 @@ export const list = query({
   args: {},
   handler: async (ctx) => {
     const products = await ctx.db.query("products").collect();
+    const todayStr = getKstTodayString();
     products.sort((a, b) => {
+      const closedA = isClosedProduct(a, todayStr);
+      const closedB = isClosedProduct(b, todayStr);
+      if (closedA !== closedB) {
+        return closedA ? 1 : -1;
+      }
       if (a.order !== undefined && b.order !== undefined && a.order !== b.order) {
         return a.order - b.order;
       }
